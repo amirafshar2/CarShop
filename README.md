@@ -4,9 +4,8 @@
 
 ### 🚀 Live-Demo: **https://carshop-udch.onrender.com/**
 
-
-> Kostenlose Render-Instanz: Der erste Aufruf kann bis zu ~1 Minute dauern. Alle Fahrzeuge, Preise und Daten sind Beispieldaten.
-> Admin-Zugang: auf der Login-Seite „ورود سریع به پنل مدیریت“ mit dem Demo-Passwort.
+> Kostenlose Render-Instanz: Der erste Aufruf kann bis zu etwa einer Minute dauern. Alle Fahrzeuge, Preise und Daten sind lediglich Beispieldaten.
+> Admin-Zugang: Auf der Login-Seite können Sie über die Schaltfläche „Schneller Zugang zum Admin-Bereich“ mit dem Demo-Passwort auf das Administrationspanel zugreifen.
 <p>
   <img alt=".NET 9" src="https://img.shields.io/badge/.NET-9.0-512BD4?logo=dotnet&logoColor=white">
   <img alt="ASP.NET Core" src="https://img.shields.io/badge/ASP.NET%20Core-Web%20API-512BD4?logo=dotnet&logoColor=white">
