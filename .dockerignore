@@ -1,0 +1,15 @@
+.git
+.vs
+.github
+**/bin
+**/obj
+**/node_modules
+web/.next
+**/*.db
+**/*.db-shm
+**/*.db-wal
+.env
+.env.local
+web/.env.local
+web/public/media/hero-source.mp4
+*.tgz

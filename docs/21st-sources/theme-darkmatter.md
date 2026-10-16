@@ -1,0 +1,136 @@
+# Darkmatter (theme)
+by serafimcloud
+page: https://21st.dev/community/themes/darkmatter
+
+## CSS
+```css
+:root {
+  --background: #ffffff;
+  --foreground: #111827;
+  --card: #ffffff;
+  --card-foreground: #111827;
+  --popover: #ffffff;
+  --popover-foreground: #111827;
+  --primary: #d87943;
+  --primary-foreground: #ffffff;
+  --secondary: #527575;
+  --secondary-foreground: #ffffff;
+  --muted: #f3f4f6;
+  --muted-foreground: #6b7280;
+  --accent: #eeeeee;
+  --accent-foreground: #111827;
+  --destructive: #ef4444;
+  --destructive-foreground: #fafafa;
+  --border: #e5e7eb;
+  --input: #e5e7eb;
+  --ring: #d87943;
+  --chart-1: #5f8787;
+  --chart-2: #e78a53;
+  --chart-3: #fbcb97;
+  --chart-4: #888888;
+  --chart-5: #999999;
+  --sidebar: #f3f4f6;
+  --sidebar-foreground: #111827;
+  --sidebar-primary: #d87943;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #ffffff;
+  --sidebar-accent-foreground: #111827;
+  --sidebar-border: #e5e7eb;
+  --sidebar-ring: #d87943;
+  --font-sans: Geist Mono, ui-monospace, monospace;
+  --font-serif: serif;
+  --font-mono: JetBrains Mono, monospace;
+  --radius: 0.75rem;
+  --shadow-color: #000000;
+  --shadow-opacity: 0.05;
+  --shadow-blur: 4px;
+  --shadow-spread: 0px;
+  --shadow-offset-x: 0px;
+  --shadow-offset-y: 1px;
+  --letter-spacing: 0rem;
+  --spacing: 0.25rem;
+}
+
+.dark {
+  --background: #121113;
+  --foreground: #c1c1c1;
+  --card: #121212;
+  --card-foreground: #c1c1c1;
+  --popover: #121113;
+  --popover-foreground: #c1c1c1;
+  --primary: #e78a53;
+  --primary-foreground: #121113;
+  --secondary: #5f8787;
+  --secondary-foreground: #121113;
+  --muted: #222222;
+  --muted-foreground: #888888;
+  --accent: #333333;
+  --accent-foreground: #c1c1c1;
+  --destructive: #5f8787;
+  --destructive-foreground: #121113;
+  --border: #222222;
+  --input: #222222;
+  --ring: #e78a53;
+  --chart-1: #5f8787;
+  --chart-2: #e78a53;
+  --chart-3: #fbcb97;
+  --chart-4: #888888;
+  --chart-5: #999999;
+  --sidebar: #121212;
+  --sidebar-foreground: #c1c1c1;
+  --sidebar-primary: #e78a53;
+  --sidebar-primary-foreground: #121113;
+  --sidebar-accent: #333333;
+  --sidebar-accent-foreground: #c1c1c1;
+  --sidebar-border: #222222;
+  --sidebar-ring: #e78a53;
+  --shadow-color: #000000;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-font-sans: var(--font-sans);
+  --color-font-serif: var(--font-serif);
+  --color-font-mono: var(--font-mono);
+  --color-radius: var(--radius);
+  --color-shadow-color: var(--shadow-color);
+  --color-shadow-opacity: var(--shadow-opacity);
+  --color-shadow-blur: var(--shadow-blur);
+  --color-shadow-spread: var(--shadow-spread);
+  --color-shadow-offset-x: var(--shadow-offset-x);
+  --color-shadow-offset-y: var(--shadow-offset-y);
+  --color-letter-spacing: var(--letter-spacing);
+  --color-spacing: var(--spacing);
+}
+```

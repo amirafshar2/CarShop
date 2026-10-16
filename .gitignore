@@ -1,0 +1,42 @@
+.env.local
+.env
+*.db
+*.db-shm
+*.db-wal
+bin/
+obj/
+node_modules/
+.next/
+
+# web
+web/node_modules/
+web/.next/
+web/.env.local
+# demo media is committed so the Docker/Render build can use the smooth hero video;
+# only the large original source video stays local
+web/public/media/hero-source.mp4
+web/public/media/hero-1440.mp4
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.rsuser
+[Dd]ebug/
+[Rr]elease/
+TestResults/
+
+# misc
+*.tgz
+_x/
+
+# private sales material (presentations, offers, prices) — never commit
+_privat/
+*.pptx
+*.ppt
+*.key
+*proposal*
+*angebot*
+*Angebot*
+*praesentation*
+*Praesentation*
