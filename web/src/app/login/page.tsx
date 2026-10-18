@@ -3,6 +3,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { toast } from "sonner";
+import { Briefcase, ShieldCheck, UserRound } from "lucide-react";
 import { Field, OtpInput } from "@/components/ui/otp-input-verification";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -18,7 +19,7 @@ function destination(roles: string[], next: string | null) {
 }
 
 /** «ورود نمایشی»: one click into the admin or staff panel for presentations. */
-function DemoAccess({ phone, onDone }: { phone: (p: string) => void; onDone: (roles: string[]) => void }) {
+function DemoAccess({ onDone }: { onDone: (roles: string[]) => void }) {
   const [info, setInfo] = useState<{ enabled: boolean; requiresKey: boolean } | null>(null);
   const [key, setKey] = useState("");
   const [busy, setBusy] = useState<"Admin" | "Staff" | null>(null);
@@ -44,35 +45,49 @@ function DemoAccess({ phone, onDone }: { phone: (p: string) => void; onDone: (ro
     }
   };
 
+  const roles = [
+    { role: "Admin" as const, icon: ShieldCheck, title: "مدیر", desc: "همه‌ی بخش‌ها: خودروها، خدمات، درخواست‌ها و کاربران", variant: "default" as const },
+    { role: "Staff" as const, icon: Briefcase, title: "کارمند", desc: "مدیریت خودروها و پیگیری درخواست‌ها", variant: "outline" as const },
+  ];
+  const locked = !!busy || (info.requiresKey && !key);
+
   return (
-    <div className="space-y-3 rounded-xl border border-primary/40 bg-primary/5 p-4 text-sm">
+    <section aria-labelledby="demo-title" className="space-y-3 rounded-xl border border-primary/40 bg-primary/5 p-3 text-sm sm:p-4">
       <div>
-        <p className="font-bold text-foreground">ورود سریع به پنل مدیریت (نسخه‌ی نمایشی)</p>
-        <p className="mt-1 text-muted-foreground">
-          {info.requiresKey ? "رمز نمایشی را وارد کنید و نقش را انتخاب کنید — بدون پیامک." : "روی یکی از دکمه‌ها بزنید — بدون پیامک."}
+        <p id="demo-title" className="font-bold text-foreground">ورود سریع نمایشی، با یک کلیک</p>
+        <p className="mt-1 text-xs text-muted-foreground sm:text-sm">
+          {info.requiresKey ? "رمز نمایشی را وارد کنید و نقش را انتخاب کنید. پیامک لازم نیست." : "نقش را انتخاب کنید. پیامک و کد لازم نیست."}
         </p>
       </div>
       {info.requiresKey && (
         <Input type="password" autoComplete="off" placeholder="رمز نمایشی" aria-label="رمز نمایشی" value={key} onChange={(e) => setKey(e.target.value)} />
       )}
-      <div className="grid gap-2 sm:grid-cols-2">
-        <Button type="button" disabled={!!busy || (info.requiresKey && !key)} onClick={() => void go("Admin")}>
-          {busy === "Admin" ? "در حال ورود…" : "ورود به‌عنوان مدیر"}
-        </Button>
-        <Button type="button" variant="outline" disabled={!!busy || (info.requiresKey && !key)} onClick={() => void go("Staff")}>
-          {busy === "Staff" ? "در حال ورود…" : "ورود به‌عنوان کارمند"}
-        </Button>
+      <div className="grid grid-cols-2 gap-2">
+        {roles.map(({ role, icon: Icon, title, desc, variant }) => (
+          <Button
+            key={role}
+            type="button"
+            variant={variant}
+            disabled={locked}
+            onClick={() => void go(role)}
+            className="h-auto min-h-11 flex-col items-center gap-1 whitespace-normal px-2 py-3 text-center"
+          >
+            <span className="flex items-center gap-1.5 text-sm font-bold">
+              <Icon className="size-4 shrink-0" aria-hidden />
+              {busy === role ? "در حال ورود…" : `ورود ${title}`}
+            </span>
+            <span className="text-[11px] font-normal leading-snug opacity-80 sm:text-xs">{desc}</span>
+          </Button>
+        ))}
       </div>
       {error && <p role="alert" className="text-destructive">{error}</p>}
-      {!info.requiresKey && (
-        <p className="text-xs text-muted-foreground">
-          یا با شماره وارد شوید: مدیر{" "}
-          <button type="button" className="text-primary hover:underline" dir="ltr" onClick={() => phone("09120000001")}>09120000001</button>
-          {" "}· کارمند{" "}
-          <button type="button" className="text-primary hover:underline" dir="ltr" onClick={() => phone("09120000002")}>09120000002</button>
-        </p>
-      )}
-    </div>
+      <p className="flex items-start gap-1.5 text-xs leading-relaxed text-muted-foreground">
+        <UserRound className="mt-0.5 size-3.5 shrink-0" aria-hidden />
+        <span>
+          پنل مشتری: هر شماره‌ی موبایلی را وارد کنید، کد تأیید روی همین صفحه نمایش داده می‌شود.
+        </span>
+      </p>
+    </section>
   );
 }
 
@@ -138,6 +153,11 @@ function LoginForm() {
       </CardHeader>
       <CardContent className="space-y-5">
         {step === "phone" ? (
+          <>
+          <DemoAccess onDone={(roles) => router.push(destination(roles, nextParam))} />
+          <div className="flex items-center gap-3 text-xs text-muted-foreground" aria-hidden>
+            <span className="h-px flex-1 bg-border" />یا با شماره موبایل<span className="h-px flex-1 bg-border" />
+          </div>
           <form
             className="space-y-4"
             onSubmit={(e) => {
@@ -154,8 +174,8 @@ function LoginForm() {
             <Button className="w-full" size="lg" disabled={busy}>
               {busy ? "در حال ارسال…" : "دریافت کد تأیید"}
             </Button>
-            <DemoAccess phone={setPhone} onDone={(roles) => router.push(destination(roles, nextParam))} />
           </form>
+          </>
         ) : (
           <div className="space-y-4">
             {devCode && (

@@ -55,6 +55,18 @@ public sealed class PanelTests(ApiFactory factory) : IClassFixture<ApiFactory>
     }
 
     [Fact]
+    public async Task Open_demo_signs_in_as_staff_without_key()
+    {
+        using var demo = factory.WithWebHostBuilder(b => b.UseSetting("Demo:OpenAccess", "true").UseSetting("Seed:StaffPhones:0", "09120000002"));
+        var client = demo.CreateClient();
+        var info = await client.GetFromJsonAsync<JsonElement>("/api/v1/auth/demo", Json);
+        Assert.True(info.GetProperty("enabled").GetBoolean());
+        Assert.False(info.GetProperty("requiresKey").GetBoolean());
+        var ok = await client.PostAsJsonAsync("/api/v1/auth/demo-login", new { role = "Staff" });
+        Assert.Equal(HttpStatusCode.OK, ok.StatusCode);
+    }
+
+    [Fact]
     public async Task Otp_code_is_never_returned_outside_development()
     {
         var res = await factory.CreateClient().PostAsJsonAsync("/api/v1/auth/otp", new { phone = "09170000086" });

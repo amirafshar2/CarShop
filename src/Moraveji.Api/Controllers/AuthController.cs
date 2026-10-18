@@ -96,9 +96,11 @@ public sealed class AuthController(IAuthService auth, IWebHostEnvironment env, I
         return result.IsSuccess ? TokensResponse(result.Value) : this.ToProblem(result.Error!);
     }
 
-    private bool RequiresDemoKey => !env.IsDevelopment();
+    /// <summary>Demo:OpenAccess = true → public demo without a key (one click for visitors). Never in Production.</summary>
+    private bool DemoOpen => env.IsDevelopment() || config.GetValue<bool>("Demo:OpenAccess");
+    private bool RequiresDemoKey => !DemoOpen;
     private bool DemoEnabled => !env.IsProduction()
-        && (env.IsDevelopment() || (config["Demo:AccessKey"]?.Trim().Length ?? 0) >= 6);
+        && (DemoOpen || (config["Demo:AccessKey"]?.Trim().Length ?? 0) >= 6);
 
     [HttpPost("logout")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
