@@ -16,21 +16,22 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { AdminHeader, LoadState, StatusPill } from "@/components/app/admin-page";
-import { apiSend, isAdmin, type ServiceCategory, type ServiceItem, type ServicePriceType } from "@/lib/api";
+import { apiSend, isAdmin, type ServiceItem, type ServicePriceType } from "@/lib/api";
 import { useApi } from "@/lib/use-api";
 import { useSession } from "@/lib/session";
 import { toman } from "@/lib/format";
-import { categoryLabels, priceTypeLabels, servicePrice } from "@/lib/services";
+import { priceTypeLabels, servicePrice } from "@/lib/services";
+import { ImageField } from "@/components/admin/fields";
 
 type Form = {
-  title: string; category: ServiceCategory; description: string; features: string; priceType: ServicePriceType;
+  title: string; category: string; description: string; features: string; priceType: ServicePriceType;
   priceToman: string; originalToman: string; unit: string; badge: string; imageUrl: string; sortOrder: string;
   isActive: boolean; isFeatured: boolean; version?: string;
 };
 
 const empty: Form = {
-  title: "", category: "Detailing", description: "", features: "", priceType: "Fixed", priceToman: "", originalToman: "",
-  unit: "هر خودرو", badge: "", imageUrl: "", sortOrder: "0", isActive: true, isFeatured: false,
+  title: "", category: "", description: "", features: "", priceType: "Fixed", priceToman: "", originalToman: "",
+  unit: "", badge: "", imageUrl: "", sortOrder: "0", isActive: true, isFeatured: false,
 };
 
 const digits = (s: string) => s.replace(/[۰-۹]/g, (d) => String("۰۱۲۳۴۵۶۷۸۹".indexOf(d))).replace(/[٠-٩]/g, (d) => String("٠١٢٣٤٥٦٧٨٩".indexOf(d))).replace(/[^\d]/g, "");
@@ -38,13 +39,13 @@ const toRial = (toman: string) => (digits(toman) ? Number(digits(toman)) * 10 : 
 const toToman = (rial: number | null) => (rial ? String(rial / 10) : "");
 
 const toForm = (s: ServiceItem): Form => ({
-  title: s.title, category: s.category, description: s.description ?? "", features: s.features.join("\n"), priceType: s.priceType,
+  title: s.title, category: s.category ?? "", description: s.description ?? "", features: s.features.join("\n"), priceType: s.priceType,
   priceToman: toToman(s.priceRial), originalToman: toToman(s.originalPriceRial), unit: s.unit ?? "", badge: s.badge ?? "",
   imageUrl: s.imageUrl ?? "", sortOrder: String(s.sortOrder), isActive: s.isActive, isFeatured: s.isFeatured, version: s.version,
 });
 
 const toPayload = (f: Form) => ({
-  title: f.title, category: f.category, description: f.description || null,
+  title: f.title, category: f.category || null, description: f.description || null,
   features: f.features.split("\n").map((x) => x.trim()).filter(Boolean), priceType: f.priceType,
   priceRial: f.priceType === "OnCall" ? null : toRial(f.priceToman),
   originalPriceRial: f.priceType === "OnCall" ? null : toRial(f.originalToman),
@@ -118,9 +119,8 @@ export default function AdminServicesPage() {
         }
       />
 
-      {!canEdit && <p className="mb-6 rounded-2xl border border-border bg-card p-4 text-sm text-muted-foreground">نقش شما «کارشناس» است؛ فقط مدیر می‌تواند قیمت‌ها را تغییر دهد.</p>}
-      <p className="mb-6 rounded-2xl border border-primary/40 bg-primary/10 p-4 text-sm">قیمت‌های اولیه‌ی دمو نمونه هستند — قبل از معرفی سایت به مشتری، قیمت‌های واقعی را وارد کنید.</p>
-
+      {!canEdit && <p className="mb-6 rounded-2xl border border-border bg-card p-4 text-sm text-muted-foreground">نقش شما «کارمند» است؛ فقط مدیر می‌تواند قیمت‌ها را تغییر دهد.</p>}
+      
       <LoadState loading={loading && !data} error={error} onRetry={reload} />
       {data && (
         <div className="overflow-x-auto rounded-2xl border border-border">
@@ -144,7 +144,7 @@ export default function AdminServicesPage() {
                       {s.isFeatured && <StatusPill className="border-violet-500/40 bg-violet-500/10 text-violet-300">ویژه</StatusPill>}
                     </div>
                   </TableCell>
-                  <TableCell className="whitespace-nowrap text-muted-foreground">{categoryLabels[s.category]}</TableCell>
+                  <TableCell className="whitespace-nowrap text-muted-foreground">{s.category ?? "—"}</TableCell>
                   <TableCell className="whitespace-nowrap">
                     <div className="font-bold">{servicePrice(s)}</div>
                     {s.originalPriceRial && <div className="text-xs text-muted-foreground line-through">{toman(s.originalPriceRial)}</div>}
@@ -184,16 +184,12 @@ export default function AdminServicesPage() {
             <form id="service-form" className="grid gap-4 sm:grid-cols-2" onSubmit={(e) => { e.preventDefault(); void save(); }}>
               <div className="grid gap-2 sm:col-span-2">
                 <Label htmlFor="s-title">عنوان خدمت</Label>
-                <Input id="s-title" value={f.title} onChange={(e) => set("title", e.target.value)} required maxLength={120} placeholder="مثلاً سرامیک بدنه" />
+                <Input id="s-title" value={f.title} onChange={(e) => set("title", e.target.value)} required maxLength={120} placeholder="عنوان خدمت" />
               </div>
               <div className="grid gap-2">
-                <Label>دسته</Label>
-                <Select value={f.category} onValueChange={(v) => set("category", v as ServiceCategory)}>
-                  <SelectTrigger aria-label="دسته"><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {(Object.keys(categoryLabels) as ServiceCategory[]).map((c) => <SelectItem key={c} value={c}>{categoryLabels[c]}</SelectItem>)}
-                  </SelectContent>
-                </Select>
+                <Label htmlFor="s-cat">دسته (اختیاری)</Label>
+                <Input id="s-cat" list="service-cats" value={f.category} onChange={(e) => set("category", e.target.value)} maxLength={60} placeholder="مثلاً خدمات ویژه" />
+                <datalist id="service-cats">{[...new Set((data ?? []).map((x) => x.category).filter(Boolean))].map((c) => <option key={c!} value={c!} />)}</datalist>
               </div>
               <div className="grid gap-2">
                 <Label>نوع قیمت</Label>
@@ -219,7 +215,7 @@ export default function AdminServicesPage() {
               )}
               <div className="grid gap-2">
                 <Label htmlFor="s-unit">واحد</Label>
-                <Input id="s-unit" value={f.unit} onChange={(e) => set("unit", e.target.value)} maxLength={40} placeholder="هر خودرو / سدان / ..." />
+                <Input id="s-unit" value={f.unit} onChange={(e) => set("unit", e.target.value)} maxLength={40} placeholder="هر نفر / هر جلسه / ..." />
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="s-badge">برچسب (اختیاری)</Label>
@@ -233,6 +229,7 @@ export default function AdminServicesPage() {
                 <Label htmlFor="s-feat">ویژگی‌ها (هر خط یک مورد)</Label>
                 <Textarea id="s-feat" rows={4} value={f.features} onChange={(e) => set("features", e.target.value)} placeholder={"ضمانت‌نامه‌ی کتبی\nتحویل در همان روز"} />
               </div>
+              <ImageField className="sm:col-span-2" label="عکس (اختیاری)" value={f.imageUrl} onChange={(v) => set("imageUrl", v ?? "")} />
               <div className="grid gap-2">
                 <Label htmlFor="s-order">ترتیب نمایش</Label>
                 <Input id="s-order" dir="ltr" inputMode="numeric" value={f.sortOrder} onChange={(e) => set("sortOrder", e.target.value)} />

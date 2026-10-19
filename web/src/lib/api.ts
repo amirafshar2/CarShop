@@ -1,52 +1,36 @@
-import { demoPhotoFor, unsplash } from "@/lib/media";
-
 /** Browser base URL ("" = same origin, used in the Docker/Render deploy where /api is proxied). */
 export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5080";
 /** Server-side base URL (inside the container the API listens on localhost). */
 const SERVER_API_URL = process.env.API_INTERNAL_URL ?? (API_URL || "http://localhost:5080");
 
-export type CarListItem = {
+export type PriceType = "Fixed" | "From" | "OnCall";
+export type ListingStatus = "Draft" | "Published" | "Hidden" | "SoldOut";
+export type Listing = {
   id: string;
+  title: string;
   slug: string;
-  titleFa: string;
-  brandEn: string;
-  modelEn: string;
-  modelYear: number;
-  yearCalendar: "Gregorian" | "Solar";
-  condition: "New" | "Used";
-  listingType: "Regular" | "TemporaryPass" | "Hawaleh";
-  mileageKm: number;
-  colors: string;
-  priceRial: number | null;
-  priceOnCall: boolean;
-  tags: string;
-  status: "Available" | "Reserved";
-  coverImageUrl: string | null;
-};
-
-export type CarDetail = CarListItem & {
-  trim: string | null;
-  package: string | null;
-  faceliftYear: number | null;
-  originCountry: string | null;
-  transmission: string;
-  fuelType: string;
-  drivetrain: string;
+  category: string | null;
+  summary: string | null;
   description: string | null;
-  bodyCondition: string | null;
-  temporaryPassMonths: number | null;
-  temporaryPassExpiresOn: string | null;
-  freeZone: string | null;
-  hawalehType: string | null;
-  hawalehDeliveryOn: string | null;
-  images: { url: string; alt: string | null; isCover: boolean }[];
+  priceType: PriceType;
+  priceRial: number | null;
+  originalPriceRial: number | null;
+  unit: string | null;
+  badge: string | null;
+  images: string[];
+  attributes: Record<string, string>;
+  status: ListingStatus;
+  isFeatured: boolean;
+  sortOrder: number;
+  publishedAt: string | null;
+  createdAt: string;
+  version: string;
 };
 
 export type Paged<T> = { items: T[]; page: number; pageSize: number; totalCount: number; totalPages: number };
 
-/** Cover image: the dealer's upload if present, otherwise an illustrative demo photo. */
-export const coverOf = (c: Pick<CarListItem, "coverImageUrl" | "brandEn" | "modelEn">, w = 1200) =>
-  c.coverImageUrl ?? unsplash(demoPhotoFor(c.brandEn, c.modelEn), w);
+/** Absolute URL for uploaded files when the API runs on another origin (dev); same-origin in the container. */
+export const mediaUrl = (u: string | null | undefined) => (!u ? "" : u.startsWith("/api/") ? `${API_URL}${u}` : u);
 
 /** Server-side read. No Next.js data cache: the API caches itself and invalidates on every admin change,
  *  so prices/status edited in the panel are visible immediately. */
@@ -60,10 +44,11 @@ async function get<T>(path: string): Promise<T | null> {
   }
 }
 
-export const getCars = (query = "") => get<Paged<CarListItem>>(`/api/v1/cars${query ? `?${query}` : ""}`);
-export const getCar = (slug: string) => get<CarDetail>(`/api/v1/cars/${encodeURIComponent(slug)}`);
+export const getListings = (query = "") => get<Paged<Listing>>(`/api/v1/listings${query ? `?${query}` : ""}`);
+export const getListing = (slug: string) => get<Listing>(`/api/v1/listings/${encodeURIComponent(slug)}`);
+export const getSiteRaw = <T,>() => get<T>(`/api/v1/site`);
 
-export type LeadType = "PriceRequest" | "VisitRequest" | "SellMyCar" | "Sourcing" | "Hawaleh" | "Detailing" | "Organization" | "General";
+export type LeadType = "General" | "ItemRequest" | "ServiceRequest" | "Booking";
 export type LeadStatus = "New" | "Contacted" | "Visit" | "Won" | "Lost";
 
 const TOO_MANY = "تعداد درخواست‌ها زیاد بود. چند دقیقه‌ی دیگر دوباره تلاش کنید.";
@@ -87,7 +72,7 @@ async function fail(res: Response, fallback: string): Promise<never> {
   throw new Error(first ?? body?.title ?? fallback);
 }
 
-export async function createLead(input: { name: string; phone: string; type: LeadType; carId?: string; message?: string }) {
+export async function createLead(input: { name: string; phone: string; type: LeadType; listingId?: string; message?: string }) {
   const res = await call(`/api/v1/leads`, {
     method: "POST",
     headers: { "content-type": "application/json" },
@@ -152,7 +137,7 @@ export async function authFetch(path: string, init: RequestInit = {}): Promise<R
   const send = () =>
     call(path, {
       ...init,
-      headers: { ...(init.body ? { "content-type": "application/json" } : {}), ...(init.headers ?? {}), ...(accessToken ? { authorization: `Bearer ${accessToken}` } : {}) },
+      headers: { ...(typeof init.body === "string" ? { "content-type": "application/json" } : {}), ...(init.headers ?? {}), ...(accessToken ? { authorization: `Bearer ${accessToken}` } : {}) },
     });
   let res = await send();
   if (res.status === 401 && (await refreshSession())) res = await send();
@@ -229,22 +214,12 @@ export async function logout() {
   setSession(null);
 }
 
-export async function reserveCar(carId: string) {
-  const res = await authFetch(`/api/v1/cars/${carId}/reservations`, { method: "POST" }).catch((e: Error) => {
-    if (e.message.includes("وارد")) throw new Error("برای رزرو، ابتدا وارد شوید.");
-    throw e;
-  });
-  if (!res.ok) await fail(res, "رزرو انجام نشد.");
-  return (await res.json()) as { id: string; expiresAt: string; depositRial: number };
-}
-
 // ---------- Services (public price list) ----------
-export type ServiceCategory = "Detailing" | "Purchase" | "Paperwork" | "Other";
-export type ServicePriceType = "Fixed" | "From" | "OnCall";
+export type ServicePriceType = PriceType;
 export type ServiceItem = {
   id: string;
   title: string;
-  category: ServiceCategory;
+  category: string | null;
   description: string | null;
   features: string[];
   priceType: ServicePriceType;
@@ -262,23 +237,44 @@ export const getServices = () => get<ServiceItem[]>(`/api/v1/services`);
 
 // ---------- Customer panel ----------
 export type Me = SessionUser & { createdAt: string };
-export type MyReservation = {
-  id: string; carId: string; carTitle: string; carSlug: string; coverImageUrl: string | null;
-  reservedAt: string; expiresAt: string; depositRial: number; status: "Active" | "Converted" | "Expired" | "Cancelled";
-};
-export type MyLead = { id: string; type: LeadType; message: string | null; status: LeadStatus; createdAt: string; carTitle: string | null };
+export type MyLead = { id: string; type: LeadType; message: string | null; status: LeadStatus; createdAt: string; listingTitle: string | null; listingSlug: string | null };
 
 // ---------- Admin panel ----------
-export type Lead = { id: string; name: string; phone: string; type: LeadType; carId: string | null; message: string | null; status: LeadStatus; assignedStaffId: string | null; createdAt: string };
+export type Lead = { id: string; name: string; phone: string; type: LeadType; listingId: string | null; message: string | null; status: LeadStatus; assignedStaffId: string | null; createdAt: string };
 export type DashboardStats = {
-  carsAvailable: number; carsReserved: number; carsSold: number; carsHidden: number; carsDraft: number;
-  leadsNew: number; leadsTotal: number; activeReservations: number; activeServices: number; customers: number; recentLeads: Lead[];
+  listingsPublished: number; listingsDraft: number; listingsHidden: number; listingsSoldOut: number;
+  leadsNew: number; leadsTotal: number; activeServices: number; customers: number; recentLeads: Lead[];
 };
-export type CarStatus = "Draft" | "Available" | "Reserved" | "Sold" | "Hidden";
-export type AdminCarRow = {
-  id: string; slug: string; titleFa: string; brandEn: string; modelEn: string; modelYear: number; condition: "New" | "Used";
-  listingType: CarListItem["listingType"]; priceRial: number | null; priceOnCall: boolean; status: CarStatus;
-  coverImageUrl: string | null; createdAt: string; updatedAt: string | null;
-};
-export type AdminCarDetail = { car: Omit<CarDetail, "status"> & { version: string; status: CarStatus }; vin: string | null };
 export type AdminUser = { id: string; phone: string; fullName: string | null; roles: string[]; createdAt: string };
+
+/** Uploads an image/video from the panel; returns its URL (/api/v1/files/…). */
+export async function uploadFile(file: File): Promise<string> {
+  const form = new FormData();
+  form.append("file", file);
+  const res = await authFetch(`/api/v1/admin/uploads`, { method: "POST", body: form });
+  if (!res.ok) await fail(res, "آپلود انجام نشد.");
+  return ((await res.json()) as { url: string }).url;
+}
+
+// ---------- First admin / admin key sign-in ----------
+export async function getSetupStatus(): Promise<{ hasAdmin: boolean; requiresKey: boolean } | null> {
+  try {
+    const res = await fetch(`${API_URL}/api/v1/auth/setup`);
+    return res.ok ? await res.json() : null;
+  } catch {
+    return null;
+  }
+}
+
+export async function claimAdmin(phone: string, fullName: string | undefined, key: string | undefined) {
+  const res = await call(`/api/v1/auth/setup`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ phone, fullName, key }),
+  });
+  if (!res.ok) await fail(res, "ورود انجام نشد.");
+  const body = (await res.json()) as AuthResponse;
+  setSession(body);
+  return body;
+}

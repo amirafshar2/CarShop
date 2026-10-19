@@ -38,7 +38,7 @@ export default function AdminLeadsPage() {
     <>
       <AdminHeader
         title="درخواست‌های مشتری"
-        description={data ? `${fa(data.totalCount)} درخواست — ${fa(data.items.filter((l) => l.status === "New").length)} جدید` : "فرم‌های تماس، رزرو بازدید، فروش خودرو، دیتیلینگ و ..."}
+        description={data ? `${fa(data.totalCount)} درخواست — ${fa(data.items.filter((l) => l.status === "New").length)} جدید` : "فرم‌های تماس و درخواست‌های بازدیدکننده‌ها"}
         actions={<Button variant="outline" onClick={() => void reload()}>به‌روزرسانی</Button>}
       />
 

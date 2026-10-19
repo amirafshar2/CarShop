@@ -5,7 +5,7 @@
 @custom-variant dark (&:is(.dark *));
 
 /* Theme: "Darkmatter" by serafimcloud — https://21st.dev/community/themes/darkmatter
-   Only colour + font tokens were changed to the Moraveji Motors brand (black / white / orange). */
+   Font set to Vazirmatn; the primary colour and radius are overridden at runtime from the site settings. */
 :root {
   --background: #ffffff;
   --foreground: #111827;

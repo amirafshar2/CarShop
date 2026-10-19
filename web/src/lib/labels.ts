@@ -1,21 +1,17 @@
-import type { CarStatus, LeadStatus, LeadType } from "@/lib/api";
+import type { LeadStatus, LeadType, ListingStatus } from "@/lib/api";
 
 export const leadTypeLabels: Record<LeadType, string> = {
-  PriceRequest: "درخواست قیمت",
-  VisitRequest: "رزرو بازدید",
-  SellMyCar: "فروش خودروی مشتری",
-  Sourcing: "خرید از راه دور",
-  Hawaleh: "حواله",
-  Detailing: "دیتیلینگ",
-  Organization: "سازمانی",
-  General: "همکاری / پیام",
+  General: "پیام / سؤال",
+  ItemRequest: "درخواست درباره‌ی آیتم",
+  ServiceRequest: "درخواست خدمت",
+  Booking: "رزرو / وقت",
 };
 
 export const leadStatusLabels: Record<LeadStatus, string> = {
   New: "جدید",
   Contacted: "تماس گرفته شد",
   Visit: "بازدید",
-  Won: "موفق (فروش)",
+  Won: "موفق",
   Lost: "ناموفق",
 };
 
@@ -27,30 +23,21 @@ export const leadStatusColor: Record<LeadStatus, string> = {
   Lost: "bg-zinc-500/15 text-zinc-400 border-zinc-500/40",
 };
 
-export const carStatusLabels: Record<CarStatus, string> = {
+export const listingStatusLabels: Record<ListingStatus, string> = {
   Draft: "پیش‌نویس",
-  Available: "منتشر شده",
-  Reserved: "رزرو شده",
-  Sold: "فروخته شد",
+  Published: "منتشر شده",
   Hidden: "پنهان",
+  SoldOut: "ناموجود / تکمیل",
 };
 
-export const carStatusColor: Record<CarStatus, string> = {
-  Draft: "bg-zinc-500/15 text-zinc-300 border-zinc-500/40",
-  Available: "bg-emerald-500/15 text-emerald-300 border-emerald-500/40",
-  Reserved: "bg-primary/15 text-primary border-primary/40",
-  Sold: "bg-sky-500/15 text-sky-300 border-sky-500/40",
-  Hidden: "bg-zinc-500/15 text-zinc-400 border-zinc-500/40",
+export const listingStatusColor: Record<ListingStatus, string> = {
+  Draft: "bg-zinc-500/15 text-zinc-500 border-zinc-500/40",
+  Published: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-300 border-emerald-500/40",
+  Hidden: "bg-zinc-500/15 text-zinc-500 border-zinc-500/40",
+  SoldOut: "bg-sky-500/15 text-sky-600 dark:text-sky-300 border-sky-500/40",
 };
 
-export const reservationStatusLabels: Record<string, string> = {
-  Active: "فعال",
-  Converted: "تبدیل به خرید",
-  Expired: "منقضی شده",
-  Cancelled: "لغو شده",
-};
-
-export const roleLabels: Record<string, string> = { Admin: "مدیر", Staff: "کارشناس", Customer: "مشتری" };
+export const roleLabels: Record<string, string> = { Admin: "مدیر", Staff: "کارمند", Customer: "مشتری" };
 
 export const faDate = (iso: string) =>
   new Intl.DateTimeFormat("fa-IR", { dateStyle: "medium", timeStyle: "short" }).format(new Date(iso));

@@ -1,35 +1,31 @@
+# One site = one container + one data volume.  Copy .env.example to .env, set the values, then:
+#   docker compose up -d --build
+# For several customers: one folder (or compose project name) per customer, each with its own .env and port.
 services:
-  db:
-    image: mcr.microsoft.com/mssql/server:2022-latest
-    environment:
-      ACCEPT_EULA: "Y"
-      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
-    volumes:
-      - mssql-data:/var/opt/mssql
-    healthcheck:
-      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"$${MSSQL_SA_PASSWORD}\" -C -Q 'SELECT 1' || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-
-  redis:
-    image: redis:7-alpine
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-
-  api:
-    build:
-      context: .
-      dockerfile: src/Moraveji.Api/Dockerfile
-    env_file: .env
-    depends_on:
-      db:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
+  site:
+    build: .
+    restart: unless-stopped
     ports:
-      - "8080:8080"
+      - "${PORT:-8080}:10000"
+    environment:
+      # blank = empty site + setup assistant | demo = sample content | content = import CONTENT_FILE
+      Seed__Mode: ${SEED_MODE:-blank}
+      Seed__Preset: ${SEED_PRESET:-services}
+      Seed__ContentFile: ${CONTENT_FILE:-}
+      # content mode only: publish immediately and skip the assistant (ready-made demo)
+      Seed__Publish: ${SEED_PUBLISH:-false}
+      # The customer enters this key on /setup to become the admin (min. 8 characters).
+      Setup__Key: ${SETUP_KEY:?set SETUP_KEY in .env}
+      Jwt__SigningKey: ${JWT_SIGNING_KEY:?set JWT_SIGNING_KEY (min. 32 characters)}
+      Otp__HashKey: ${OTP_HASH_KEY:?set OTP_HASH_KEY (min. 32 characters)}
+      # Optional real SMS (otherwise admins sign in with the setup key on /setup)
+      Sms__Provider: ${SMS_PROVIDER:-Console}
+      Sms__ApiKey: ${SMS_API_KEY:-}
+      Demo__OpenAccess: ${DEMO_OPEN_ACCESS:-false}
+      Seed__AdminPhone: ${ADMIN_PHONE:-}
+    volumes:
+      - site-data:/app/data
+      # - ./content.json:/app/content/content.json:ro   # for SEED_MODE=content, with CONTENT_FILE=/app/content/content.json
 
 volumes:
-  mssql-data:
+  site-data:

@@ -1,265 +1,168 @@
-# CarShop – Autohaus-Plattform (Vibe-Coding-Projekt)
+# SiteKit – Website-Baukasten mit Einrichtungs-Assistent (Vibe-Coding-Projekt)
 
 > 🇮🇷 Persische Version: [README.fa.md](README.fa.md)
 
-### 🚀 Live-Demo: **https://carshop-udch.onrender.com/**
-
-> Kostenlose Render-Instanz: Der erste Aufruf kann bis zu etwa einer Minute dauern. Alle Fahrzeuge, Preise und Daten sind lediglich Beispieldaten.
-> Admin-Zugang: Auf der Login-Seite können Sie über die Schaltfläche „Schneller Zugang zum Admin-Bereich“ mit dem Demo-Passwort auf das Administrationspanel zugreifen.
 <p>
   <img alt=".NET 9" src="https://img.shields.io/badge/.NET-9.0-512BD4?logo=dotnet&logoColor=white">
   <img alt="ASP.NET Core" src="https://img.shields.io/badge/ASP.NET%20Core-Web%20API-512BD4?logo=dotnet&logoColor=white">
   <img alt="EF Core" src="https://img.shields.io/badge/EF%20Core-SQLite%20%7C%20SQL%20Server-6DB33F">
   <img alt="Next.js 15" src="https://img.shields.io/badge/Next.js-15-000000?logo=nextdotjs&logoColor=white">
   <img alt="React" src="https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black">
-  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white">
   <img alt="Tailwind CSS" src="https://img.shields.io/badge/Tailwind%20CSS-4-06B6D4?logo=tailwindcss&logoColor=white">
-  <img alt="Docker" src="https://img.shields.io/badge/Docker-Render-2496ED?logo=docker&logoColor=white">
+  <img alt="Docker" src="https://img.shields.io/badge/Docker-1%20Container-2496ED?logo=docker&logoColor=white">
   <img alt="Tests" src="https://img.shields.io/badge/Tests-64%20gr%C3%BCn-2ea44f">
 </p>
 
 ## 💡 Über dieses Projekt
 
-Dieses Projekt ist eine **Idee, die ich aus Neugier umgesetzt habe** – mein **zweites Projekt per Vibe Coding mit Claude**.
-Ich wollte ausprobieren, wie weit man mit KI-gestützter Entwicklung kommt, wenn man eine komplette, realistische Plattform baut: eine persische (RTL) Website für ein fiktives Autohaus mit Fahrzeugbestand, Online-Reservierung, Leistungen & Preisen sowie Admin-, Mitarbeiter- und Benutzerbereich.
+Eine **Idee, die ich aus Neugier umgesetzt habe**, wieder per **Vibe Coding mit Claude**.
+Dieses Repository hieß zuerst **CarShop** – eine Website für genau eine Branche (Autohaus). Daraus ist SiteKit geworden: Ich wollte wissen,
+ob man daraus eine **Vorlage** machen kann, bei der **alles im Admin-Panel änderbar** ist – Name, Logo, Farben, Texte, Menü, Felder, Inhalte –
+und die beim ersten Öffnen einen **Assistenten** zeigt, der Schritt für Schritt erklärt, was man eintragen muss, bis die Seite fertig ist.
 
-Ich habe die Ideen, Anforderungen und Entscheidungen vorgegeben und alles getestet; Claude hat Code, Tests und Dokumentation mitgeschrieben. Es war eine **spannende und faszinierende Erfahrung**, bei der ich sehr viel über Clean Architecture, Sicherheit, Concurrency und modernes Frontend gelernt habe.
+Dieselbe Installation kann ein Autohaus, ein Reisebüro, ein Shop oder ein Salon werden. Jede Installation ist unabhängig
+(eigener Container, eigene Datenbank) und startet wahlweise **leer**, **mit Beispielinhalt** oder **mit einem exportierten Inhaltspaket**.
 
-- **Backend:** ASP.NET Core 9, Clean Architecture (Domain · Application · Infrastructure · Api)
-- **Frontend:** Next.js 15 (App Router, TypeScript, Tailwind CSS v4), vollständig **RTL / Persisch**, UI aus Komponenten von 21st.dev
-- **Datenbank:** SQLite in Entwicklung/Demo, SQL Server für Produktion (EF Core)
+Ich habe Ideen, Anforderungen und Entscheidungen vorgegeben und alles getestet; Claude hat Code, Tests und Dokumentation mitgeschrieben.
+
+## ✨ Funktionen
+
+- **4 Branchen-Vorlagen:** Autohaus, Reisebüro, Shop, Dienstleistung/Salon – jeweils mit passenden Bezeichnungen („Tour“, „Fahrzeug“ …), Feldern (Ziel, Dauer, Hotel / Baujahr, km …), Kategorien und Menü.
+- **Alles im Panel änderbar:** Name, Logo-Upload, Hauptfarbe, Hell/Dunkel, Ecken, Startseite (Hero mit Bild oder Video, Vorteile, Über uns, Zahlen, FAQ, CTA), Kontakt, Menü, aktive Seiten, Footer, SEO, eigene Felder und Filter.
+- **Einrichtungs-Assistent in 8 Schritten:** Branche → Name & Logo → Aussehen (mit Live-Vorschau) → Kontakt → Startseite → erster Eintrag → Leistungen → Veröffentlichen. Jeder Schritt erklärt *warum* und gibt Tipps; ein schwebender **„Hilfe“-Knopf** zeigt überall die Checkliste.
+- **Unveröffentlicht = „Demnächst“-Seite** für Besucher; Admin/Mitarbeiter sehen die echte Seite mit Vorschau-Leiste.
+- **Inhaltspaket:** Alles (Einstellungen, Einträge, Leistungen) als JSON exportieren und in eine andere Installation importieren; „Von vorne beginnen“ leer oder mit Beispielinhalt.
+- **Erster Admin per Setup-Key:** Eine frische Seite hat keinen Admin; wer den Key kennt, wird auf `/setup` Admin. Später dient der Key auch als Admin-Login, solange kein SMS-Panel angebunden ist.
+- Allgemeine Einträge mit Bildern, Preisen (fest / „ab“ / auf Anfrage, Streichpreis), Status (Entwurf, veröffentlicht, versteckt, ausverkauft), Filter & Suche; Leistungen mit Preisliste; Anfragen (Leads); Benutzer & Rollen; Login per SMS-Code.
 
 ## 📸 Screenshots
 
-| Startseite (Scroll-Video-Hero) | Fahrzeugbestand mit Filtern |
+| Assistent: Branche wählen | Einstellungen: Aussehen mit Vorschau |
 |---|---|
-| ![Startseite](docs/screenshots/home.jpg) | ![Bestand](docs/screenshots/inventory.jpg) |
-| **Fahrzeugseite mit Galerie & Reservierung** | **Leistungen & Preise** |
-| ![Fahrzeug](docs/screenshots/car.jpg) | ![Leistungen](docs/screenshots/services.jpg) |
-| **Admin-Dashboard** | **Admin: Leistungen & Preise bearbeiten** |
-| ![Dashboard](docs/screenshots/admin-dashboard.jpg) | ![Leistung bearbeiten](docs/screenshots/admin-service-edit.jpg) |
-| **Admin: Fahrzeuge** | **Login (OTP + Demo-Zugang)** |
-| ![Admin Fahrzeuge](docs/screenshots/admin-cars.jpg) | ![Login](docs/screenshots/login.jpg) |
+| ![Assistent](docs/screenshots/wizard.jpg) | ![Aussehen](docs/screenshots/look.jpg) |
+| **Eigene Felder & Kategorien** | **Veröffentlichen, Export/Import, Neustart** |
+| ![Felder](docs/screenshots/catalog.jpg) | ![Veröffentlichen](docs/screenshots/publish.jpg) |
+| **Beispiel: Vorlage „Autohaus“ mit Beispielinhalt** | **Ergebnis des Assistenten: „Reisebüro“** |
+| ![Autohaus](docs/screenshots/home.jpg) | ![Reisebüro](docs/screenshots/result-travel.jpg) |
+| **Liste mit Filtern aus eigenen Feldern** | **Admin-Dashboard mit Fortschritt** |
+| ![Liste](docs/screenshots/items.jpg) | ![Dashboard](docs/screenshots/dashboard.jpg) |
 
-**Mobil** (auf Handys und langsamen Geräten wird statt des Videos ein Standbild geladen):
+**Erster Start auf dem Handy – von leer bis online:**
 
 <p>
-  <img src="docs/screenshots/mobile-home.jpg" width="200" alt="Mobil: Startseite">
-  <img src="docs/screenshots/mobile-inventory.jpg" width="200" alt="Mobil: Bestand">
-  <img src="docs/screenshots/mobile-filters.jpg" width="200" alt="Mobil: Filter">
-  <img src="docs/screenshots/mobile-services.jpg" width="200" alt="Mobil: Leistungen">
+  <img src="docs/screenshots/mobile-coming-soon.jpg" width="150" alt="Demnächst">
+  <img src="docs/screenshots/mobile-setup.jpg" width="150" alt="Admin anlegen">
+  <img src="docs/screenshots/mobile-wizard-type.jpg" width="150" alt="Branche">
+  <img src="docs/screenshots/mobile-wizard-brand.jpg" width="150" alt="Name und Logo">
+  <img src="docs/screenshots/mobile-wizard-item.jpg" width="150" alt="Erster Eintrag">
+  <img src="docs/screenshots/mobile-result.jpg" width="150" alt="Fertige Seite">
 </p>
+
+## 🧭 Ablauf beim ersten Start
+
+```mermaid
+flowchart LR
+    A["Container startet<br/>Seed__Mode"] -->|blank| B["Leere Seite<br/>„Demnächst“"]
+    A -->|demo| D["Beispielinhalt<br/>veröffentlicht"]
+    A -->|content| C["Inhaltspaket<br/>importiert"]
+    B --> E["/setup<br/>Handy + Setup-Key → Admin"]
+    C --> E
+    E --> F["Assistent<br/>8 Schritte"]
+    F --> G["Veröffentlichen"]
+    D -.->|„Von vorne beginnen“| B
+```
+
+## 🏗️ Architektur
+
+```mermaid
+flowchart TB
+    subgraph Container["1 Docker-Container pro Website"]
+        direction TB
+        WEB["Next.js 15 (RTL)<br/>liest /api/v1/site → Farben, Logo, Menü, Texte"]
+        API["ASP.NET Core 9 API"]
+        subgraph Clean["Clean Architecture"]
+            DOM["Domain<br/>Listing · Service · Lead · SiteSettings"]
+            APP["Application<br/>SiteContent (JSON) · Presets · Regeln"]
+            INF["Infrastructure<br/>EF Core · Identity · SMS"]
+        end
+        DATA[("/app/data<br/>SQLite + Uploads")]
+        WEB -- "/api/* (gleicher Origin)" --> API
+        API --> APP --> DOM
+        API --> INF --> DATA
+    end
+    Browser((Browser)) --> WEB
+```
+
+**Warum ein JSON-Dokument für die Einstellungen?** Alle Texte, Farben, Menüpunkte und Felddefinitionen liegen in *einer* Zeile (`SiteSettings.ContentJson`).
+Neue Optionen brauchen keine Migration, und Export/Import ist trivial. Branchenspezifische Werte eines Eintrags (z. B. `destination`, `km`) liegen ebenfalls als JSON am Eintrag;
+die Liste wird gecacht und im Speicher gefiltert – für den Katalog eines kleinen Unternehmens schnell genug und unabhängig vom Datenbank-Anbieter.
 
 ## 🧩 Technologien
 
 | Bereich | Technologie | Wofür |
 |---|---|---|
-| Backend | **ASP.NET Core 9**, C# 13 | REST-API (`/api/v1`), Controller, ProblemDetails |
-| Architektur | **Clean Architecture** (Domain · Application · Infrastructure · Api) | Geschäftsregeln unabhängig von Framework und Datenbank |
-| Daten | **EF Core 9**, SQLite (Dev/Demo), SQL Server (Prod) | Optimistic Concurrency, gefilterte Unique-Indizes, Soft Delete, Audit-Log |
-| Auth | ASP.NET Identity, **JWT** + HttpOnly-Refresh-Cookie, **SMS-OTP** (Kavenegar) | passwortloser Login, Rollen Admin/Mitarbeiter/Benutzer |
-| Validierung | **FluentValidation** | jede Eingabe, Fehler als `422` |
-| Performance | **HybridCache** (Tag-Invalidierung), Response Compression | schneller Bestand, sofort aktuelle Preise |
-| Schutz | Rate Limiting, CORS, Security-Header, ForwardedHeaders | OTP-Brute-Force, Missbrauch, echte Client-IP hinter Proxy |
-| Hintergrund | Hosted Service | abgelaufene Reservierungen jede Minute freigeben |
-| Frontend | **Next.js 15** (App Router, Standalone-Build), **React 19**, **TypeScript** | SSR/SEO, Admin- und Benutzerbereich |
-| UI | **Tailwind CSS v4**, Komponenten von **21st.dev**, Vazirmatn, RTL | moderne persische Oberfläche |
-| Medien | **ffmpeg** (Scroll-Scrub-Encodes, Standbilder) | flüssiges Hero-Video, leicht für langsame Netze |
-| Tests | **xUnit**, `WebApplicationFactory`, **Playwright** (E2E) | 37 Domain- + 27 API-Tests, Browser-Szenarien |
-| Betrieb | **Docker** (ein Container: API + Website), **Render**, GitHub Actions | Live-Demo, CI |
+| Backend | **ASP.NET Core 9**, C# 13 | REST-API (`/api/v1`), ProblemDetails, FluentValidation |
+| Architektur | **Clean Architecture** | Domain · Application · Infrastructure · Api |
+| Daten | **EF Core 9**, SQLite (Standard), SQL Server optional | Optimistic Concurrency (Version-Token), Soft Delete, Audit-Log |
+| Cache | **HybridCache** mit Tags | Seite, Einträge, Leistungen; Invalidierung bei jeder Änderung |
+| Auth | ASP.NET Identity, **JWT** + HttpOnly-Refresh-Cookie mit Rotation | SMS-Code (OTP, als HMAC gespeichert), Setup-Key für den ersten Admin |
+| Uploads | eigene Ablage in `/app/data/uploads` | Prüfung per Magic Bytes (JPG/PNG/WEBP/GIF/MP4), kein SVG/HTML, zufällige Namen |
+| Frontend | **Next.js 15** (App Router), **React 19**, TypeScript, **Tailwind v4** | Theme per CSS-Variablen aus den Einstellungen, Vazirmatn-Schrift, RTL |
+| UI | Komponenten von **21st.dev** (Navbar, Footer, Sidebar, CTA, Pricing Card …) + eigene Formular-Bausteine | siehe [docs/21st-components.md](docs/21st-components.md) |
+| Tests | **xUnit**, WebApplicationFactory, **Playwright** | 64 Tests (Unit + Integration), E2E des Assistenten |
+| Deployment | **Docker** (ein Container: API + Website), docker-compose | eine Instanz pro Website mit eigenem Volume |
 
-## 🏗️ Architektur
+## 🚀 Starten
 
-```mermaid
-flowchart LR
-    U["👤 Besucher / Benutzer<br/>Admin / Mitarbeiter"] -->|HTTPS| W
+### Mit Visual Studio
+`SiteKit.sln` öffnen → Profil **„SiteKit (سایت + API)“** → **F5**. Die API startet, `npm run dev` wird automatisch gestartet, der Browser öffnet sich.
+In der Entwicklung startet die Seite mit Beispielinhalt (Vorlage „Autohaus“); auf der Login-Seite gibt es Ein-Klick-Logins für Admin und Mitarbeiter.
 
-    subgraph C["Docker-Container (Render)"]
-        W["Next.js 15<br/>Website + Admin + Benutzerbereich"]
-        W -->|"/api/v1/* (Proxy, gleiche Origin)"| A
-        subgraph A["ASP.NET Core 9 API"]
-            direction TB
-            API["Api<br/>Controller · Auth · Rate Limit"]
-            APP["Application<br/>Services · DTOs · Validierung · Cache"]
-            DOM["Domain<br/>Fahrzeug · Reservierung · Lead · Leistung"]
-            INF["Infrastructure<br/>EF Core · Identity · JWT · OTP · SMS · Jobs"]
-            API --> APP --> DOM
-            INF --> APP
-        end
-    end
+### Ohne Visual Studio
+```bash
+# API (http://localhost:5080)
+dotnet run --project src/SiteKit.Api
+# Website (http://localhost:3000)
+cd web && cp .env.example .env.local && npm install && npm run dev
+```
+Andere Startart in der Entwicklung, z. B. leer als Reisebüro:
+`Seed__Mode=blank Seed__Preset=travel ConnectionStrings__Default="Data Source=blank.db" dotnet run --project src/SiteKit.Api`
 
-    INF --> DB[("SQLite (Demo)<br/>SQL Server (Prod)")]
-    INF --> SMS["Kavenegar SMS"]
+### Als Container (eine Website pro Instanz)
+```bash
+cp .env.example .env      # SETUP_KEY, JWT_SIGNING_KEY, OTP_HASH_KEY (≥ 32 Zeichen), SEED_MODE, SEED_PRESET
+docker compose up -d --build
 ```
 
-**Sichere Reservierung – ein Fahrzeug kann nie doppelt verkauft werden:**
+| `SEED_MODE` | Ergebnis beim ersten Start |
+|---|---|
+| `blank` | leere Seite, „Demnächst“, Assistent beim ersten Login (`/setup` mit Setup-Key) |
+| `demo` | Beispielinhalt der gewählten Vorlage, veröffentlicht |
+| `content` | Inhaltspaket aus `CONTENT_FILE` (exportiert aus einer anderen Installation), unveröffentlicht – mit `SEED_PUBLISH=true` sofort veröffentlicht (fertige Demo) |
 
-```mermaid
-sequenceDiagram
-    autonumber
-    participant K1 as Benutzer A
-    participant K2 as Benutzer B
-    participant API as API (CarService)
-    participant DB as Datenbank
-    K1->>API: POST /cars/{id}/reservations
-    K2->>API: POST /cars/{id}/reservations (gleichzeitig)
-    API->>DB: Car.Version prüfen + Reservierung anlegen (A)
-    API->>DB: Car.Version prüfen + Reservierung anlegen (B)
-    DB-->>API: A ✅ gespeichert
-    DB-->>API: B ❌ Concurrency-Konflikt / Unique-Index
-    API-->>K1: 201 Reserviert (48 h, Anzahlung)
-    API-->>K2: 409 „Gerade von jemand anderem reserviert“
-```
+Der Modus gilt nur für den allerersten Start (leere Datenbank); danach ändert man alles im Panel.
 
-**Login ohne Passwort:**
+## 🔐 Sicherheit
 
-```mermaid
-sequenceDiagram
-    participant B as Browser
-    participant N as Next.js
-    participant A as API
-    B->>N: Handynummer
-    N->>A: POST /auth/otp
-    A-->>B: SMS-Code (Dev/Demo: auf der Seite angezeigt)
-    B->>A: POST /auth/verify (Code)
-    A-->>B: Access-Token (15 min) + HttpOnly-Refresh-Cookie
-    Note over B,A: Beim Neuladen: POST /auth/refresh → neues Token, altes Refresh-Token wird ungültig (Rotation)
-```
+- Links und Bild-URLs aus dem Panel: nur relativ, `https:`, `tel:`, `mailto:` – kein `javascript:` / `data:` / `//`.
+- Uploads nur für Mitarbeiter, Typ-Erkennung über die ersten Bytes, Auslieferung mit festem Content-Type und `nosniff`.
+- Rollen: Admin ändert Einstellungen, Preise und Benutzer; Mitarbeiter dürfen lesen und neue Einträge anlegen.
+- Setup-Key wird zeitkonstant verglichen; nach dem ersten Admin kann niemand anderes die Seite übernehmen.
+- Gleichzeitiges Bearbeiten: veraltete Formulare werden mit 409 abgelehnt statt still zu überschreiben.
+- Keine Secrets im Code: alles über Umgebungsvariablen.
 
-## Projektstruktur
+## 📁 Projektstruktur
 
 ```
-MoravejiMotors.sln
-├── src/
-│   ├── Moraveji.Domain          ← Geschäftsregeln (Fahrzeug, Reservierung, Auftrag, Lead, Leistung) – ohne Abhängigkeiten
-│   ├── Moraveji.Application     ← Services, DTOs, Validierung (FluentValidation), Caching
-│   ├── Moraveji.Infrastructure  ← EF Core, Identity, OTP, JWT, SMS, Seed-Daten, Hintergrundjobs
-│   └── Moraveji.Api             ← Controller, Sicherheit, Rate Limiting, Swagger
-├── tests/
-│   ├── Moraveji.UnitTests        ← 37 Domain-Tests
-│   └── Moraveji.IntegrationTests ← 27 API-Tests gegen eine echte Datenbank (parallele Reservierungen, OTP-Brute-Force, Rechte …)
-├── web/                          ← Next.js-Frontend
-├── docs/                         ← 21st.dev-Komponenten, Screenshots
-└── docker-compose.yml
+src/
+  SiteKit.Domain/          Listing, ServiceItem, Lead, SiteSettings, Preisregeln
+  SiteKit.Application/     SiteContent + Validierung, Presets (4 Branchen), Listing-/Site-/Lead-Services
+  SiteKit.Infrastructure/  EF Core, Identity, OTP/SMS, Seeder (blank/demo/content)
+  SiteKit.Api/             Controller (Site, Listings, Services, Leads, Auth, Files, Admin)
+tests/                     Unit- und Integrationstests
+web/src/app/               Website (/, /items, /services, /contact) + Panel (/admin/…) + /setup
+web/src/components/admin/  Assistent-Bausteine: Bild-Upload, Farbwahl, Listen-Editor, Abschnitte
 ```
-
-## Starten mit Visual Studio (einfachster Weg) ✅
-
-1. `MoravejiMotors.sln` in Visual Studio öffnen.
-2. Oben das Startprofil **„CarShop (سایت + API)“** wählen und **F5** drücken.
-
-Visual Studio erledigt dann alles automatisch:
-- startet die API auf `http://localhost:5080`,
-- führt bei Bedarf `npm install` für die Website aus (beim ersten Mal einige Minuten),
-- startet die Next.js-Website auf `http://localhost:3000` und öffnet sie im Browser,
-- beendet beim **Stop** beides wieder.
-
-Voraussetzungen: **.NET 9 SDK** und **Node.js LTS** (`setup.bat` installiert beides einmalig).
-Das Profil „فقط API (Swagger)“ startet nur die API mit Swagger.
-
-## Anmeldung in den Bereichen
-
-Die Anmeldung erfolgt passwortlos per **SMS-Code (OTP)**. In der Entwicklung wird keine echte SMS gesendet: Der 6-stellige Code wird **direkt auf der Login-Seite angezeigt** („ورود با این کد“) und zusätzlich in der API-Konsole ausgegeben (`DEV OTP for …`).
-
-| Bereich | Adresse | Testnummer |
-|---|---|---|
-| **Admin-Bereich** | http://localhost:3000/admin | `09120000001` |
-| **Mitarbeiter-Bereich** (eingeschränkt: keine Preise/Benutzer ändern) | http://localhost:3000/admin | `09120000002`, `09120000003` |
-| **Benutzerbereich** | http://localhost:3000/account | jede andere Handynummer – erste Anmeldung = Registrierung |
-
-Auf der Login-Seite gibt es in der Entwicklung Schnellwahl-Buttons für die Testkonten.
-
-**Admin-Bereich:** Dashboard mit Kennzahlen · Fahrzeuge (anlegen, Preis ändern, veröffentlichen/verbergen/als verkauft markieren, löschen) · Leistungen & Preise (anlegen, bearbeiten, Rabatt, ein-/ausblenden, löschen – sofort auf `/services` sichtbar) · Anfragen (Status ändern, Anruf/WhatsApp) · Benutzer & Mitarbeiter (Mitarbeiter per Nummer hinzufügen, Rollen ändern).
-
-**Benutzerbereich:** meine Reservierungen (mit Stornierung), meine Anfragen, Profil bearbeiten.
-
-## Manuell starten (ohne Visual Studio)
-
-```powershell
-cd C:\xampp\htdocs\galeri
-dotnet test                                                    # alle 64 Tests müssen grün sein
-dotnet run --project src\Moraveji.Api --urls http://localhost:5080
-
-# zweites Fenster
-cd C:\xampp\htdocs\galeri\web
-copy .env.example .env.local
-npm install
-npm run dev
-```
-
-Website: http://localhost:3000 – bitte über `localhost` öffnen (nicht 127.0.0.1), damit das Login-Cookie funktioniert.
-Swagger: http://localhost:5080/swagger
-
-In der Entwicklung wird die SQLite-Datenbank (`moraveji-dev.db`) automatisch erstellt und mit 20 Demo-Fahrzeugen und 8 Demo-Leistungen befüllt.
-
-**Offline-Präsentation** (falls Unsplash/Pexels langsam oder gesperrt sind):
-
-```powershell
-cd web
-npm run fetch-media          # Bilder/Video lokal speichern
-# in web\.env.local:  NEXT_PUBLIC_LOCAL_MEDIA=1
-```
-
-## Seiten
-
-`/` Startseite (Scroll-Video-Hero, Fernkauf, aktueller Bestand, Leistungen, Firmenkooperationen, Bewertungen) · `/inventory` (Filter & Suche) · `/cars/{slug}` (Galerie, Daten, Reservierung mit Anzahlung) · `/services` (Leistungen & Preise) · `/contact?type=…` · `/login` · `/account` · `/admin`
-
-## Wichtigste API-Endpunkte
-
-| Methode | Pfad | Zugriff |
-|---|---|---|
-| POST | `/api/v1/auth/otp`, `/auth/verify`, `/auth/refresh`, `/auth/logout` | öffentlich |
-| GET | `/api/v1/cars`, `/api/v1/cars/{slug}` | öffentlich |
-| POST | `/api/v1/cars/{id}/reservations` | angemeldeter Benutzer – `409`, wenn jemand schneller war |
-| GET | `/api/v1/services` | öffentlich (Preisliste) |
-| POST | `/api/v1/leads` | öffentlich (Preisanfrage, Besichtigung, Fernkauf …) |
-| GET / PATCH | `/api/v1/leads`, `/leads/{id}/status` | Mitarbeiter (eigene + unzugewiesene) / Admin (alle) |
-| GET / POST / PUT / DELETE | `/api/v1/admin/services` | Lesen: Mitarbeiter & Admin – Ändern: nur Admin |
-| GET / POST / PUT / DELETE | `/api/v1/admin/cars`, `/{id}`, `/{id}/status` | Mitarbeiter/Admin (Status & Löschen: nur Admin) |
-| GET | `/api/v1/admin/stats` | Mitarbeiter & Admin |
-| GET / POST / PUT | `/api/v1/admin/users`, `/{id}/role` | nur Admin |
-| GET / PUT / POST | `/api/v1/me`, `/me/reservations`, `/me/reservations/{id}/cancel`, `/me/leads` | angemeldeter Benutzer (nur eigene Daten) |
-| GET | `/health/live`, `/health/ready` | Monitoring |
-
-## Sicherheit & Geld – Garantien
-
-- **Ein Fahrzeug wird nie doppelt reserviert/verkauft:** Concurrency-Token (`Version`) pro Datensatz + **gefilterter Unique-Index** `UX_Reservations_OneActivePerCar` direkt in der Datenbank. Test: 6 gleichzeitige Benutzer → genau 1 Erfolg, alle anderen `409`.
-- **Pro Benutzer nur eine aktive Reservierung** (`UX_Reservations_OneActivePerCustomer`) + Rate Limiting – ein Konto kann nicht den ganzen Bestand blockieren.
-- **Optimistic Locking im Admin:** Ein veraltetes Bearbeitungsformular erhält `409`, statt Änderungen anderer zu überschreiben.
-- **Login:** Access-Token 15 Minuten; Refresh-Token als `HttpOnly; Secure; SameSite=Strict`-Cookie mit **Rotation** – Wiederverwendung eines alten Tokens beendet die ganze Sitzung (Diebstahlerkennung).
-- **OTP** wird nur als HMAC gespeichert; Fehlversuche und Token-Rotation sind **atomar** (parallele Anfragen können Limits nicht umgehen).
-- **Rollen & Ressourcen:** Admin / Mitarbeiter / Benutzer; Benutzer sehen nur eigene Daten (Schutz vor IDOR), IDs sind `Guid`s.
-- Geldbeträge immer als `long` in **Rial** (Anzeige in Toman).
-- **Unveränderliches Audit-Log** für Fahrzeuge, Reservierungen, Leads und Leistungen; Soft Delete statt Löschen.
-- Abgelaufene Reservierungen werden jede Minute automatisch freigegeben.
-- Rate Limiting für OTP, Login, Token-Refresh und Formulare; strikte CORS-Whitelist; Security-Header; Fehler als ProblemDetails ohne Stacktrace.
-- Der Entwicklungs-OTP auf der Login-Seite wird **nur in der Development-Umgebung** ausgeliefert (per Test abgesichert).
-
-## Konfiguration für Produktion (nur Umgebungsvariablen – keine Secrets im Code)
-
-```
-ASPNETCORE_ENVIRONMENT=Production
-Database__Provider=SqlServer
-ConnectionStrings__Default=Server=...;Database=MoravejiMotors;...
-Jwt__SigningKey=<mind. 32 zufällige Zeichen>
-Otp__HashKey=<mind. 32 zufällige Zeichen>
-Sms__Provider=Kavenegar
-Sms__ApiKey=<Kavenegar-Schlüssel>
-Sms__OtpTemplate=moraveji-otp
-Seed__AdminPhone=09...
-```
-
-Ohne `Jwt__SigningKey` bzw. `Otp__HashKey` startet die Anwendung in Produktion absichtlich nicht. Siehe auch `.env.example`.
-
-## Ideen für später
-
-- [x] Phase 1: Drei-Schichten-Grundgerüst, OTP-Login, Rollen
-- [x] Phase 2: Fahrzeugkatalog, sichere Reservierung, Leads, Seed-Daten
-- [x] Phase 3: Next.js-Frontend ausschließlich mit 21st.dev-Komponenten
-- [x] Admin-Bereich (Dashboard, Fahrzeuge, Leistungen & Preise, Anfragen, Benutzer), Benutzerbereich, Leistungsseite, Start per F5 in Visual Studio
-- [ ] Online-Zahlung (Ledger + Outbox), Foto-Upload im Admin
-- [ ] Shop, Online-Vertrag, Mitarbeiter-CRM, Reporting
 
 ## Credits
-
-Alle verwendeten 21st.dev-Komponenten sind in `docs/21st-components.md` aufgeführt, die Quellen der Demo-Fotos und des Videos in `CREDITS.md`.
+Beispielfotos: Unsplash-Lizenz, siehe [CREDITS.md](CREDITS.md). UI-Komponenten: [docs/21st-components.md](docs/21st-components.md).

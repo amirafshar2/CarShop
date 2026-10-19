@@ -1,0 +1,11 @@
+{
+ "theme": {
+  "--color-destructive-foreground": "var(--destructive-foreground)"
+ },
+ "light": {
+  "--destructive-foreground": "oklch(1 0 0)"
+ },
+ "dark": {
+  "--destructive-foreground": "oklch(1 0 0)"
+ }
+}

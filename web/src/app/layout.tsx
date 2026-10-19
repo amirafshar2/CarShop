@@ -4,65 +4,69 @@ import Navbar2 from "@/components/ui/navbar2";
 import FooterWithSuite from "@/components/ui/footer-with-suite";
 import { Toaster } from "@/components/ui/sonner";
 import HideOnAdmin from "@/components/app/hide-on-admin";
+import SiteGate from "@/components/site/site-gate";
+import { getSite, themeVars } from "@/lib/site";
+import { mediaUrl } from "@/lib/api";
 import "./globals.css";
 
-export const metadata: Metadata = {
-  title: { default: "مروجی موتورز | خرید و فروش خودرو در شیراز", template: "%s | مروجی موتورز" },
-  description: "مشاور خرید و فروش خودرو — از انتخاب تا تعویض پلاک. موجودی روز، خرید از راه دور، گذر موقت، فروش حواله و دیتیلینگ. شیراز، چهارراه زرگری، برج بارانا.",
-  openGraph: { locale: "fa_IR", type: "website", siteName: "مروجی موتورز" },
-};
+export const dynamic = "force-dynamic"; // brand, colours and menu are edited live from the panel
 
-export const viewport: Viewport = { themeColor: "#0a0a0b", colorScheme: "dark" };
+export async function generateMetadata(): Promise<Metadata> {
+  const { content: c } = await getSite();
+  const name = c.brand.name || "سایت";
+  return {
+    title: { default: c.seo.title || (c.brand.tagline ? `${name} | ${c.brand.tagline}` : name), template: `%s | ${name}` },
+    description: c.seo.description || c.brand.description || undefined,
+    openGraph: { locale: "fa_IR", type: "website", siteName: name, images: c.home.heroImageUrl ? [mediaUrl(c.home.heroImageUrl)] : undefined },
+    icons: c.brand.logoUrl ? { icon: mediaUrl(c.brand.logoUrl) } : undefined,
+  };
+}
 
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "AutoDealer",
-  name: "مروجی موتورز",
-  telephone: "+989171006003",
-  address: { "@type": "PostalAddress", streetAddress: "چهارراه زرگری، برج بارانا، طبقه اول", addressLocality: "شیراز", addressCountry: "IR" },
-  sameAs: ["https://www.instagram.com/moraveji.motors"],
-};
+export async function generateViewport(): Promise<Viewport> {
+  const { content: c } = await getSite();
+  return { themeColor: c.theme.mode === "dark" ? "#0a0a0b" : "#ffffff", colorScheme: c.theme.mode };
+}
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const site = await getSite();
+  const c = site.content;
+  const year = new Intl.NumberFormat("fa-IR", { useGrouping: false }).format(new Date().getFullYear());
+  const footerLinks = [
+    ...c.nav.map((n) => ({ text: n.label, url: n.href })),
+  ];
+  const social = [
+    c.contact.instagram && { text: "اینستاگرام", url: `https://instagram.com/${c.contact.instagram}` },
+    c.contact.whatsapp && { text: "واتساپ", url: `https://wa.me/${c.contact.whatsapp}` },
+    c.contact.telegram && { text: "تلگرام", url: `https://t.me/${c.contact.telegram}` },
+    c.contact.phone && { text: c.contact.phone, url: `tel:${c.contact.phone}` },
+  ].filter(Boolean) as { text: string; url: string }[];
+
   return (
-    <html lang="fa" dir="rtl" className="dark" suppressHydrationWarning>
+    <html lang="fa" dir="rtl" className={c.theme.mode === "dark" ? "dark" : ""} style={themeVars(c.theme) as React.CSSProperties} suppressHydrationWarning>
       <body>
-        <ThemeProvider attribute="class" forcedTheme="dark" enableSystem={false}>
-          <HideOnAdmin>
-            <Navbar2 />
-          </HideOnAdmin>
-          <main>{children}</main>
-          <HideOnAdmin>
-          <FooterWithSuite
-            brandName="مروجی موتورز"
-            tagline="از انتخاب تا تعویض پلاک."
-            description="مشاور خرید و فروش خودرو در شیراز — موجودی روز، خرید از راه دور، گذر موقت، حواله و دیتیلینگ."
-            navLinks={[
-              { text: "خانه", url: "/" },
-              { text: "موجودی", url: "/inventory" },
-              { text: "گذر موقت", url: "/inventory?listingType=TemporaryPass" },
-              { text: "حواله", url: "/inventory?listingType=Hawaleh" },
-              { text: "خدمات و قیمت‌ها", url: "/services" },
-              { text: "خرید از راه دور", url: "/#remote-buy" },
-              { text: "ماشینت رو بفروش", url: "/contact?type=SellMyCar" },
-              { text: "تماس", url: "/contact" },
-            ]}
-            socialLinks={[
-              { text: "اینستاگرام", url: "https://www.instagram.com/moraveji.motors" },
-              { text: "دیتیلینگ", url: "https://www.instagram.com/moravejimotors_detailing" },
-              { text: "واتساپ", url: "https://wa.me/989171006003" },
-              { text: "۰۹۱۷۱۰۰۶۰۰۳", url: "tel:09171006003" },
-            ]}
-            question="سؤالی درباره‌ی خرید یا فروش خودرو دارید؟ با ما در تماس باشید."
-            ctaText="رزرو بازدید"
-            ctaUrl="/contact?type=VisitRequest"
-            email="شیراز، چهارراه زرگری، برج بارانا، طبقه اول"
-            copyright={`© ${new Intl.NumberFormat("fa-IR", { useGrouping: false }).format(new Date().getFullYear())} شرکت بازرگانی مروجی موتورز`}
-          />
-          </HideOnAdmin>
+        <ThemeProvider attribute="class" forcedTheme={c.theme.mode} enableSystem={false}>
+          <SiteGate published={site.isPublished} brand={c.brand.name} tagline={c.brand.tagline}>
+            <HideOnAdmin>
+              <Navbar2 site={c} />
+            </HideOnAdmin>
+            <main>{children}</main>
+            <HideOnAdmin>
+              <FooterWithSuite
+                brandName={c.brand.name || " "}
+                tagline={c.brand.tagline ?? ""}
+                description={c.footer.text ?? c.brand.description ?? ""}
+                navLinks={footerLinks}
+                socialLinks={social}
+                question={c.home.ctaTitle ?? "سؤالی دارید؟ با ما در تماس باشید."}
+                ctaText={c.labels.requestButton}
+                ctaUrl="/contact"
+                email={c.contact.address ?? c.contact.email ?? ""}
+                copyright={c.footer.copyright ?? `© ${year} ${c.brand.name}`}
+              />
+            </HideOnAdmin>
+          </SiteGate>
           <Toaster position="top-center" richColors />
         </ThemeProvider>
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       </body>
     </html>
   );

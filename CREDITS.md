@@ -1,28 +1,13 @@
-# منابع تصاویر و ویدیوی دمو
+# Credits
 
-تمام تصاویر و ویدیوی دمو **واقعی و با لایسنس آزاد** هستند و فقط برای نمایش دمو استفاده شده‌اند.
-همه‌ی عکس‌ها و داده‌ها نمونه هستند و از پنل ادمین قابل تغییرند.
-هیچ تصویر یا داده‌ای به‌عنوان اطلاعات واقعی ساخته نشده است.
+## Beispielfotos (Unsplash License — https://unsplash.com/license)
+Nur für die Beispielinhalte der Vorlagen (`src/SiteKit.Application/Site/Presets.cs`); werden im Panel durch eigene Fotos ersetzt.
+Link: `https://images.unsplash.com/photo-<id>`
 
-## ویدیو (Pexels License)
-- «Sleek Sports Car Emerging from Darkness» — https://www.pexels.com/video/sleek-sports-car-emerging-from-darkness-29498800/
+- Autohaus: 1503376780353-7e6692767b70, 1590362891991-f776e747a588, 1621007947382-bb3c3994e3fb, 1555215695-3004980ad54e, 1617469767053-d3b523a0b982, 1606664515524-ed2f786a0bd6, 1618843479313-40f8afb4b4d8, 1550355291-bbee04a92027
+- Reisen: 1507525428034-b723cf961d3e, 1535262412227-85541e910204, 1524231757912-21f4fe3a7200, 1589561454226-796a8aa89b05, 1512453979798-5ea266f8880c, 1518684079-3c830dcef090, 1603477849227-705c424d1d80
+- Shop: 1560769629-975ec94e6a86, 1611930022073-b7a4ba5fcccd, 1542291026-7eec264c27ff, 1546868871-7041f2a55e12, 1563170351-be82bc888aa4, 1491553895911-0055eca6402d, 1629198688000-71f23e745b6e
+- Salon: 1633681926022-84c23e8cb2d6, 1580618672591-eb180b1a973f, 1634449571010-02389ed0f9b0, 1616394584738-fc6e612e71b9
 
-## عکس‌ها (Unsplash License — https://unsplash.com/license)
-شناسه‌ها در `web/src/lib/media.ts`. لینک هر عکس: `https://unsplash.com/photos/<id>` یا `https://images.unsplash.com/photo-<id>`
-
-- 1621007947382-bb3c3994e3fb — Toyota Camry
-- 1617469767053-d3b523a0b982 — Toyota RAV4
-- 1555215695-3004980ad54e — BMW (سفید)
-- 1601362840469-51e4d8d58785 — BMW (سری ۷)
-- 1580273916550-e323be2ae537 — BMW (خاکستری)
-- 1606664515524-ed2f786a0bd6 — Audi
-- 1618843479313-40f8afb4b4d8 — Mercedes-AMG
-- 1590362891991-f776e747a588 — Mercedes در پارکینگ
-- 1563720223185-11003d516935 — SUV مشکی در پارکینگ
-- 1550355291-bbee04a92027 — Hyundai قرمز
-- 1533473359331-0135ef1b58bf — SUV سفید
-- 1619767886558-efdc259cde1a — سدان مشکی
-- 1520340356584-f9917d1eea6f — کارواش / دیتیلینگ
-- 1609521263047-f8f205293f24 — خودرو در باران
-- 1494976388531-d1058494cdd8 — Mustang مشکی (پوستر هیرو)
-- 1503376780353-7e6692767b70 — Porsche مشکی
+## UI
+Komponenten von 21st.dev, siehe [docs/21st-components.md](docs/21st-components.md). Schrift: Vazirmatn (OFL).

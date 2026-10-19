@@ -8,7 +8,8 @@ import { Field, OtpInput } from "@/components/ui/otp-input-verification";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { demoLogin, getDemoInfo, isStaff, requestOtp, verifyOtp } from "@/lib/api";
+import { demoLogin, getDemoInfo, getSetupStatus, isStaff, requestOtp, verifyOtp } from "@/lib/api";
+import Link from "next/link";
 import { useSession } from "@/lib/session";
 import { fa } from "@/lib/format";
 
@@ -103,6 +104,8 @@ function LoginForm() {
   const [busy, setBusy] = useState(false);
   const [cooldown, setCooldown] = useState(0);
   const [devCode, setDevCode] = useState<string | null>(null);
+  const [fresh, setFresh] = useState(false);
+  useEffect(() => { void getSetupStatus().then((s) => setFresh(!!s && !s.hasAdmin)); }, []);
 
   // Already signed in (refresh cookie) → straight to the right panel.
   useEffect(() => {
@@ -152,6 +155,12 @@ function LoginForm() {
         <CardDescription>با شماره موبایل؛ بدون رمز عبور.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-5">
+        {fresh && (
+          <Link href="/setup" className="block rounded-xl border border-primary/50 bg-primary/10 p-4 text-sm">
+            <span className="block font-bold">این سایت هنوز مدیر ندارد</span>
+            <span className="mt-1 block text-muted-foreground">برای راه‌اندازی و ساخت حساب مدیر اینجا بزنید ←</span>
+          </Link>
+        )}
         {step === "phone" ? (
           <>
           <DemoAccess onDone={(roles) => router.push(destination(roles, nextParam))} />
@@ -174,6 +183,7 @@ function LoginForm() {
             <Button className="w-full" size="lg" disabled={busy}>
               {busy ? "در حال ارسال…" : "دریافت کد تأیید"}
             </Button>
+            <p className="text-center text-sm text-muted-foreground"><Link href="/setup" className="hover:text-foreground hover:underline">ورود مدیر با کلید راه‌اندازی</Link></p>
           </form>
           </>
         ) : (

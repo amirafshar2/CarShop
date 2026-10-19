@@ -2,7 +2,7 @@
 # Starts the API (internal only) and the website; the container stops if either one dies.
 # The API must start inside its folder: ASP.NET Core reads appsettings*.json from the working directory.
 cd /app/api
-ASPNETCORE_URLS=http://127.0.0.1:5080 dotnet Moraveji.Api.dll &
+ASPNETCORE_URLS=http://127.0.0.1:5080 dotnet SiteKit.Api.dll &
 API_PID=$!
 
 cd /app/web
