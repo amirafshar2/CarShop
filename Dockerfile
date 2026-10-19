@@ -38,7 +38,12 @@ COPY --from=web /web/public ./web/public
 COPY scripts/docker-start.sh ./start.sh
 RUN sed -i "s/\r$//" ./start.sh && chmod +x ./start.sh && mkdir -p /app/data && chown -R $APP_UID /app/data
 
-ENV ASPNETCORE_ENVIRONMENT=Hosted \
+# Memory budget 512 MB: workstation GC that gives memory back, a capped Node heap, ffmpeg with 2 threads (see VideoOptimizer).
+ENV DOTNET_gcServer=0 \
+    DOTNET_GCConserveMemory=7 \
+    DOTNET_GCHeapHardLimit=0x8000000 \
+    NODE_OPTIONS=--max-old-space-size=160 \
+    ASPNETCORE_ENVIRONMENT=Hosted \
     API_INTERNAL_URL=http://127.0.0.1:5080 \
     NEXT_TELEMETRY_DISABLED=1 \
     NODE_ENV=production \

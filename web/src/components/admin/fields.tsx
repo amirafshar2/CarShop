@@ -212,8 +212,9 @@ export function HeroVideoField({ value, optimized, mode, onChange }: {
   const input = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const [showUrl, setShowUrl] = useState(false);
+  const [failed, setFailed] = useState<string | null>(null);
   const id = uploadId(value);
-  const waiting = !!id && !optimized;
+  const waiting = !!id && !optimized && !failed;
 
   useEffect(() => {
     if (!id || optimized) return;
@@ -223,6 +224,7 @@ export function HeroVideoField({ value, optimized, mode, onChange }: {
         const s = await getUploadStatus(id);
         if (stop) return;
         if (s.ready) { onChange({ optimized: true, poster: s.poster }); toast.success("ویدیو برای پخش روان آماده شد."); return; }
+        if (s.failed) { setFailed(s.failed); toast.error(s.failed); return; }
       } catch { /* try again */ }
       if (!stop) timer = setTimeout(check, 4000);
     };
@@ -236,6 +238,7 @@ export function HeroVideoField({ value, optimized, mode, onChange }: {
     setBusy(true);
     try {
       const r = await uploadMedia(file);
+      setFailed(null);
       onChange({ url: r.url, optimized: false });
       toast.success(r.optimizing ? "آپلود شد؛ نسخه‌ی سبک و روان در حال ساخت است…" : "آپلود شد.");
     } catch (e) {
@@ -268,6 +271,7 @@ export function HeroVideoField({ value, optimized, mode, onChange }: {
           {waiting && <Loader2 className="size-3.5 animate-spin" aria-hidden />}
           {waiting
             ? "در حال بهینه‌سازی برای کامپیوترهای ضعیف… (چند دقیقه؛ می‌توانید ذخیره کنید و بروید)"
+            : failed ? failed
             : optimized ? "بهینه شده: نسخه‌ی ۱۰۸۰ و ۷۲۰ مخصوص اسکرول + عکس اول ساخته شد." : "لینک بیرونی بهینه نمی‌شود؛ برای بهترین نتیجه ویدیو را آپلود کنید."}
         </p>
       )}

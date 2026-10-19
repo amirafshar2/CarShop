@@ -51,7 +51,7 @@ public sealed partial class FilesController(UploadStore store, VideoOptimizer vi
     {
         if (!SafeId().IsMatch(id)) return NotFound();
         var ready = video.IsReady(id);
-        return Ok(new { ready, poster = ready ? $"/api/v1/files/{id}.jpg" : null });
+        return Ok(new { ready, poster = ready ? $"/api/v1/files/{id}.jpg" : null, failed = ready ? null : video.FailureOf(id) });
     }
 
     [HttpGet("api/v1/files/{name}")]

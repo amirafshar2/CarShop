@@ -264,7 +264,7 @@ export const uploadFile = async (file: File) => (await uploadMedia(file)).url;
 export const uploadId = (url: string | null | undefined) => url?.match(/^\/api\/v1\/files\/([a-f0-9]{32})\.mp4$/)?.[1] ?? null;
 
 /** Is the background optimisation of an uploaded video finished? */
-export async function getUploadStatus(id: string): Promise<{ ready: boolean; poster: string | null }> {
+export async function getUploadStatus(id: string): Promise<{ ready: boolean; poster: string | null; failed?: string | null }> {
   const res = await authFetch(`/api/v1/admin/uploads/${id}/status`);
   if (!res.ok) await fail(res, "وضعیت ویدیو خوانده نشد.");
   return res.json();
