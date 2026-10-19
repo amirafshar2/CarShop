@@ -190,7 +190,7 @@ public sealed class SiteTests(ApiFactory factory) : IClassFixture<ApiFactory>
         }
         Assert.True(status.GetProperty("ready").GetBoolean());
         var anon = factory.CreateClient();
-        foreach (var name in new[] { $"{id}.mp4", $"{id}-scrub.mp4", $"{id}-scrub-720.mp4", $"{id}.jpg", $"{id}-960.jpg" })
+        foreach (var name in new[] { $"{id}.mp4", $"{id}-scrub.mp4", $"{id}-scrub-720.mp4", $"{id}-scrub-540.mp4", $"{id}.jpg", $"{id}-960.jpg" })
             Assert.Equal(HttpStatusCode.OK, (await anon.GetAsync($"/api/v1/files/{name}")).StatusCode);
         File.Delete(tmp);
     }

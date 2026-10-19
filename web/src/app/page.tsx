@@ -84,6 +84,7 @@ export default async function Home() {
         <HeroVideo
           src1080={video ? mediaUrl(video.scrub) : raw}
           src720={video ? mediaUrl(video.scrub720) : raw}
+          src540={video ? mediaUrl(video.scrub540) : raw}
           poster={poster}
           still={still}
           mode={h.heroVideoMode === "loop" ? "loop" : "scroll"}

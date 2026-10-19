@@ -24,7 +24,8 @@ public sealed class UploadStore(IConfiguration config, IWebHostEnvironment env)
 /// <item><c>{id}.mp4</c> — loop version: H.264 High, ≤1920px, CRF 21, no audio, faststart.</item>
 /// <item><c>{id}-scrub.mp4</c> — scroll version ≤1920px: a keyframe every 4 frames and no B-frames,
 /// so every scroll position can be decoded almost instantly (CRF 24).</item>
-/// <item><c>{id}-scrub-720.mp4</c> — same for phones and weak hardware (≤1280px).</item>
+/// <item><c>{id}-scrub-720.mp4</c> — same for phones and tablets (≤1280px).</item>
+/// <item><c>{id}-scrub-540.mp4</c> — same for slow computers (few CPU cores / little memory, ≤960px).</item>
 /// <item><c>{id}.jpg</c> / <c>{id}-960.jpg</c> — first frame as poster / still image.</item>
 /// <item><c>{id}.ready</c> — written last; the panel polls for it.</item>
 /// </list>
@@ -71,6 +72,7 @@ public sealed class VideoOptimizer(UploadStore store, IConfiguration config, ILo
         {
             ($"{id}.jpg", $"-i \"{original}\" -frames:v 1 {Scale(1920)} -q:v 3"),
             ($"{id}-960.jpg", $"-i \"{original}\" -frames:v 1 {Scale(960)} -q:v 4"),
+            ($"{id}-scrub-540.mp4", $"-i \"{original}\" {Scale(960)} -c:v libx264 -preset slow -crf 25 -profile:v main -g 4 -keyint_min 4 -sc_threshold 0 -bf 0 {common}"),
             ($"{id}-scrub-720.mp4", $"-i \"{original}\" {Scale(1280)} -c:v libx264 -preset slow -crf 24 -profile:v main -g 4 -keyint_min 4 -sc_threshold 0 -bf 0 {common}"),
             ($"{id}-scrub.mp4", $"-i \"{original}\" {Scale(1920)} -c:v libx264 -preset slow -crf 24 -profile:v high -g 4 -keyint_min 4 -sc_threshold 0 -bf 0 {common}"),
             ($"{id}.mp4", $"-i \"{original}\" {Scale(1920)} -c:v libx264 -preset slow -crf 21 -profile:v high -g 48 {common}"),

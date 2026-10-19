@@ -16,7 +16,7 @@ public sealed partial class FilesController(UploadStore store, VideoOptimizer vi
     private const long MaxImage = 5 * 1024 * 1024;
     private const long MaxVideo = 80 * 1024 * 1024;
 
-    [GeneratedRegex("^[a-f0-9]{32}(-scrub|-scrub-720|-960)?\\.(jpg|png|webp|gif|mp4)$")] private static partial Regex SafeName();
+    [GeneratedRegex("^[a-f0-9]{32}(-scrub|-scrub-720|-scrub-540|-960)?\\.(jpg|png|webp|gif|mp4)$")] private static partial Regex SafeName();
     [GeneratedRegex("^[a-f0-9]{32}$")] private static partial Regex SafeId();
 
     [HttpPost("api/v1/admin/uploads")]

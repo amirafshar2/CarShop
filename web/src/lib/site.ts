@@ -113,6 +113,7 @@ export function videoVariants(url: string | null | undefined, optimized: boolean
     main: url,
     scrub: ok ? `${base}-scrub.mp4` : url,
     scrub720: ok ? `${base}-scrub-720.mp4` : url,
+    scrub540: ok ? `${base}-scrub-540.mp4` : url,
     poster: ok ? `${base}.jpg` : null,
     still: ok ? `${base}-960.jpg` : null,
   };
