@@ -127,6 +127,75 @@ public sealed class SiteTests(ApiFactory factory) : IClassFixture<ApiFactory>
     }
 
     [Fact]
+    public async Task Demo_home_has_story_steps_gallery_and_marked_sample_reviews()
+    {
+        var home = (await factory.CreateClient().GetFromJsonAsync<JsonElement>("/api/v1/site", Json)).GetProperty("content").GetProperty("home");
+        Assert.All(home.GetProperty("highlights").EnumerateArray(), h => Assert.StartsWith("https://", h.GetProperty("imageUrl").GetString()));
+        Assert.InRange(home.GetProperty("gallery").GetArrayLength(), 1, 7);
+        Assert.All(home.GetProperty("testimonials").EnumerateArray(), t => Assert.Equal("متن نمونه", t.GetProperty("name").GetString()));
+    }
+
+    [Fact]
+    public async Task Mega_menu_sub_links_and_section_lists_are_validated()
+    {
+        var admin = await Admin();
+        var site = await admin.GetFromJsonAsync<JsonElement>("/api/v1/admin/site", Json);
+        var content = JsonSerializer.Deserialize<Dictionary<string, object>>(site.GetProperty("content").GetRawText(), Json)!;
+
+        content["nav"] = new[] { new { label = "منو", href = "/", children = new[] { new { label = "بد", href = "javascript:alert(1)" } } } };
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, (await admin.PutAsJsonAsync("/api/v1/admin/site", new { content })).StatusCode);
+
+        content["nav"] = new object[]
+        {
+            new { label = "موجودی", href = "/items", imageUrl = "https://example.com/m.jpg", caption = "عکس", note = "یادداشت",
+                  children = new[] { new { label = "همه", href = "/items", group = "موجودی", badge = "جدید" }, new { label = "تماس", href = "tel:0912", group = "ارتباط", badge = "" } } },
+            new { label = "تماس", href = "/contact" },
+        };
+        Assert.Equal(HttpStatusCode.NoContent, (await admin.PutAsJsonAsync("/api/v1/admin/site", new { content })).StatusCode);
+        var nav = (await factory.CreateClient().GetFromJsonAsync<JsonElement>("/api/v1/site", Json)).GetProperty("content").GetProperty("nav");
+        Assert.Equal("ارتباط", nav[0].GetProperty("children")[1].GetProperty("group").GetString());
+
+        var home = JsonSerializer.Deserialize<Dictionary<string, object?>>(site.GetProperty("content").GetProperty("home").GetRawText(), Json)!;
+        home["gallery"] = Enumerable.Range(0, 8).Select(i => $"https://example.com/{i}.jpg").ToArray();
+        content["home"] = home;
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, (await admin.PutAsJsonAsync("/api/v1/admin/site", new { content })).StatusCode);
+    }
+
+    [Fact]
+    public async Task Uploaded_video_gets_scroll_versions_and_poster_in_the_background()
+    {
+        var tmp = Path.Combine(Path.GetTempPath(), $"sk-{Guid.NewGuid():N}.mp4");
+        try
+        {
+            using (var make = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("ffmpeg",
+                       ["-v", "error", "-f", "lavfi", "-i", "testsrc=size=640x360:rate=24:duration=1", "-pix_fmt", "yuv420p", "-y", tmp])))
+                make!.WaitForExit();
+        }
+        catch (System.ComponentModel.Win32Exception) { return; } // no ffmpeg on this machine → the optimiser is off, nothing to test
+        var admin = await Admin();
+        using var form = new MultipartFormDataContent { { new ByteArrayContent(await File.ReadAllBytesAsync(tmp)), "file", "clip.mp4" } };
+        var res = await admin.PostAsync("/api/v1/admin/uploads", form);
+        Assert.Equal(HttpStatusCode.Created, res.StatusCode);
+        var body = await res.Content.ReadFromJsonAsync<JsonElement>(Json);
+        Assert.True(body.GetProperty("optimizing").GetBoolean());
+        var url = body.GetProperty("url").GetString()!;
+        var id = url[(url.LastIndexOf('/') + 1)..^4];
+
+        JsonElement status = default;
+        for (var i = 0; i < 120; i++)
+        {
+            status = await admin.GetFromJsonAsync<JsonElement>($"/api/v1/admin/uploads/{id}/status", Json);
+            if (status.GetProperty("ready").GetBoolean()) break;
+            await Task.Delay(500);
+        }
+        Assert.True(status.GetProperty("ready").GetBoolean());
+        var anon = factory.CreateClient();
+        foreach (var name in new[] { $"{id}.mp4", $"{id}-scrub.mp4", $"{id}-scrub-720.mp4", $"{id}.jpg", $"{id}-960.jpg" })
+            Assert.Equal(HttpStatusCode.OK, (await anon.GetAsync($"/api/v1/files/{name}")).StatusCode);
+        File.Delete(tmp);
+    }
+
+    [Fact]
     public async Task Upload_accepts_real_images_only_and_serves_them_back()
     {
         var admin = await Admin();

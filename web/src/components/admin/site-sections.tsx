@@ -1,11 +1,11 @@
 "use client";
 
 import { Moon, Sun } from "lucide-react";
-import { AreaField, ColorField, ImageField, ListEditor, SwitchRow, TextField } from "@/components/admin/fields";
+import { AreaField, ColorField, HeroVideoField, ImageField, ImagesField, ListEditor, SwitchRow, TextField } from "@/components/admin/fields";
 import { ICONS, SiteIcon } from "@/components/site/icon";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { initials, onColor, radiusOf, type FieldDef, type SiteContent } from "@/lib/site";
+import { initials, onColor, radiusOf, type FieldDef, type NavLink, type SiteContent } from "@/lib/site";
 import { mediaUrl } from "@/lib/api";
 
 export type SetFn = (path: string, value: unknown) => void;
@@ -85,12 +85,19 @@ export function HeroSection({ c, set }: P) {
   const h = c.home;
   return (
     <div className="grid gap-5 sm:grid-cols-2">
+      <TextField className="sm:col-span-2" label="متن کوچک بالای تیتر" value={h.heroEyebrow} onChange={(v) => set("home.heroEyebrow", v)} max={80} placeholder={c.brand.tagline ?? "مثلاً مشاور خرید و فروش خودرو"} />
       <TextField className="sm:col-span-2" label="تیتر بزرگ صفحه‌ی اول" value={h.heroTitle} onChange={(v) => set("home.heroTitle", v)} max={120} placeholder="مثلاً سفر بعدی‌ات را همین‌جا انتخاب کن" />
       <AreaField className="sm:col-span-2" label="زیرتیتر" value={h.heroSubtitle} onChange={(v) => set("home.heroSubtitle", v)} max={300} rows={2} />
       <TextField label="متن دکمه" value={h.heroCtaText} onChange={(v) => set("home.heroCtaText", v)} max={40} placeholder={`دیدن ${c.labels.itemPlural}`} />
       <TextField label="لینک دکمه" dir="ltr" value={h.heroCtaUrl} onChange={(v) => set("home.heroCtaUrl", v)} max={300} placeholder="/items" hint="/items صفحه‌ی آیتم‌ها، /services خدمات، /contact تماس" />
       <ImageField label="عکس پس‌زمینه" value={h.heroImageUrl} onChange={(v) => set("home.heroImageUrl", v)} hint="افقی و باکیفیت؛ حداقل ۱۶۰۰ پیکسل عرض." />
-      <ImageField label="ویدیوی پس‌زمینه (اختیاری)" accept="video" value={h.heroVideoUrl} onChange={(v) => set("home.heroVideoUrl", v)} hint="MP4 کوتاه و بی‌صدا، حداکثر ۲۵ مگابایت. اگر بگذارید جای عکس پخش می‌شود." />
+      <HeroVideoField value={h.heroVideoUrl} optimized={h.heroVideoOptimized} mode={h.heroVideoMode}
+        onChange={(p) => {
+          if (p.url !== undefined) set("home.heroVideoUrl", p.url);
+          if (p.optimized !== undefined) set("home.heroVideoOptimized", p.optimized);
+          if (p.mode) set("home.heroVideoMode", p.mode);
+          if (p.poster && !h.heroImageUrl) set("home.heroImageUrl", p.poster);
+        }} />
     </div>
   );
 }
@@ -100,28 +107,63 @@ export function HomeMoreSection({ c, set }: P) {
   return (
     <div className="grid gap-8">
       <section className="grid gap-4">
-        <SwitchRow label="بخش «چرا ما؟» (ویژگی‌ها)" checked={h.showHighlights} onChange={(v) => set("home.showHighlights", v)} />
+        <SwitchRow label="بخش مراحل / ویژگی‌ها" hint="اگر برای همه‌ی موارد عکس بگذارید، به‌صورت داستان اسکرولی (عکس با اسکرول عوض می‌شود) نمایش داده می‌شود." checked={h.showHighlights} onChange={(v) => set("home.showHighlights", v)} />
         {h.showHighlights && (
           <>
-            <TextField label="عنوان بخش" value={h.highlightsTitle} onChange={(v) => set("home.highlightsTitle", v)} max={80} />
-            <ListEditor items={h.highlights} onChange={(v) => set("home.highlights", v)} max={8} addLabel="افزودن ویژگی"
-              make={() => ({ title: "", text: "", icon: "check" })}
+            <div className="grid gap-4 sm:grid-cols-3">
+              <TextField label="متن کوچک بالای عنوان" value={h.highlightsEyebrow} onChange={(v) => set("home.highlightsEyebrow", v)} max={60} />
+              <TextField className="sm:col-span-2" label="عنوان بخش" value={h.highlightsTitle} onChange={(v) => set("home.highlightsTitle", v)} max={100} />
+            </div>
+            <AreaField label="توضیح زیر عنوان" value={h.highlightsText} onChange={(v) => set("home.highlightsText", v)} max={400} rows={2} />
+            <ListEditor items={h.highlights} onChange={(v) => set("home.highlights", v)} max={8} addLabel="افزودن مرحله / ویژگی"
+              make={() => ({ title: "", text: "", icon: "check", imageUrl: null })}
               render={(x, put) => (
-                <div className="grid gap-3 sm:grid-cols-[160px_1fr_2fr]">
-                  <Select value={x.icon ?? "check"} onValueChange={(v) => put({ ...x, icon: v })}>
-                    <SelectTrigger aria-label="آیکن"><SiteIcon name={x.icon} className="size-4" /><SelectValue /></SelectTrigger>
-                    <SelectContent>{Object.entries(ICONS).map(([k, v]) => <SelectItem key={k} value={k}>{v.label}</SelectItem>)}</SelectContent>
-                  </Select>
-                  <Input value={x.title} onChange={(e) => put({ ...x, title: e.target.value })} placeholder="عنوان" maxLength={60} aria-label="عنوان ویژگی" />
-                  <Input value={x.text ?? ""} onChange={(e) => put({ ...x, text: e.target.value })} placeholder="توضیح کوتاه" maxLength={160} aria-label="توضیح ویژگی" />
+                <div className="grid gap-3">
+                  <div className="grid gap-3 sm:grid-cols-[160px_1fr]">
+                    <Select value={x.icon ?? "check"} onValueChange={(v) => put({ ...x, icon: v })}>
+                      <SelectTrigger aria-label="آیکن"><SiteIcon name={x.icon} className="size-4" /><SelectValue /></SelectTrigger>
+                      <SelectContent>{Object.entries(ICONS).map(([k, v]) => <SelectItem key={k} value={k}>{v.label}</SelectItem>)}</SelectContent>
+                    </Select>
+                    <Input value={x.title} onChange={(e) => put({ ...x, title: e.target.value })} placeholder="عنوان (مثلاً ۱. ثبت درخواست)" maxLength={60} aria-label="عنوان" />
+                  </div>
+                  <textarea value={x.text ?? ""} onChange={(e) => put({ ...x, text: e.target.value })} placeholder="توضیح" maxLength={400} rows={2} aria-label="توضیح" className="rounded-md border border-input bg-transparent px-3 py-2 text-sm" />
+                  <ImageField label="عکس (برای حالت اسکرولی)" value={x.imageUrl} onChange={(v) => put({ ...x, imageUrl: v })} />
                 </div>
               )} />
           </>
         )}
       </section>
-      <SwitchRow label={`بخش ${c.labels.itemPlural}ی ویژه`} hint="مواردی که در فرمشان «ویژه» زده‌اید." checked={h.showFeatured} onChange={(v) => set("home.showFeatured", v)} />
-      {h.showFeatured && <TextField label="عنوان بخش ویژه" value={h.featuredTitle} onChange={(v) => set("home.featuredTitle", v)} max={80} />}
-      <SwitchRow label="نمایش چند خدمت در صفحه‌ی اول" checked={h.showServices} onChange={(v) => set("home.showServices", v)} />
+      <section className="grid gap-4">
+        <SwitchRow label={`بخش ${c.labels.itemPlural} (کاروسل سه‌بعدی)`} hint={`جدیدترین ${c.labels.itemPlural}ی منتشرشده.`} checked={h.showFeatured} onChange={(v) => set("home.showFeatured", v)} />
+        {h.showFeatured && (
+          <>
+            <div className="grid gap-4 sm:grid-cols-3">
+              <TextField label="متن کوچک بالای عنوان" value={h.featuredEyebrow} onChange={(v) => set("home.featuredEyebrow", v)} max={60} />
+              <TextField className="sm:col-span-2" label="عنوان بخش" value={h.featuredTitle} onChange={(v) => set("home.featuredTitle", v)} max={100} />
+            </div>
+            <AreaField label="توضیح زیر عنوان" value={h.featuredText} onChange={(v) => set("home.featuredText", v)} max={400} rows={2} />
+          </>
+        )}
+      </section>
+      <section className="grid gap-4">
+        <SwitchRow label="آمار با شمارنده‌ی متحرک" hint="عدد را بنویسید (مثل ۴۸ یا 2,000+)؛ با اسکرول از صفر می‌شمارد." checked={h.showStats ?? true} onChange={(v) => set("home.showStats", v)} />
+        {(h.showStats ?? true) && (
+          <ListEditor items={h.stats} onChange={(v) => set("home.stats", v)} max={6} addLabel="افزودن آمار" make={() => ({ value: "", label: "" })}
+            render={(x, put) => (
+              <div className="grid grid-cols-2 gap-3">
+                <Input value={x.value} onChange={(e) => put({ ...x, value: e.target.value })} placeholder="۱۰+" maxLength={20} aria-label="عدد" />
+                <Input value={x.label} onChange={(e) => put({ ...x, label: e.target.value })} placeholder="سال تجربه" maxLength={40} aria-label="عنوان آمار" />
+              </div>
+            )} />
+        )}
+      </section>
+      <section className="grid gap-4">
+        <SwitchRow label="خدمات در صفحه‌ی اول (کاشی‌های بنتو)" checked={h.showServices} onChange={(v) => set("home.showServices", v)} />
+        {h.showServices && <div className="grid gap-4 sm:grid-cols-3">
+              <TextField label="متن کوچک بالای عنوان" value={h.servicesEyebrow} onChange={(v) => set("home.servicesEyebrow", v)} max={60} />
+              <TextField className="sm:col-span-2" label="عنوان بخش" value={h.servicesTitle} onChange={(v) => set("home.servicesTitle", v)} max={100} />
+            </div>}
+      </section>
       <section className="grid gap-4">
         <SwitchRow label="بخش «درباره‌ی ما»" checked={h.showAbout} onChange={(v) => set("home.showAbout", v)} />
         {h.showAbout && (
@@ -129,16 +171,6 @@ export function HomeMoreSection({ c, set }: P) {
             <TextField label="عنوان" value={h.aboutTitle} onChange={(v) => set("home.aboutTitle", v)} max={80} />
             <ImageField label="عکس" value={h.aboutImageUrl} onChange={(v) => set("home.aboutImageUrl", v)} />
             <AreaField className="sm:col-span-2" label="متن" value={h.aboutText} onChange={(v) => set("home.aboutText", v)} max={3000} rows={5} />
-            <div className="sm:col-span-2">
-              <p className="mb-2 text-sm font-medium">آمار (مثل «۱۰ سال تجربه»)</p>
-              <ListEditor items={h.stats} onChange={(v) => set("home.stats", v)} max={6} addLabel="افزودن آمار" make={() => ({ value: "", label: "" })}
-                render={(x, put) => (
-                  <div className="grid grid-cols-2 gap-3">
-                    <Input value={x.value} onChange={(e) => put({ ...x, value: e.target.value })} placeholder="۱۰+" maxLength={20} aria-label="عدد" />
-                    <Input value={x.label} onChange={(e) => put({ ...x, label: e.target.value })} placeholder="سال تجربه" maxLength={40} aria-label="عنوان آمار" />
-                  </div>
-                )} />
-            </div>
           </div>
         )}
       </section>
@@ -160,7 +192,56 @@ export function HomeMoreSection({ c, set }: P) {
           <div className="grid gap-4 sm:grid-cols-2">
             <TextField label="عنوان" value={h.ctaTitle} onChange={(v) => set("home.ctaTitle", v)} max={80} />
             <TextField label="متن" value={h.ctaText} onChange={(v) => set("home.ctaText", v)} max={200} />
+            <TextField label="متن دکمه" value={h.ctaButtonText} onChange={(v) => set("home.ctaButtonText", v)} max={40} placeholder={c.labels.requestButton} />
+            <TextField label="لینک دکمه" dir="ltr" value={h.ctaButtonUrl} onChange={(v) => set("home.ctaButtonUrl", v)} max={300} placeholder="/contact" />
           </div>
+        )}
+      </section>
+      <section className="grid gap-4">
+        <SwitchRow label="نوار متحرک همکاران / مشتریان سازمانی" checked={h.showPartners ?? true} onChange={(v) => set("home.showPartners", v)} />
+        {(h.showPartners ?? true) && (
+          <>
+            <div className="grid gap-4 sm:grid-cols-3">
+              <TextField label="متن کوچک بالای عنوان" value={h.partnersEyebrow} onChange={(v) => set("home.partnersEyebrow", v)} max={60} />
+              <TextField className="sm:col-span-2" label="عنوان بخش" value={h.partnersTitle} onChange={(v) => set("home.partnersTitle", v)} max={100} />
+            </div>
+            <ListEditor items={h.partners ?? []} onChange={(v) => set("home.partners", v)} max={20} addLabel="افزودن نام" make={() => ""}
+              render={(x, put) => <Input value={x} onChange={(e) => put(e.target.value)} placeholder="نام سازمان یا برند" maxLength={80} aria-label="نام" />} />
+          </>
+        )}
+      </section>
+      <section className="grid gap-4">
+        <SwitchRow label="نظر مشتری‌ها (ستون‌های متحرک)" hint="فقط نظر واقعی و با اجازه‌ی مشتری بگذارید." checked={h.showTestimonials ?? true} onChange={(v) => set("home.showTestimonials", v)} />
+        {(h.showTestimonials ?? true) && (
+          <>
+            <div className="grid gap-4 sm:grid-cols-3">
+              <TextField label="متن کوچک بالای عنوان" value={h.testimonialsEyebrow} onChange={(v) => set("home.testimonialsEyebrow", v)} max={60} />
+              <TextField className="sm:col-span-2" label="عنوان بخش" value={h.testimonialsTitle} onChange={(v) => set("home.testimonialsTitle", v)} max={100} />
+            </div>
+            <AreaField label="توضیح زیر عنوان" value={h.testimonialsText} onChange={(v) => set("home.testimonialsText", v)} max={300} rows={2} />
+            <ListEditor items={h.testimonials ?? []} onChange={(v) => set("home.testimonials", v)} max={20} addLabel="افزودن نظر" make={() => ({ name: "", role: "", text: "" })}
+              render={(x, put) => (
+                <>
+                  <div className="grid grid-cols-2 gap-3">
+                    <Input value={x.name} onChange={(e) => put({ ...x, name: e.target.value })} placeholder="نام" maxLength={60} aria-label="نام" />
+                    <Input value={x.role ?? ""} onChange={(e) => put({ ...x, role: e.target.value })} placeholder="خدمت / سمت" maxLength={60} aria-label="توضیح کوتاه" />
+                  </div>
+                  <textarea value={x.text} onChange={(e) => put({ ...x, text: e.target.value })} placeholder="متن نظر" maxLength={500} rows={2} aria-label="متن نظر" className="rounded-md border border-input bg-transparent px-3 py-2 text-sm" />
+                </>
+              )} />
+          </>
+        )}
+      </section>
+      <section className="grid gap-4">
+        <SwitchRow label="گالری زوم (پایین صفحه)" hint="تا ۷ عکس؛ عکس اول بزرگ و وسط است و با اسکرول بزرگ می‌شود." checked={h.showGallery ?? true} onChange={(v) => set("home.showGallery", v)} />
+        {(h.showGallery ?? true) && (
+          <>
+            <div className="grid gap-4 sm:grid-cols-3">
+              <TextField label="متن کوچک بالای عنوان" value={h.galleryEyebrow} onChange={(v) => set("home.galleryEyebrow", v)} max={60} />
+              <TextField className="sm:col-span-2" label="عنوان بخش" value={h.galleryTitle} onChange={(v) => set("home.galleryTitle", v)} max={100} />
+            </div>
+            <ImagesField value={h.gallery ?? []} onChange={(v) => set("home.gallery", v.slice(0, 7))} />
+          </>
         )}
       </section>
     </div>
@@ -172,12 +253,37 @@ export function MenuSection({ c, set }: P) {
     <div className="grid gap-8">
       <section className="grid gap-3">
         <p className="text-sm font-medium">لینک‌های منوی بالا</p>
-        <ListEditor items={c.nav} onChange={(v) => set("nav", v)} max={10} addLabel="افزودن لینک" make={() => ({ label: "", href: "/" })}
+        <ListEditor items={c.nav} onChange={(v) => set("nav", v)} max={10} addLabel="افزودن لینک" make={(): NavLink => ({ label: "", href: "/" })}
           render={(x, put) => (
-            <div className="grid grid-cols-2 gap-3">
-              <Input value={x.label} onChange={(e) => put({ ...x, label: e.target.value })} placeholder="عنوان" maxLength={30} aria-label="عنوان لینک" />
-              <Input dir="ltr" value={x.href} onChange={(e) => put({ ...x, href: e.target.value })} placeholder="/items" maxLength={300} aria-label="آدرس لینک" />
-            </div>
+            <>
+              <div className="grid grid-cols-2 gap-3">
+                <Input value={x.label} onChange={(e) => put({ ...x, label: e.target.value })} placeholder="عنوان" maxLength={30} aria-label="عنوان لینک" />
+                <Input dir="ltr" value={x.href} onChange={(e) => put({ ...x, href: e.target.value })} placeholder="/items" maxLength={300} aria-label="آدرس لینک" />
+              </div>
+              <details className="rounded-lg border border-dashed border-border p-3" open={(x.children?.length ?? 0) > 0}>
+                <summary className="cursor-pointer text-sm font-medium">زیرمنو (منوی بزرگ با عکس) {(x.children?.length ?? 0) > 0 ? `· ${x.children!.length} لینک` : ""}</summary>
+                <div className="mt-3 grid gap-3">
+                  <ListEditor items={x.children ?? []} onChange={(v) => put({ ...x, children: v })} max={12} addLabel="افزودن زیرلینک" make={(): NavLink => ({ label: "", href: "/", group: "", badge: "" })}
+                    render={(y, putY) => (
+                      <div className="grid gap-2 sm:grid-cols-2">
+                        <Input value={y.label} onChange={(e) => putY({ ...y, label: e.target.value })} placeholder="عنوان" maxLength={40} aria-label="عنوان زیرلینک" />
+                        <Input dir="ltr" value={y.href} onChange={(e) => putY({ ...y, href: e.target.value })} placeholder="/items?…" maxLength={300} aria-label="آدرس زیرلینک" />
+                        <Input value={y.group ?? ""} onChange={(e) => putY({ ...y, group: e.target.value })} placeholder="ستون (مثلاً «ویژه»)" maxLength={30} aria-label="ستون" />
+                        <Input value={y.badge ?? ""} onChange={(e) => putY({ ...y, badge: e.target.value })} placeholder="برچسب کوچک (اختیاری)" maxLength={20} aria-label="برچسب" />
+                      </div>
+                    )} />
+                  {(x.children?.length ?? 0) > 0 && (
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      <ImageField label="عکس کنار منو" value={x.imageUrl} onChange={(v) => put({ ...x, imageUrl: v })} />
+                      <div className="grid gap-3">
+                        <Input value={x.caption ?? ""} onChange={(e) => put({ ...x, caption: e.target.value })} placeholder="نوشته‌ی روی عکس" maxLength={60} aria-label="نوشته‌ی روی عکس" />
+                        <Input value={x.note ?? ""} onChange={(e) => put({ ...x, note: e.target.value })} placeholder="یادداشت پایین منو" maxLength={100} aria-label="یادداشت پایین منو" />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </details>
+            </>
           )} />
         <p className="text-xs text-muted-foreground">آدرس‌های داخلی: / خانه · /items {c.labels.itemPlural} · /services خدمات · /contact تماس · /#about درباره‌ی ما</p>
       </section>

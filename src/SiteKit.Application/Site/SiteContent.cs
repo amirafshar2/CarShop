@@ -70,18 +70,47 @@ public sealed class FieldDef
 
 public sealed class HomeInfo
 {
+    /// <summary>Small line above the big hero title (falls back to the brand tagline).</summary>
+    public string? HeroEyebrow { get; set; }
     public string HeroTitle { get; set; } = "";
     public string? HeroSubtitle { get; set; }
     public string? HeroImageUrl { get; set; }
     public string? HeroVideoUrl { get; set; }
+    /// <summary>scroll = the video plays forward/backward with scrolling; loop = plays on its own.</summary>
+    public string HeroVideoMode { get; set; } = "scroll";
+    /// <summary>True when the upload optimiser produced {name}-scrub.mp4, {name}-scrub-720.mp4 and {name}.jpg next to the video.</summary>
+    public bool HeroVideoOptimized { get; set; }
     public string? HeroCtaText { get; set; }
     public string? HeroCtaUrl { get; set; }
     public bool ShowHighlights { get; set; } = true;
+    public string? HighlightsEyebrow { get; set; }
     public string? HighlightsTitle { get; set; }
+    public string? HighlightsText { get; set; }
+    /// <summary>Steps with an image each → shown as a sticky scroll story (image changes while you read).</summary>
     public List<Highlight> Highlights { get; set; } = [];
     public bool ShowFeatured { get; set; } = true;
+    public string? FeaturedEyebrow { get; set; }
     public string? FeaturedTitle { get; set; }
+    public string? FeaturedText { get; set; }
+    public bool ShowStats { get; set; } = true;
     public bool ShowServices { get; set; } = true;
+    public string? ServicesEyebrow { get; set; }
+    public string? ServicesTitle { get; set; }
+    public bool ShowPartners { get; set; } = true;
+    public string? PartnersEyebrow { get; set; }
+    public string? PartnersTitle { get; set; }
+    /// <summary>Names shown in the moving logo strip (partners, organisations, brands).</summary>
+    public List<string> Partners { get; set; } = [];
+    public bool ShowTestimonials { get; set; } = true;
+    public string? TestimonialsEyebrow { get; set; }
+    public string? TestimonialsTitle { get; set; }
+    public string? TestimonialsText { get; set; }
+    public List<Testimonial> Testimonials { get; set; } = [];
+    public bool ShowGallery { get; set; } = true;
+    public string? GalleryEyebrow { get; set; }
+    public string? GalleryTitle { get; set; }
+    /// <summary>Up to 7 photos for the zoom-parallax section (first one is the large centre image).</summary>
+    public List<string> Gallery { get; set; } = [];
     public bool ShowAbout { get; set; } = true;
     public string? AboutTitle { get; set; }
     public string? AboutText { get; set; }
@@ -92,6 +121,8 @@ public sealed class HomeInfo
     public bool ShowCta { get; set; } = true;
     public string? CtaTitle { get; set; }
     public string? CtaText { get; set; }
+    public string? CtaButtonText { get; set; }
+    public string? CtaButtonUrl { get; set; }
 }
 
 public sealed class Highlight
@@ -100,6 +131,14 @@ public sealed class Highlight
     public string? Text { get; set; }
     /// <summary>Icon name from a fixed list (shield, clock, star, truck, heart, check, map, phone, gift, sparkles).</summary>
     public string? Icon { get; set; }
+    public string? ImageUrl { get; set; }
+}
+
+public sealed class Testimonial
+{
+    public string Name { get; set; } = "";
+    public string? Role { get; set; }
+    public string Text { get; set; } = "";
 }
 
 public sealed class Stat
@@ -131,6 +170,15 @@ public sealed class NavLink
 {
     public string Label { get; set; } = "";
     public string Href { get; set; } = "/";
+    /// <summary>Optional sub-links → the item opens a mega menu (with <see cref="ImageUrl"/> on the side).</summary>
+    public List<NavLink> Children { get; set; } = [];
+    public string? Badge { get; set; }
+    /// <summary>Sub-links with the same group are shown together as one column (group = column heading).</summary>
+    public string? Group { get; set; }
+    public string? ImageUrl { get; set; }
+    public string? Caption { get; set; }
+    /// <summary>Small line at the bottom of the mega menu (links to the item's own href).</summary>
+    public string? Note { get; set; }
 }
 
 public sealed class FooterInfo
@@ -214,16 +262,34 @@ public static partial class SiteRules
         Len(c.Home.HeroSubtitle, 300, "زیرتیتر");
         Url(c.Home.HeroImageUrl, "تصویر صفحه‌ی اول");
         Url(c.Home.HeroVideoUrl, "ویدیوی صفحه‌ی اول");
+        if (c.Home.HeroVideoMode is not ("scroll" or "loop")) errors.Add("حالت پخش ویدیو نامعتبر است.");
         Url(c.Home.AboutImageUrl, "تصویر درباره‌ی ما");
         if (!IsSafeLink(c.Home.HeroCtaUrl)) errors.Add("لینک دکمه‌ی صفحه‌ی اول نامعتبر است.");
         Len(c.Home.AboutText, 3000, "متن درباره‌ی ما");
         if (c.Home.Highlights.Count > 8) errors.Add("حداکثر ۸ ویژگی برای صفحه‌ی اول.");
         if (c.Home.Faq.Count > 20) errors.Add("حداکثر ۲۰ پرسش متداول.");
         if (c.Home.Stats.Count > 6) errors.Add("حداکثر ۶ آمار.");
+        if (c.Nav.Any(n => n.Children.Count > 12)) errors.Add("هر منو حداکثر ۱۲ زیرلینک دارد.");
+        if (c.Home.Gallery.Count > 7) errors.Add("گالری حداکثر ۷ عکس دارد.");
+        if (c.Home.Partners.Count > 20) errors.Add("حداکثر ۲۰ نام در نوار همکاران.");
+        if (c.Home.Testimonials.Count > 20) errors.Add("حداکثر ۲۰ نظر.");
+        foreach (var g in c.Home.Gallery) Url(g, "عکس گالری");
+        foreach (var p in c.Home.Partners) Len(p, 80, "نام همکار");
+        foreach (var t in c.Home.Testimonials)
+        {
+            if (string.IsNullOrWhiteSpace(t.Text)) errors.Add("هر نظر باید متن داشته باشد.");
+            Len(t.Name, 60, "نام نظردهنده");
+            Len(t.Role, 60, "توضیح نظردهنده");
+            Len(t.Text, 500, "متن نظر");
+        }
+        Len(c.Home.HeroEyebrow, 80, "متن بالای تیتر");
+        foreach (var h in c.Home.Highlights) Url(h.ImageUrl, "عکس مرحله");
+        if (!IsSafeLink(c.Home.CtaButtonUrl)) errors.Add("لینک دکمه‌ی کادر تماس نامعتبر است.");
 
         if (c.Nav.Count > 10) errors.Add("منو حداکثر ۱۰ لینک دارد.");
-        foreach (var n in c.Nav)
+        foreach (var n in c.Nav.Concat(c.Nav.SelectMany(x => x.Children)))
         {
+            Url(n.ImageUrl, "تصویر منو");
             if (string.IsNullOrWhiteSpace(n.Label)) errors.Add("هر لینک منو باید عنوان داشته باشد.");
             Len(n.Label, 30, "عنوان لینک منو");
             if (!IsSafeLink(n.Href)) errors.Add($"لینک «{n.Label}» نامعتبر است.");

@@ -18,7 +18,7 @@ public sealed class SiteController(ISiteService site) : ControllerBase
 [ApiController]
 [Route("api/v1/admin/site")]
 [Authorize(Policy = AuthPolicies.StaffOrAdmin)] // staff can read (labels, fields); every change is admin-only
-public sealed class AdminSiteController(ISiteService site) : ControllerBase
+public sealed partial class AdminSiteController(ISiteService site, VideoOptimizer videos) : ControllerBase
 {
     [HttpGet]
     [ProducesResponseType<AdminSiteDto>(StatusCodes.Status200OK)]
@@ -29,7 +29,20 @@ public sealed class AdminSiteController(ISiteService site) : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-    public async Task<IActionResult> Update(UpdateSiteRequest request, CancellationToken ct) => Done(await site.UpdateAsync(request, ct));
+    public async Task<IActionResult> Update(UpdateSiteRequest request, CancellationToken ct)
+    {
+        // An uploaded hero video counts as optimised only once the background job has produced its versions.
+        var home = request.Content.Home;
+        if (home.HeroVideoUrl is { } url && UploadedVideo().Match(url) is { Success: true } m)
+        {
+            home.HeroVideoOptimized = videos.IsReady(m.Groups[1].Value);
+            if (home.HeroVideoOptimized && string.IsNullOrWhiteSpace(home.HeroImageUrl)) home.HeroImageUrl = $"/api/v1/files/{m.Groups[1].Value}.jpg";
+        }
+        return Done(await site.UpdateAsync(request, ct));
+    }
+
+    [System.Text.RegularExpressions.GeneratedRegex("^/api/v1/files/([a-f0-9]{32})\\.mp4$")]
+    private static partial System.Text.RegularExpressions.Regex UploadedVideo();
 
     /// <summary>Switch the kind of business (labels, fields, menu); optionally add sample content.</summary>
     [HttpPost("preset")]

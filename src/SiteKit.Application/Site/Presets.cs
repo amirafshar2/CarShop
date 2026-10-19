@@ -53,8 +53,43 @@ public static class Presets
         c.Home.FeaturedTitle ??= $"{c.Labels.ItemPlural}ی ویژه";
         c.Home.CtaTitle ??= "سؤالی دارید؟";
         c.Home.CtaText ??= "با ما در تماس باشید؛ در کوتاه‌ترین زمان پاسخ می‌دهیم.";
+        c.Home.HighlightsEyebrow ??= c.Brand.Name;
+        c.Home.FeaturedEyebrow ??= c.Labels.ItemPlural;
+        c.Home.ServicesEyebrow ??= "خدمات ما";
+        c.Home.ServicesTitle ??= c.Labels.ServicesTitle;
+        c.Home.TestimonialsEyebrow ??= "نظر مشتری‌ها";
+        c.Home.TestimonialsTitle ??= "صدای مشتری‌ها";
+        c.Home.GalleryTitle ??= c.Brand.Name;
+        if (demo)
+        {
+            // Photos of the sample items give the steps (scroll story) and the zoom gallery something to show.
+            var photos = DemoListings(key).SelectMany(l => l.Images).Prepend(c.Home.AboutImageUrl).Prepend(c.Home.HeroImageUrl)
+                .Where(u => !string.IsNullOrEmpty(u)).Distinct().ToList();
+            for (var i = 0; i < c.Home.Highlights.Count && photos.Count > 0; i++)
+                c.Home.Highlights[i].ImageUrl ??= photos[(i + 1) % photos.Count];
+            if (c.Home.Gallery.Count == 0) c.Home.Gallery = photos.Take(7).ToList()!;
+            // Clearly marked samples — replaced by real reviews from the panel.
+            if (c.Home.Testimonials.Count == 0)
+            {
+                c.Home.TestimonialsText = "(متن نمونه — نظرات واقعی مشتری‌ها را از پنل جایگزین کنید)";
+                c.Home.Testimonials =
+                [
+                    new() { Name = "متن نمونه", Role = c.Labels.ItemSingular, Text = "«اینجا نظر واقعی مشتری بعد از خرید نمایش داده می‌شود.»" },
+                    new() { Name = "متن نمونه", Role = "خدمات", Text = "«فقط نظراتی را بگذارید که مشتری اجازه‌ی انتشارشان را داده.»" },
+                    new() { Name = "متن نمونه", Role = "پشتیبانی", Text = "«نام، توضیح کوتاه و متن نظر از بخش صفحه‌ی اول پنل عوض می‌شود.»" },
+                    new() { Name = "متن نمونه", Role = c.Labels.ItemPlural, Text = "«ستون‌ها خودکار حرکت می‌کنند و روی هاور می‌ایستند.»" },
+                    new() { Name = "متن نمونه", Role = "تماس", Text = "«هر تعداد نظر تا ۲۰ مورد قابل افزودن است.»" },
+                    new() { Name = "متن نمونه", Role = "رضایت", Text = "«این متن‌ها نمونه‌اند و در سایت شما جایگزین می‌شوند.»" },
+                ];
+            }
+        }
         if (!demo)
         {
+            c.Home.Testimonials = [];
+            c.Home.Partners = [];
+            c.Home.Gallery = [];
+            c.Home.GalleryTitle = null;
+            c.Home.HighlightsEyebrow = null;
             c.Brand = new BrandInfo();
             c.Contact = new ContactInfo();
             c.Home.Stats = [];

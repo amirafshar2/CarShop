@@ -26,6 +26,11 @@ builder.Host.UseSerilog((ctx, cfg) => cfg
 builder.Services.AddApplication(builder.Configuration);
 builder.Services.AddInfrastructure(builder.Configuration, builder.Environment);
 builder.Services.AddScoped<ICurrentUser, HttpCurrentUser>();
+builder.Services.AddSingleton<UploadStore>();
+builder.Services.AddSingleton<VideoOptimizer>();
+builder.Services.AddHostedService(sp => sp.GetRequiredService<VideoOptimizer>());
+// Hero videos can be larger than Kestrel's 30 MB default; the upload endpoint enforces its own limits.
+builder.WebHost.ConfigureKestrel(k => k.Limits.MaxRequestBodySize = 90 * 1024 * 1024);
 
 // ---------- MVC, validation, errors ----------
 builder.Services.AddControllers(o => o.Filters.Add<ValidationFilter>())

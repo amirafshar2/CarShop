@@ -27,6 +27,8 @@ RUN npm run build
 
 # ---------- 3) Runtime ----------
 FROM mcr.microsoft.com/dotnet/aspnet:9.0
+# ffmpeg: uploaded videos are re-encoded in the background into light scroll versions + a poster.
+RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg && rm -rf /var/lib/apt/lists/*
 COPY --from=web /usr/local/bin/node /usr/local/bin/node
 WORKDIR /app
 COPY --from=api /out/api ./api

@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { toast } from "sonner";
 import { ArrowDown, ArrowUp, ImagePlus, Loader2, Plus, Trash2, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
-import { mediaUrl, uploadFile } from "@/lib/api";
+import { getUploadStatus, mediaUrl, uploadFile, uploadId, uploadMedia } from "@/lib/api";
 
 export function TextField({ label, value, onChange, hint, placeholder, max, dir, type = "text", required, className }: {
   label: string; value: string | null | undefined; onChange: (v: string) => void; hint?: string; placeholder?: string; max?: number;
@@ -197,6 +197,89 @@ export function ListEditor<T>({ items, onChange, make, render, addLabel, max = 2
       {items.length < max && (
         <Button type="button" variant="outline" onClick={() => onChange([...items, make()])} className="justify-self-start"><Plus className="size-4" />{addLabel}</Button>
       )}
+    </div>
+  );
+}
+
+/**
+ * Hero video: upload → the server makes the fast scroll versions + a poster in the background
+ * (a short keyframe interval so slow computers can scrub smoothly). Polls until they exist.
+ */
+export function HeroVideoField({ value, optimized, mode, onChange }: {
+  value: string | null | undefined; optimized: boolean; mode: "scroll" | "loop";
+  onChange: (patch: { url?: string | null; optimized?: boolean; mode?: "scroll" | "loop"; poster?: string | null }) => void;
+}) {
+  const input = useRef<HTMLInputElement>(null);
+  const [busy, setBusy] = useState(false);
+  const [showUrl, setShowUrl] = useState(false);
+  const id = uploadId(value);
+  const waiting = !!id && !optimized;
+
+  useEffect(() => {
+    if (!id || optimized) return;
+    let stop = false;
+    const check = async () => {
+      try {
+        const s = await getUploadStatus(id);
+        if (stop) return;
+        if (s.ready) { onChange({ optimized: true, poster: s.poster }); toast.success("ویدیو برای پخش روان آماده شد."); return; }
+      } catch { /* try again */ }
+      if (!stop) timer = setTimeout(check, 4000);
+    };
+    let timer = setTimeout(check, 1500);
+    return () => { stop = true; clearTimeout(timer); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, optimized]);
+
+  const pick = async (file: File | undefined) => {
+    if (!file) return;
+    setBusy(true);
+    try {
+      const r = await uploadMedia(file);
+      onChange({ url: r.url, optimized: false });
+      toast.success(r.optimizing ? "آپلود شد؛ نسخه‌ی سبک و روان در حال ساخت است…" : "آپلود شد.");
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setBusy(false);
+      if (input.current) input.current.value = "";
+    }
+  };
+
+  return (
+    <div className="grid gap-3 sm:col-span-2">
+      <span className="text-sm font-medium">ویدیوی صفحه‌ی اول (اختیاری)</span>
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="grid h-24 w-40 shrink-0 place-items-center overflow-hidden rounded-xl border border-dashed border-border bg-muted">
+          {value ? <video src={mediaUrl(value)} className="h-full w-full object-cover" muted /> : <ImagePlus className="size-7 text-muted-foreground" aria-hidden />}
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <input ref={input} type="file" accept="video/mp4,video/quicktime" className="sr-only" onChange={(e) => void pick(e.target.files?.[0])} aria-label="آپلود ویدیو" />
+          <Button type="button" variant="outline" onClick={() => input.current?.click()} disabled={busy}>
+            {busy ? <Loader2 className="size-4 animate-spin" /> : <ImagePlus className="size-4" />}{value ? "عوض کردن" : "آپلود ویدیو"}
+          </Button>
+          {value && <Button type="button" variant="ghost" onClick={() => onChange({ url: null, optimized: false })}><X className="size-4" />حذف</Button>}
+          <Button type="button" variant="ghost" className="text-xs text-muted-foreground" onClick={() => setShowUrl((v) => !v)}>لینک</Button>
+        </div>
+      </div>
+      {showUrl && <Input dir="ltr" value={value ?? ""} onChange={(e) => onChange({ url: e.target.value || null, optimized: false })} placeholder="https://….mp4" className="h-10" aria-label="لینک ویدیو" />}
+      {value && (
+        <p role="status" className={`flex items-center gap-2 text-xs ${waiting ? "text-primary" : "text-muted-foreground"}`}>
+          {waiting && <Loader2 className="size-3.5 animate-spin" aria-hidden />}
+          {waiting
+            ? "در حال بهینه‌سازی برای کامپیوترهای ضعیف… (چند دقیقه؛ می‌توانید ذخیره کنید و بروید)"
+            : optimized ? "بهینه شده: نسخه‌ی ۱۰۸۰ و ۷۲۰ مخصوص اسکرول + عکس اول ساخته شد." : "لینک بیرونی بهینه نمی‌شود؛ برای بهترین نتیجه ویدیو را آپلود کنید."}
+        </p>
+      )}
+      <div className="grid gap-2 sm:max-w-sm">
+        <span className="text-sm font-medium">نحوه‌ی پخش</span>
+        <div className="grid grid-cols-2 gap-2">
+          {([["scroll", "با اسکرول جلو/عقب می‌رود"], ["loop", "خودکار و تکراری"]] as const).map(([k, t]) => (
+            <Button key={k} type="button" variant={mode === k ? "default" : "outline"} onClick={() => onChange({ mode: k })} className="h-auto whitespace-normal py-2 text-xs">{t}</Button>
+          ))}
+        </div>
+      </div>
+      <p className="text-xs leading-5 text-muted-foreground">MP4 یا MOV، حداکثر ۸۰ مگابایت، ۵ تا ۱۵ ثانیه بهترین است. صدا حذف می‌شود. روی گوشی با «صرفه‌جویی داده» فقط عکس اول نشان داده می‌شود.</p>
     </div>
   );
 }

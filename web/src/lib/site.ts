@@ -2,7 +2,9 @@ import { getSiteRaw, type Listing } from "@/lib/api";
 import { toman } from "@/lib/format";
 
 export type FieldDef = { key: string; label: string; type: "text" | "number" | "select"; options: string[]; suffix: string | null; showOnCard: boolean; filter: boolean };
-export type Highlight = { title: string; text: string | null; icon: string | null };
+export type Highlight = { title: string; text: string | null; icon: string | null; imageUrl?: string | null };
+export type Testimonial = { name: string; role: string | null; text: string };
+export type NavLink = { label: string; href: string; children?: NavLink[]; badge?: string | null; group?: string | null; imageUrl?: string | null; caption?: string | null; note?: string | null };
 export type SiteContent = {
   brand: { name: string; tagline: string | null; description: string | null; logoUrl: string | null };
   theme: { primary: string; mode: "dark" | "light"; corners: "sharp" | "soft" | "round" };
@@ -10,16 +12,21 @@ export type SiteContent = {
   fields: FieldDef[];
   categories: string[];
   home: {
-    heroTitle: string; heroSubtitle: string | null; heroImageUrl: string | null; heroVideoUrl: string | null; heroCtaText: string | null; heroCtaUrl: string | null;
-    showHighlights: boolean; highlightsTitle: string | null; highlights: Highlight[];
-    showFeatured: boolean; featuredTitle: string | null; showServices: boolean;
+    heroEyebrow?: string | null; heroTitle: string; heroSubtitle: string | null; heroImageUrl: string | null; heroVideoUrl: string | null; heroVideoMode: "scroll" | "loop"; heroVideoOptimized: boolean; heroCtaText: string | null; heroCtaUrl: string | null;
+    showHighlights: boolean; highlightsEyebrow?: string | null; highlightsTitle: string | null; highlightsText?: string | null; highlights: Highlight[];
+    showFeatured: boolean; featuredEyebrow?: string | null; featuredTitle: string | null; featuredText?: string | null;
+    showStats?: boolean;
+    showServices: boolean; servicesEyebrow?: string | null; servicesTitle?: string | null;
+    showPartners?: boolean; partnersEyebrow?: string | null; partnersTitle?: string | null; partners?: string[];
+    showTestimonials?: boolean; testimonialsEyebrow?: string | null; testimonialsTitle?: string | null; testimonialsText?: string | null; testimonials?: Testimonial[];
+    showGallery?: boolean; galleryEyebrow?: string | null; galleryTitle?: string | null; gallery?: string[];
     showAbout: boolean; aboutTitle: string | null; aboutText: string | null; aboutImageUrl: string | null;
     stats: { value: string; label: string }[];
     showFaq: boolean; faq: { question: string; answer: string }[];
-    showCta: boolean; ctaTitle: string | null; ctaText: string | null;
+    showCta: boolean; ctaTitle: string | null; ctaText: string | null; ctaButtonText?: string | null; ctaButtonUrl?: string | null;
   };
   contact: { phone: string | null; whatsapp: string | null; instagram: string | null; telegram: string | null; email: string | null; address: string | null; hours: string | null; mapUrl: string | null };
-  nav: { label: string; href: string }[];
+  nav: NavLink[];
   footer: { text: string | null; copyright: string | null };
   seo: { title: string | null; description: string | null };
   pages: { items: boolean; services: boolean; contact: boolean };
@@ -36,7 +43,7 @@ export const FALLBACK_SITE: PublicSite = {
     theme: { primary: "#f97316", mode: "dark", corners: "soft" },
     labels: { itemSingular: "آیتم", itemPlural: "آیتم‌ها", itemsPageTitle: "همه‌ی آیتم‌ها", requestButton: "ثبت درخواست", categoryLabel: "دسته", soldOutLabel: "ناموجود", servicesTitle: "خدمات و قیمت‌ها" },
     fields: [], categories: [],
-    home: { heroTitle: "", heroSubtitle: null, heroImageUrl: null, heroVideoUrl: null, heroCtaText: null, heroCtaUrl: null, showHighlights: false, highlightsTitle: null, highlights: [], showFeatured: false, featuredTitle: null, showServices: false, showAbout: false, aboutTitle: null, aboutText: null, aboutImageUrl: null, stats: [], showFaq: false, faq: [], showCta: false, ctaTitle: null, ctaText: null },
+    home: { heroTitle: "", heroSubtitle: null, heroImageUrl: null, heroVideoUrl: null, heroVideoMode: "scroll", heroVideoOptimized: false, heroCtaText: null, heroCtaUrl: null, showHighlights: false, highlightsTitle: null, highlights: [], showFeatured: false, featuredTitle: null, showServices: false, showAbout: false, aboutTitle: null, aboutText: null, aboutImageUrl: null, stats: [], showFaq: false, faq: [], showCta: false, ctaTitle: null, ctaText: null },
     contact: { phone: null, whatsapp: null, instagram: null, telegram: null, email: null, address: null, hours: null, mapUrl: null },
     nav: [{ label: "خانه", href: "/" }], footer: { text: null, copyright: null }, seo: { title: null, description: null }, pages: { items: true, services: true, contact: true },
   },
@@ -96,3 +103,17 @@ export function fieldValue(f: FieldDef, raw: string | undefined): string | null 
 export const whatsappLink = (n: string | null) => (n ? `https://wa.me/${n.replace(/\D/g, "")}` : null);
 export const instagramLink = (h: string | null) => (h ? `https://instagram.com/${h.replace(/^@/, "")}` : null);
 export const telegramLink = (h: string | null) => (h ? `https://t.me/${h.replace(/^@/, "")}` : null);
+
+/** Scroll / poster versions created by the upload optimiser next to the video (same base name). */
+export function videoVariants(url: string | null | undefined, optimized: boolean) {
+  if (!url) return null;
+  const base = url.replace(/\.mp4(\?.*)?$/i, "");
+  const ok = optimized && base !== url;
+  return {
+    main: url,
+    scrub: ok ? `${base}-scrub.mp4` : url,
+    scrub720: ok ? `${base}-scrub-720.mp4` : url,
+    poster: ok ? `${base}.jpg` : null,
+    still: ok ? `${base}-960.jpg` : null,
+  };
+}

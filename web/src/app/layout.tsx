@@ -31,9 +31,12 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   const site = await getSite();
   const c = site.content;
   const year = new Intl.NumberFormat("fa-IR", { useGrouping: false }).format(new Date().getFullYear());
-  const footerLinks = [
-    ...c.nav.map((n) => ({ text: n.label, url: n.href })),
-  ];
+  // Footer: plain menu items plus the sub-links of mega menus (no duplicates).
+  const footerLinks = c.nav
+    .flatMap((n) => (n.children?.length ? n.children : [n]))
+    .filter((n, i, all) => !/^(tel:|mailto:)/.test(n.href) && all.findIndex((x) => x.href === n.href) === i)
+    .slice(0, 10)
+    .map((n) => ({ text: n.label, url: n.href }));
   const social = [
     c.contact.instagram && { text: "اینستاگرام", url: `https://instagram.com/${c.contact.instagram}` },
     c.contact.whatsapp && { text: "واتساپ", url: `https://wa.me/${c.contact.whatsapp}` },

@@ -248,12 +248,26 @@ export type DashboardStats = {
 export type AdminUser = { id: string; phone: string; fullName: string | null; roles: string[]; createdAt: string };
 
 /** Uploads an image/video from the panel; returns its URL (/api/v1/files/…). */
-export async function uploadFile(file: File): Promise<string> {
+export type UploadResult = { url: string; video: boolean; optimizing: boolean };
+
+export async function uploadMedia(file: File): Promise<UploadResult> {
   const form = new FormData();
   form.append("file", file);
   const res = await authFetch(`/api/v1/admin/uploads`, { method: "POST", body: form });
   if (!res.ok) await fail(res, "آپلود انجام نشد.");
-  return ((await res.json()) as { url: string }).url;
+  return (await res.json()) as UploadResult;
+}
+
+export const uploadFile = async (file: File) => (await uploadMedia(file)).url;
+
+/** Id of an uploaded file from its URL (/api/v1/files/{id}.mp4), or null for outside links. */
+export const uploadId = (url: string | null | undefined) => url?.match(/^\/api\/v1\/files\/([a-f0-9]{32})\.mp4$/)?.[1] ?? null;
+
+/** Is the background optimisation of an uploaded video finished? */
+export async function getUploadStatus(id: string): Promise<{ ready: boolean; poster: string | null }> {
+  const res = await authFetch(`/api/v1/admin/uploads/${id}/status`);
+  if (!res.ok) await fail(res, "وضعیت ویدیو خوانده نشد.");
+  return res.json();
 }
 
 // ---------- First admin / admin key sign-in ----------
