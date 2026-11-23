@@ -82,8 +82,8 @@ public class SiteRulesTests
         c.Theme.Primary = "red";
         c.Fields.Add(new FieldDef { Key = "year", Label = "Erneut", Type = "text" });
         var errors = SiteRules.Validate(c);
-        Assert.Contains(errors, e => e.Contains("Farbe"));
-        Assert.Contains(errors, e => e.Contains("Doppelt"));
+        Assert.Contains(errors, e => e.Contains("Hauptfarbe"));
+        Assert.Contains(errors, e => e.Contains("wiederholen"));
     }
 
     [Fact]

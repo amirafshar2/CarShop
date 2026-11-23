@@ -335,9 +335,9 @@ public static class Presets
         _ =>
         [
             new("Haarschnitt", "Haare", "Beratung und Schnitt nach Wunsch.", ["Waschen", "Föhnen"], PriceType.From, 39 * E, null, "Beliebt", true),
-            new("Haarfarbe", "Haare", "Farbe und Strähnen mit bewährten Marken.", ["Verträglichkeitstest", "Farbberatung"], PriceType.From, 79 * E, null,
-            new("Gesichtsreinigung", "Haut", "Tiefenreinigung und Maske.", ["Hautanalyse", "Spezialmaske"], PriceType.Fixed, 69 * E, null, null, false, 85 * E),
-            new("Maniküre", "Nägel", "Maniküre und Gel-Lack.", ["Formen", "Gel-Lack"], PriceType.Fixed, 35 * E, null,
+            new("Haarfarbe", "Haare", "Farbe und Strähnen mit bewährten Marken.", ["Verträglichkeitstest", "Farbberatung"], PriceType.From, 79 * E, null),
+            new("Gesichtsreinigung", "Haut", "Tiefenreinigung und Maske.", ["Hautanalyse", "Spezialmaske"], PriceType.Fixed, 69 * E, "pro Sitzung", null, false, 85 * E),
+            new("Maniküre", "Nägel", "Maniküre und Gel-Lack.", ["Formen", "Gel-Lack"], PriceType.Fixed, 35 * E, null),
         ],
     };
 }

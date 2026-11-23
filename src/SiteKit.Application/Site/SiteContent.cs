@@ -246,7 +246,7 @@ public static partial class SiteRules
     public static List<string> Validate(SiteContent c)
     {
         var errors = new List<string>();
-        void Len(string? v, int max, string name) { if (v is { Length: var l } && l > max) errors.Add($"«{name}“ darf höchstens {max} Zeichen lang sein."); }
+        void Len(string? v, int max, string name) { if (v is { Length: var l } && l > max) errors.Add($"„{name}“ darf höchstens {max} Zeichen lang sein."); }
         void Url(string? v, string name) { if (!IsSafeUrl(v)) errors.Add($"Die Adresse „{name}“ muss mit https:// oder / beginnen."); }
 
         if (string.IsNullOrWhiteSpace(c.Brand.Name)) errors.Add("Der Name des Unternehmens ist erforderlich.");
