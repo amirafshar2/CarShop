@@ -28,7 +28,7 @@ public sealed class AuthController(IAuthService auth, IWebHostEnvironment env, I
         // Development: always. Public demo: only for customer phones — admin/staff codes stay in the server log.
         if (!env.IsProduction()
             && HttpContext.RequestServices.GetService<IDevOtpPeek>() is { } peek
-            && SiteKit.Domain.Common.IranValidators.TryNormalizeMobile(request.Phone, out var phone))
+            && SiteKit.Domain.Common.PhoneValidators.TryNormalizeMobile(request.Phone, out var phone))
         {
             var reveal = env.IsDevelopment()
                 || (config.GetValue<bool>("Demo:RevealCustomerOtp")
@@ -90,7 +90,7 @@ public sealed class AuthController(IAuthService auth, IWebHostEnvironment env, I
             var expected = System.Text.Encoding.UTF8.GetBytes(config["Demo:AccessKey"]!);
             var actual = System.Text.Encoding.UTF8.GetBytes(request.Key?.Trim() ?? "");
             if (!System.Security.Cryptography.CryptographicOperations.FixedTimeEquals(expected, actual))
-                return Problem(title: "رمز ورود نمایشی نادرست است.", statusCode: StatusCodes.Status401Unauthorized);
+                return Problem(title: "Das Demo-Passwort ist falsch.", statusCode: StatusCodes.Status401Unauthorized);
         }
         var result = await auth.DemoSignInAsync(request.Role, ct);
         return result.IsSuccess ? TokensResponse(result.Value) : this.ToProblem(result.Error!);
@@ -119,11 +119,11 @@ public sealed class AuthController(IAuthService auth, IWebHostEnvironment env, I
         {
             var configured = config["Setup:Key"]?.Trim() ?? "";
             if (configured.Length < 8)
-                return Problem(title: "کلید راه‌اندازی روی سرور تنظیم نشده است (Setup__Key، حداقل ۸ حرف).", statusCode: StatusCodes.Status503ServiceUnavailable);
+                return Problem(title: "Auf dem Server ist kein Einrichtungsschlüssel gesetzt (Setup__Key, mindestens 8 Zeichen).", statusCode: StatusCodes.Status503ServiceUnavailable);
             var expected = System.Text.Encoding.UTF8.GetBytes(configured);
             var actual = System.Text.Encoding.UTF8.GetBytes(request.Key?.Trim() ?? "");
             if (!System.Security.Cryptography.CryptographicOperations.FixedTimeEquals(expected, actual))
-                return Problem(title: "کلید راه‌اندازی نادرست است.", statusCode: StatusCodes.Status401Unauthorized);
+                return Problem(title: "Der Einrichtungsschlüssel ist falsch.", statusCode: StatusCodes.Status401Unauthorized);
         }
         var result = await auth.ClaimFirstAdminAsync(request.Phone, request.FullName, ct);
         return result.IsSuccess ? TokensResponse(result.Value) : this.ToProblem(result.Error!);

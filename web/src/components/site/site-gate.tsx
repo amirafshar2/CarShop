@@ -20,8 +20,8 @@ export default function SiteGate({ published, brand, tagline, children }: { publ
     return (
       <>
         <div role="status" className="fixed inset-x-0 bottom-0 z-[60] flex items-center justify-center gap-2 bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground">
-          <Eye className="size-4" aria-hidden /> پیش‌نمایش: سایت هنوز منتشر نشده و بازدیدکننده‌ها صفحه‌ی «به‌زودی» را می‌بینند.
-          <a href="/admin/publish" className="underline underline-offset-4">انتشار</a>
+          <Eye className="size-4" aria-hidden /> Vorschau: Die Website ist noch nicht veröffentlicht; Besucher sehen die Seite „Bald für Sie da“.
+          <a href="/admin/publish" className="underline underline-offset-4">Veröffentlichen</a>
         </div>
         {children}
       </>
@@ -29,10 +29,10 @@ export default function SiteGate({ published, brand, tagline, children }: { publ
   return (
     <div className="grid min-h-screen place-items-center px-6 text-center">
       <div>
-        <p className="text-sm font-semibold text-primary">به‌زودی</p>
-        <h1 className="mt-3 text-4xl font-black md:text-6xl">{brand || "سایت در حال آماده‌سازی"}</h1>
-        <p className="mt-4 text-lg text-muted-foreground">{tagline ?? "سایت ما به‌زودی راه‌اندازی می‌شود."}</p>
-        <a href="/login" className="mt-10 inline-block text-xs text-muted-foreground underline underline-offset-4">ورود مدیر</a>
+        <p className="text-sm font-semibold text-primary">Bald für Sie da</p>
+        <h1 className="mt-3 text-4xl font-black md:text-6xl">{brand || "Die Website wird vorbereitet"}</h1>
+        <p className="mt-4 text-lg text-muted-foreground">{tagline ?? "Unsere Website ist bald für Sie da."}</p>
+        <a href="/login" className="mt-10 inline-block text-xs text-muted-foreground underline underline-offset-4">Admin-Anmeldung</a>
       </div>
     </div>
   );

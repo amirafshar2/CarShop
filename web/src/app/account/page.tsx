@@ -37,7 +37,7 @@ export default function AccountPage() {
     setSaving(true);
     try {
       await apiSend("/api/v1/me", "PUT", { fullName: name });
-      toast.success("پروفایل ذخیره شد.");
+      toast.success("Profil gespeichert.");
       await me.reload();
     } catch (e) {
       toast.error((e as Error).message);
@@ -52,27 +52,27 @@ export default function AccountPage() {
     <div className="mx-auto max-w-5xl px-4 pb-24 pt-36">
       <header className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-sm font-semibold text-primary">حساب کاربری</p>
-          <h1 className="mt-2 text-3xl font-black sm:text-4xl">سلام{user.fullName ? ` ${user.fullName}` : ""}</h1>
-          <p className="mt-2 text-muted-foreground" dir="ltr" style={{ textAlign: "right" }}>{user.phone}</p>
+          <p className="text-sm font-semibold text-primary">Benutzerkonto</p>
+          <h1 className="mt-2 text-3xl font-black sm:text-4xl">Hallo{user.fullName ? ` ${user.fullName}` : ""}</h1>
+          <p className="mt-2 text-muted-foreground">{user.phone}</p>
         </div>
         <div className="flex flex-wrap gap-2">
-          {isStaff(user) && <Button asChild><Link href="/admin"><ShieldCheck className="me-1.5 size-4" />پنل مدیریت</Link></Button>}
-          <Button variant="outline" onClick={async () => { await logout(); router.replace("/"); }}><LogOut className="me-1.5 size-4" />خروج</Button>
+          {isStaff(user) && <Button asChild><Link href="/admin"><ShieldCheck className="me-1.5 size-4" />Admin-Panel</Link></Button>}
+          <Button variant="outline" onClick={async () => { await logout(); router.replace("/"); }}><LogOut className="me-1.5 size-4" />Abmelden</Button>
         </div>
       </header>
 
-      <Tabs defaultValue="leads" dir="rtl">
+      <Tabs defaultValue="leads">
         <TabsList className="mb-6 h-auto flex-wrap">
-          <TabsTrigger value="leads" className="gap-2 px-4 py-2.5 text-[15px]"><Inbox className="size-4" />درخواست‌های من</TabsTrigger>
-          <TabsTrigger value="profile" className="gap-2 px-4 py-2.5 text-[15px]"><Settings className="size-4" />پروفایل</TabsTrigger>
+          <TabsTrigger value="leads" className="gap-2 px-4 py-2.5 text-[15px]"><Inbox className="size-4" />Meine Anfragen</TabsTrigger>
+          <TabsTrigger value="profile" className="gap-2 px-4 py-2.5 text-[15px]"><Settings className="size-4" />Profil</TabsTrigger>
         </TabsList>
 
         <TabsContent value="leads" className="space-y-3">
           <LoadState loading={leads.loading && !leads.data} error={leads.error} onRetry={leads.reload} />
           {leads.data?.length === 0 && (
             <Card><CardContent className="py-10 text-center text-muted-foreground">
-              درخواستی با شماره‌ی شما ثبت نشده است. <Link href="/contact" className="font-semibold text-primary hover:underline">ثبت درخواست</Link>
+              Mit Ihrer Nummer wurde noch keine Anfrage gesendet. <Link href="/contact" className="font-semibold text-primary hover:underline">Anfrage senden</Link>
             </CardContent></Card>
           )}
           {leads.data?.map((l) => (
@@ -92,14 +92,14 @@ export default function AccountPage() {
         <TabsContent value="profile">
           <Card className="max-w-lg">
             <CardHeader>
-              <CardTitle>پروفایل</CardTitle>
-              <CardDescription>شماره‌ی موبایل شناسه‌ی ورود شماست و قابل تغییر نیست.</CardDescription>
+              <CardTitle>Profil</CardTitle>
+              <CardDescription>Die Handynummer ist Ihre Anmeldekennung und kann nicht geändert werden.</CardDescription>
             </CardHeader>
             <CardContent>
               <form className="grid gap-4" onSubmit={(e) => { e.preventDefault(); void saveProfile(); }}>
-                <div className="grid gap-2"><Label htmlFor="p-name">نام و نام خانوادگی</Label><Input id="p-name" value={name} onChange={(e) => setName(e.target.value)} maxLength={80} /></div>
-                <div className="grid gap-2"><Label htmlFor="p-phone">شماره موبایل</Label><Input id="p-phone" dir="ltr" value={user.phone} disabled /></div>
-                <Button type="submit" disabled={saving}>{saving ? "در حال ذخیره…" : "ذخیره"}</Button>
+                <div className="grid gap-2"><Label htmlFor="p-name">Vor- und Nachname</Label><Input id="p-name" value={name} onChange={(e) => setName(e.target.value)} maxLength={80} /></div>
+                <div className="grid gap-2"><Label htmlFor="p-phone">Handynummer</Label><Input id="p-phone" dir="ltr" value={user.phone} disabled /></div>
+                <Button type="submit" disabled={saving}>{saving ? "Wird gespeichert…" : "Speichern"}</Button>
               </form>
             </CardContent>
           </Card>

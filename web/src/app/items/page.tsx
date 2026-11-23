@@ -49,7 +49,7 @@ export default async function ItemsPage({ searchParams }: { searchParams: Promis
       {c.categories.length > 0 && (
         <nav aria-label={c.labels.categoryLabel} className="-mx-4 mb-5 flex gap-2 overflow-x-auto px-4 pb-1">
           <Link href={link({ category: null, page: null })} aria-current={!one(sp.category) ? "page" : undefined}
-            className={`shrink-0 rounded-full border px-4 py-2.5 text-[15px] font-medium ${!one(sp.category) ? "border-primary bg-primary text-primary-foreground" : "border-border text-muted-foreground hover:bg-accent"}`}>همه</Link>
+            className={`shrink-0 rounded-full border px-4 py-2.5 text-[15px] font-medium ${!one(sp.category) ? "border-primary bg-primary text-primary-foreground" : "border-border text-muted-foreground hover:bg-accent"}`}>Alle</Link>
           {c.categories.map((cat) => (
             <Link key={cat} href={link({ category: cat, page: null })} aria-current={one(sp.category) === cat ? "page" : undefined}
               className={`shrink-0 rounded-full border px-4 py-2.5 text-[15px] font-medium ${one(sp.category) === cat ? "border-primary bg-primary text-primary-foreground" : "border-border text-muted-foreground hover:bg-accent"}`}>{cat}</Link>
@@ -61,34 +61,34 @@ export default async function ItemsPage({ searchParams }: { searchParams: Promis
       <form method="get" action="/items" className="mb-10 grid gap-3 rounded-[var(--radius)] border border-border bg-card p-4 sm:grid-cols-2 lg:grid-cols-[2fr_repeat(auto-fit,minmax(140px,1fr))]">
         {one(sp.category) && <input type="hidden" name="category" value={one(sp.category)} />}
         <label className="relative sm:col-span-2 lg:col-span-1">
-          <span className="sr-only">جستجو</span>
+          <span className="sr-only">Suchen</span>
           <Search className="pointer-events-none absolute start-3 top-3 size-5 text-muted-foreground" aria-hidden />
-          <input name="q" defaultValue={one(sp.q)} placeholder={`جستجو در ${c.labels.itemPlural}`} className={`${selectCls} ps-10`} />
+          <input name="q" defaultValue={one(sp.q)} placeholder={`Suchen in: ${c.labels.itemPlural}`} className={`${selectCls} ps-10`} />
         </label>
         {filterFields.map((f) => (
           <label key={f.key}>
             <span className="sr-only">{f.label}</span>
             <select name={`f_${f.key}`} defaultValue={one(sp[`f_${f.key}`])} className={selectCls}>
-              <option value="">{`${f.label}: همه`}</option>
+              <option value="">{`${f.label}: alle`}</option>
               {f.options.map((o) => <option key={o} value={o}>{o}</option>)}
             </select>
           </label>
         ))}
         <label>
-          <span className="sr-only">مرتب‌سازی</span>
+          <span className="sr-only">Sortierung</span>
           <select name="sort" defaultValue={one(sp.sort)} className={selectCls}>
-            <option value="">پیشنهادی</option>
-            <option value="price-asc">ارزان‌ترین</option>
-            <option value="price-desc">گران‌ترین</option>
+            <option value="">Empfohlen</option>
+            <option value="price-asc">Günstigste</option>
+            <option value="price-desc">Teuerste</option>
           </select>
         </label>
-        <Button type="submit" className="h-11">اعمال</Button>
+        <Button type="submit" className="h-11">Anwenden</Button>
       </form>
 
-      {!data && <p className="text-center text-muted-foreground">ارتباط با سرور برقرار نشد.</p>}
+      {!data && <p className="text-center text-muted-foreground">Keine Verbindung zum Server.</p>}
       {data && data.items.length === 0 && (
         <div className="rounded-[var(--radius)] border border-dashed border-border p-12 text-center text-muted-foreground">
-          {base ? <>چیزی پیدا نشد. <Link href="/items" className="text-primary underline">پاک کردن فیلترها</Link></> : `هنوز ${c.labels.itemSingular}ی اضافه نشده است.`}
+          {base ? <>Nichts gefunden. <Link href="/items" className="text-primary underline">Filter zurücksetzen</Link></> : `Noch kein(e) ${c.labels.itemSingular} vorhanden.`}
         </div>
       )}
       {data && data.items.length > 0 && (
@@ -97,7 +97,7 @@ export default async function ItemsPage({ searchParams }: { searchParams: Promis
         </div>
       )}
       {data && data.totalPages > 1 && (
-        <nav aria-label="صفحه‌ها" className="mt-12 flex flex-wrap justify-center gap-2">
+        <nav aria-label="Seiten" className="mt-12 flex flex-wrap justify-center gap-2">
           {Array.from({ length: data.totalPages }, (_, i) => i + 1).map((p) => (
             <Link key={p} href={link({ page: p === 1 ? null : String(p) })} aria-current={p === page ? "page" : undefined}
               className={`grid size-11 place-items-center rounded-[var(--radius)] border ${p === page ? "border-primary bg-primary text-primary-foreground" : "border-border hover:bg-accent"}`}>{fa(p)}</Link>

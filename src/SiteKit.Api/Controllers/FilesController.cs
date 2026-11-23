@@ -26,14 +26,14 @@ public sealed partial class FilesController(UploadStore store, VideoOptimizer vi
     [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<IActionResult> Upload(IFormFile file, CancellationToken ct)
     {
-        if (file is null || file.Length == 0) return Problem(title: "فایلی انتخاب نشده است.", statusCode: 422);
+        if (file is null || file.Length == 0) return Problem(title: "Es wurde keine Datei ausgewählt.", statusCode: 422);
 
         var head = new byte[16];
         await using (var s = file.OpenReadStream()) _ = await s.ReadAsync(head, ct);
         var ext = Detect(head);
-        if (ext is null) return Problem(title: "فقط عکس JPG، PNG، WEBP، GIF یا ویدیوی MP4/MOV قابل آپلود است.", statusCode: 422);
+        if (ext is null) return Problem(title: "Hochladen lassen sich nur Bilder (JPG, PNG, WEBP, GIF) oder Videos (MP4/MOV).", statusCode: 422);
         var max = ext == "mp4" ? MaxVideo : MaxImage;
-        if (file.Length > max) return Problem(title: ext == "mp4" ? "حجم ویدیو حداکثر ۸۰ مگابایت است." : "حجم عکس حداکثر ۵ مگابایت است.", statusCode: 422);
+        if (file.Length > max) return Problem(title: ext == "mp4" ? "Videos dürfen höchstens 80 MB groß sein." : "Bilder dürfen höchstens 5 MB groß sein.", statusCode: 422);
 
         var id = Guid.NewGuid().ToString("N");
         await using (var target = System.IO.File.Create(Path.Combine(store.Root, $"{id}.{ext}")))

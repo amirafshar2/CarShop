@@ -38,19 +38,19 @@ public sealed class UpsertListingRequestValidator : AbstractValidator<UpsertList
 {
     public UpsertListingRequestValidator()
     {
-        RuleFor(x => x.Title).NotEmpty().WithMessage("عنوان الزامی است.").MaximumLength(150);
+        RuleFor(x => x.Title).NotEmpty().WithMessage("Der Titel ist erforderlich.").MaximumLength(150);
         RuleFor(x => x.Category).MaximumLength(60);
         RuleFor(x => x.Summary).MaximumLength(200);
         RuleFor(x => x.Description).MaximumLength(5000);
         RuleFor(x => x.PriceType).IsInEnum();
         RuleFor(x => x.Status).IsInEnum();
-        RuleFor(x => x.PriceRial).GreaterThan(0).When(x => x.PriceType != PriceType.OnCall).WithMessage("قیمت باید بیشتر از صفر باشد.");
+        RuleFor(x => x.PriceRial).GreaterThan(0).When(x => x.PriceType != PriceType.OnCall).WithMessage("Der Preis muss größer als null sein.");
         RuleFor(x => x.Unit).MaximumLength(40);
         RuleFor(x => x.Badge).MaximumLength(30);
-        RuleFor(x => x.Images).Must(i => i is null || i.Count <= 12).WithMessage("حداکثر ۱۲ تصویر.");
-        RuleForEach(x => x.Images).MaximumLength(1000).Must(SiteRules.IsSafeUrl).WithMessage("آدرس تصویر باید با https:// یا / شروع شود.");
+        RuleFor(x => x.Images).Must(i => i is null || i.Count <= 12).WithMessage("Höchstens 12 Bilder.");
+        RuleForEach(x => x.Images).MaximumLength(1000).Must(SiteRules.IsSafeUrl).WithMessage("Die Bildadresse muss mit https:// oder / beginnen.");
         RuleFor(x => x.Attributes).Must(a => a is null || (a.Count <= 12 && a.All(kv => kv.Key.Length <= 30 && (kv.Value?.Length ?? 0) <= 200)))
-            .WithMessage("مقدار فیلدها حداکثر ۲۰۰ حرف است.");
+            .WithMessage("Feldwerte dürfen höchstens 200 Zeichen lang sein.");
     }
 }
 
@@ -67,7 +67,7 @@ public interface IListingService
 
 public sealed class ListingService(IAppDbContext db, HybridCache cache, IPersistenceConflictDetector conflicts, TimeProvider clock) : IListingService
 {
-    private static readonly Error NotFound = Error.NotFound("listing.not_found", "پیدا نشد.");
+    private static readonly Error NotFound = Error.NotFound("listing.not_found", "Nicht gefunden.");
 
     /// <summary>All visible listings, cached. Catalogues of a small business are small, so filters run in memory —
     /// which also lets them work on the JSON attributes with every database provider.</summary>
@@ -150,7 +150,7 @@ public sealed class ListingService(IAppDbContext db, HybridCache cache, IPersist
         if (r.Version is { } expected)
         {
             if (expected != listing.Version)
-                return Result.Failure(Error.Conflict("listing.stale", "این مورد بعد از باز کردن فرم تغییر کرده است. صفحه را تازه کنید."));
+                return Result.Failure(Error.Conflict("listing.stale", "Dieser Eintrag wurde geändert, nachdem Sie das Formular geöffnet haben. Bitte die Seite neu laden."));
             db.SetOriginalVersion(listing, expected);
         }
         if (listing.Title != r.Title.Trim()) listing.Rename(r.Title, await UniqueSlugAsync(r.Title, id, ct));
@@ -159,7 +159,7 @@ public sealed class ListingService(IAppDbContext db, HybridCache cache, IPersist
         try { await db.SaveChangesAsync(ct); }
         catch (Exception ex) when (conflicts.IsConflict(ex))
         {
-            return Result.Failure(Error.Conflict("listing.concurrent_update", "همزمان توسط کاربر دیگری تغییر کرد. صفحه را تازه کنید."));
+            return Result.Failure(Error.Conflict("listing.concurrent_update", "Gleichzeitig von jemand anderem geändert. Bitte die Seite neu laden."));
         }
         await cache.RemoveByTagAsync(CacheTags.Listings, ct);
         return Result.Success();
@@ -206,11 +206,11 @@ public sealed class ListingService(IAppDbContext db, HybridCache cache, IPersist
         return slug;
     }
 
-    /// <summary>URL-friendly slug that keeps Persian letters: «تور استانبول ۴ شب» → «تور-استانبول-4-شب».</summary>
+    /// <summary>URL-friendly slug that keeps non-Latin letters: "Tour Istanbul 4 Nächte" → "tour-istanbul-4-nächte".</summary>
     public static string Slugify(string title)
     {
         var sb = new StringBuilder();
-        foreach (var ch in IranValidators.NormalizeDigits(title.Trim().ToLowerInvariant()))
+        foreach (var ch in PhoneValidators.NormalizeDigits(title.Trim().ToLowerInvariant()))
         {
             if (char.IsLetterOrDigit(ch)) sb.Append(ch);
             else if (sb.Length > 0 && sb[^1] != '-') sb.Append('-');

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ChevronLeft } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa6";
 import { Button } from "@/components/ui/button";
 import { getListing, mediaUrl } from "@/lib/api";
@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const item = await getListing(decodeURIComponent((await params).slug));
-  return item ? { title: item.title, description: item.summary ?? undefined, openGraph: { images: item.images[0] ? [mediaUrl(item.images[0])] : undefined } } : { title: "پیدا نشد" };
+  return item ? { title: item.title, description: item.summary ?? undefined, openGraph: { images: item.images[0] ? [mediaUrl(item.images[0])] : undefined } } : { title: "Nicht gefunden" };
 }
 
 export default async function ItemPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -24,13 +24,13 @@ export default async function ItemPage({ params }: { params: Promise<{ slug: str
   const specs = c.fields.map((f) => ({ label: f.label, value: fieldValue(f, item.attributes[f.key]) })).filter((s) => s.value);
   const soldOut = item.status === "SoldOut";
   const wa = whatsappLink(c.contact.whatsapp);
-  const waText = encodeURIComponent(`سلام، درباره‌ی «${item.title}» سؤال داشتم.`);
+  const waText = encodeURIComponent(`Hallo, ich habe eine Frage zu „${item.title}“.`);
 
   return (
     <div className="mx-auto max-w-7xl px-4 pb-28 pt-32 md:pt-36">
-      <nav aria-label="مسیر" className="mb-6 flex items-center gap-1 text-sm text-muted-foreground">
+      <nav aria-label="Pfad" className="mb-6 flex items-center gap-1 text-sm text-muted-foreground">
         <Link href="/items" className="hover:text-foreground">{c.labels.itemPlural}</Link>
-        <ChevronLeft className="size-4" aria-hidden />
+        <ChevronRight className="size-4" aria-hidden />
         <span className="truncate text-foreground">{item.title}</span>
       </nav>
       <div className="grid gap-10 lg:grid-cols-[1.4fr_1fr]">
@@ -64,7 +64,7 @@ export default async function ItemPage({ params }: { params: Promise<{ slug: str
             </Button>
             {wa && (
               <Button asChild size="lg" variant="outline" className="h-12 text-base">
-                <a href={`${wa}?text=${waText}`} target="_blank" rel="noopener noreferrer"><FaWhatsapp className="size-5" aria-hidden /> واتساپ</a>
+                <a href={`${wa}?text=${waText}`} target="_blank" rel="noopener noreferrer"><FaWhatsapp className="size-5" aria-hidden /> WhatsApp</a>
               </Button>
             )}
           </div>
@@ -72,7 +72,7 @@ export default async function ItemPage({ params }: { params: Promise<{ slug: str
       </div>
       {item.description && (
         <section className="mt-14 max-w-3xl">
-          <h2 className="mb-4 text-2xl font-black">توضیحات</h2>
+          <h2 className="mb-4 text-2xl font-black">Beschreibung</h2>
           <p className="whitespace-pre-line text-lg leading-8 text-muted-foreground">{item.description}</p>
         </section>
       )}

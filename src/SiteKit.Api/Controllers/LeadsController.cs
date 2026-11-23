@@ -14,7 +14,7 @@ public sealed record UpdateLeadStatusRequest(LeadStatus Status);
 [Route("api/v1/leads")]
 public sealed class LeadsController(ILeadService leads) : ControllerBase
 {
-    /// <summary>Public: «درخواست قیمت»، رزرو بازدید، ماشینم رو بفروش، خرید از راه دور، ...</summary>
+    /// <summary>Public: "Preis anfragen", Besichtigung buchen, Auto verkaufen, Fernkauf, ...</summary>
     [HttpPost]
     [EnableRateLimiting(RateLimitPolicies.Forms)]
     [ProducesResponseType(StatusCodes.Status201Created)]

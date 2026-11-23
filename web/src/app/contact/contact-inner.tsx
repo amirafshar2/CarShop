@@ -16,25 +16,25 @@ export default function ContactInner({ site: c }: { site: SiteContent }) {
   const raw = params.get("type") as LeadType | null;
   const type: LeadType = itemId ? "ItemRequest" : service ? "ServiceRequest" : raw === "Booking" || raw === "General" ? raw : "Booking";
 
-  const chips: [LeadType, string][] = [["Booking", c.labels.requestButton], ["General", "سؤال / پیام"]];
+  const chips: [LeadType, string][] = [["Booking", c.labels.requestButton], ["General", "Frage / Nachricht"]];
   const channels = [
-    c.contact.address && { icon: MapPin, title: "آدرس", value: c.contact.address, href: c.contact.mapUrl ?? undefined },
-    c.contact.phone && { icon: Phone, title: "تماس مستقیم", value: c.contact.phone, href: `tel:${c.contact.phone}`, ltr: true },
-    c.contact.whatsapp && { icon: FaWhatsapp, title: "واتساپ", value: "پیام در واتساپ", href: whatsappLink(c.contact.whatsapp)! },
-    c.contact.instagram && { icon: FaInstagram, title: "اینستاگرام", value: `@${c.contact.instagram}`, href: instagramLink(c.contact.instagram)!, ltr: true },
-    c.contact.telegram && { icon: FaTelegram, title: "تلگرام", value: `@${c.contact.telegram}`, href: telegramLink(c.contact.telegram)!, ltr: true },
-    c.contact.email && { icon: Mail, title: "ایمیل", value: c.contact.email, href: `mailto:${c.contact.email}`, ltr: true },
-    c.contact.hours && { icon: Clock, title: "ساعت کاری", value: c.contact.hours },
+    c.contact.address && { icon: MapPin, title: "Adresse", value: c.contact.address, href: c.contact.mapUrl ?? undefined },
+    c.contact.phone && { icon: Phone, title: "Direkter Kontakt", value: c.contact.phone, href: `tel:${c.contact.phone}`, ltr: true },
+    c.contact.whatsapp && { icon: FaWhatsapp, title: "WhatsApp", value: "Nachricht per WhatsApp", href: whatsappLink(c.contact.whatsapp)! },
+    c.contact.instagram && { icon: FaInstagram, title: "Instagram", value: `@${c.contact.instagram}`, href: instagramLink(c.contact.instagram)!, ltr: true },
+    c.contact.telegram && { icon: FaTelegram, title: "Telegram", value: `@${c.contact.telegram}`, href: telegramLink(c.contact.telegram)!, ltr: true },
+    c.contact.email && { icon: Mail, title: "E-Mail", value: c.contact.email, href: `mailto:${c.contact.email}`, ltr: true },
+    c.contact.hours && { icon: Clock, title: "Öffnungszeiten", value: c.contact.hours },
   ].filter(Boolean) as { icon: typeof Phone; title: string; value: string; href?: string; ltr?: boolean }[];
 
-  const title = itemTitle ? `${c.labels.requestButton}: «${itemTitle}»` : service ? `رزرو «${service}»` : type === "General" ? "تماس با ما" : c.labels.requestButton;
+  const title = itemTitle ? `${c.labels.requestButton}: «${itemTitle}»` : service ? `Buchung „${service}»` : type === "General" ? "Kontakt" : c.labels.requestButton;
 
   return (
     <ContactForm
       key={type + (itemId ?? "") + (service ?? "")}
-      eyebrow={<span className="font-semibold text-primary">{c.brand.name} · ارتباط با ما</span>}
+      eyebrow={<span className="font-semibold text-primary">{c.brand.name} · Kontakt</span>}
       title={title}
-      description="اطلاعاتتان را بفرستید؛ در کوتاه‌ترین زمان با شما تماس می‌گیریم."
+      description="Schicken Sie uns Ihre Daten – wir melden uns so schnell wie möglich."
       details={
         <div className="space-y-8">
           {!itemId && !service && (
@@ -76,28 +76,28 @@ export default function ContactInner({ site: c }: { site: SiteContent }) {
       }
       formHeader={
         <div className="mb-6 border-b border-border pb-5">
-          <p className="text-xl font-bold">فرم درخواست</p>
-          <p className="mt-1 text-sm text-muted-foreground">کمتر از یک دقیقه وقتتان را می‌گیرد.</p>
+          <p className="text-xl font-bold">Anfrageformular</p>
+          <p className="mt-1 text-sm text-muted-foreground">Dauert weniger als eine Minute.</p>
         </div>
       }
       formFooter={
         <p className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
           <ShieldCheck className="size-4 shrink-0 text-primary" aria-hidden />
-          شماره‌ی شما فقط برای تماس با شما استفاده می‌شود.
+          Ihre Nummer wird nur verwendet, um Sie zu kontaktieren.
         </p>
       }
-      placeholders={{ name: "مثلاً علی محمدی", email: "۰۹۱۲۳۴۵۶۷۸۹", message: "اگر توضیحی دارید اینجا بنویسید (اختیاری)" }}
+      placeholders={{ name: "z. B. Max Mustermann", email: "0151 23456789", message: "Wenn Sie etwas ergänzen möchten, schreiben Sie es hier (optional)" }}
       labels={{
-        name: "نام و نام خانوادگی",
-        email: "شماره موبایل",
-        message: "توضیحات",
-        submit: "ارسال درخواست",
-        pending: "در حال ارسال…",
-        success: "دریافت شد! به‌زودی با شما تماس می‌گیریم.",
-        error: "ارسال انجام نشد. شماره را بررسی کنید و دوباره تلاش کنید.",
+        name: "Vor- und Nachname",
+        email: "Handynummer",
+        message: "Beschreibung",
+        submit: "Anfrage senden",
+        pending: "Wird gesendet…",
+        success: "Angekommen! Wir melden uns bald bei Ihnen.",
+        error: "Senden fehlgeschlagen. Bitte die Nummer prüfen und erneut versuchen.",
       }}
       onSubmit={async (v) => {
-        const message = [service ? `خدمت: ${service}` : "", v.message].filter(Boolean).join(" — ");
+        const message = [service ? `Leistung: ${service}` : "", v.message].filter(Boolean).join(" — ");
         await createLead({ name: v.name, phone: v.email, type, listingId: itemId, message: message || undefined });
       }}
     />

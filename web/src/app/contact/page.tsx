@@ -4,7 +4,7 @@ import { getSite } from "@/lib/site";
 import ContactInner from "./contact-inner";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = { title: "تماس با ما" };
+export const metadata: Metadata = { title: "Kontakt" };
 
 export default async function ContactPage() {
   const { content } = await getSite();

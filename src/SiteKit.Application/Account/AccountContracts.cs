@@ -14,7 +14,7 @@ public sealed record MyLeadDto(Guid Id, LeadType Type, string? Message, LeadStat
 public sealed class UpdateProfileRequestValidator : AbstractValidator<UpdateProfileRequest>
 {
     public UpdateProfileRequestValidator() =>
-        RuleFor(x => x.FullName).MaximumLength(80).WithMessage("نام حداکثر ۸۰ حرف است.");
+        RuleFor(x => x.FullName).MaximumLength(80).WithMessage("Der Name darf höchstens 80 Zeichen lang sein.");
 }
 
 /// <summary>Everything the signed-in customer can see or do about their own account (never other users' data).</summary>
@@ -44,17 +44,17 @@ public sealed class SetUserRoleRequestValidator : AbstractValidator<SetUserRoleR
 {
     public SetUserRoleRequestValidator() =>
         RuleFor(x => x.Role).Must(r => r is Abstractions.Roles.Admin or Abstractions.Roles.Staff or Abstractions.Roles.Customer)
-            .WithMessage("نقش نامعتبر است.");
+            .WithMessage("Ungültige Rolle.");
 }
 
 public sealed class CreateUserRequestValidator : AbstractValidator<CreateUserRequest>
 {
     public CreateUserRequestValidator()
     {
-        RuleFor(x => x.Phone).Must(p => IranValidators.TryNormalizeMobile(p, out _)).WithMessage("شماره موبایل نامعتبر است.");
+        RuleFor(x => x.Phone).Must(p => PhoneValidators.TryNormalizeMobile(p, out _)).WithMessage("Ungültige Handynummer.");
         RuleFor(x => x.FullName).MaximumLength(80);
         RuleFor(x => x.Role).Must(r => r is Abstractions.Roles.Admin or Abstractions.Roles.Staff or Abstractions.Roles.Customer)
-            .WithMessage("نقش نامعتبر است.");
+            .WithMessage("Ungültige Rolle.");
     }
 }
 

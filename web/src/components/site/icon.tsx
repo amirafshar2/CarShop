@@ -1,16 +1,16 @@
 import { Check, Clock, Gift, Heart, MapPin, Phone, ShieldCheck, Sparkles, Star, Truck, type LucideIcon } from "lucide-react";
 
 export const ICONS: Record<string, { icon: LucideIcon; label: string }> = {
-  shield: { icon: ShieldCheck, label: "سپر (اعتماد)" },
-  check: { icon: Check, label: "تیک" },
-  clock: { icon: Clock, label: "ساعت (سرعت)" },
-  star: { icon: Star, label: "ستاره" },
-  truck: { icon: Truck, label: "ارسال" },
-  heart: { icon: Heart, label: "قلب" },
-  map: { icon: MapPin, label: "مکان" },
-  phone: { icon: Phone, label: "تلفن" },
-  gift: { icon: Gift, label: "هدیه" },
-  sparkles: { icon: Sparkles, label: "درخشش" },
+  shield: { icon: ShieldCheck, label: "Schild (Vertrauen)" },
+  check: { icon: Check, label: "Haken" },
+  clock: { icon: Clock, label: "Uhr (Tempo)" },
+  star: { icon: Star, label: "Stern" },
+  truck: { icon: Truck, label: "Versand" },
+  heart: { icon: Heart, label: "Herz" },
+  map: { icon: MapPin, label: "Ort" },
+  phone: { icon: Phone, label: "Telefon" },
+  gift: { icon: Gift, label: "Geschenk" },
+  sparkles: { icon: Sparkles, label: "Glanz" },
 };
 
 export function SiteIcon({ name, className }: { name: string | null | undefined; className?: string }) {

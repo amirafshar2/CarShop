@@ -17,7 +17,7 @@ import { fieldValue, getSite, priceText, videoVariants } from "@/lib/site";
 
 export const dynamic = "force-dynamic"; // content and inventory are edited live from the panel
 
-const faDigits = (n: number) => new Intl.NumberFormat("fa-IR", { useGrouping: false }).format(n);
+const faDigits = (n: number) => new Intl.NumberFormat("de-DE", { useGrouping: false }).format(n);
 
 /** Neutral initials avatar — reviews never use real people's faces. */
 const avatar = (text: string, color: string) =>
@@ -25,7 +25,7 @@ const avatar = (text: string, color: string) =>
     `<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"><rect width="80" height="80" rx="40" fill="#1c1c1f"/><text x="40" y="50" font-size="28" font-family="sans-serif" fill="${color}" text-anchor="middle">${text}</text></svg>`,
   )}`;
 
-/** "۴۸ ساعت" / "2,000+" → animated number + the text around it. Values without a number stay text. */
+/** "48 Stunden" / "2,000+" → animated number + the text around it. Values without a number stay text. */
 function parseStat(value: string) {
   const latin = value.replace(/[۰-۹]/g, (d) => String("۰۱۲۳۴۵۶۷۸۹".indexOf(d))).replace(/[٠-٩]/g, (d) => String("٠١٢٣٤٥٦٧٨٩".indexOf(d)));
   const m = latin.match(/^(\D*?)(\d[\d,٬]*)(.*)$/);
@@ -80,7 +80,7 @@ export default async function Home() {
   return (
     <>
       {/* Hero: scroll scrubs the video forward/backward (sticky, the page keeps scrolling after it) */}
-      <section aria-label={c.brand.name || "صفحه‌ی اصلی"} className="relative">
+      <section aria-label={c.brand.name || "Startseite"} className="relative">
         <HeroVideo
           src1080={video ? mediaUrl(video.scrub) : raw}
           src720={video ? mediaUrl(video.scrub720) : raw}
@@ -92,7 +92,7 @@ export default async function Home() {
         <div className="pointer-events-none absolute inset-0">
           <div className="sticky top-0 flex h-screen flex-col items-center justify-center bg-gradient-to-b from-background/40 via-transparent to-background px-6 text-center">
             {(h.heroEyebrow || c.brand.tagline) && <p className="mb-4 text-sm font-semibold tracking-wide text-primary">{h.heroEyebrow || c.brand.tagline}</p>}
-            <MaskedTextReveal as="h1" text={h.heroTitle || c.brand.name || "سایت شما اینجاست"} splitBy="words" className="text-6xl font-black md:text-8xl" />
+            <MaskedTextReveal as="h1" text={h.heroTitle || c.brand.name || "Hier entsteht Ihre Website"} splitBy="words" className="text-6xl font-black md:text-8xl" />
             {h.heroSubtitle && (
               <MaskedTextReveal as="p" text={h.heroSubtitle} splitBy="words" delay={0.5} className="mt-6 text-xl text-foreground/85 md:text-2xl" />
             )}
@@ -103,10 +103,10 @@ export default async function Home() {
             )}
             {isEmpty && (
               <p className="pointer-events-auto mt-8 rounded-xl border border-dashed border-border bg-background/70 p-4 text-sm text-muted-foreground">
-                این صفحه هنوز خالی است. از پنل مدیریت، دستیار راه‌اندازی را دنبال کنید.
+                Diese Seite ist noch leer. Folgen Sie im Admin-Panel dem Einrichtungsassistenten.
               </p>
             )}
-            <span className="absolute bottom-10 text-xs text-muted-foreground">اسکرول کنید ↓</span>
+            <span className="absolute bottom-10 text-xs text-muted-foreground">Scrollen ↓</span>
           </div>
         </div>
       </section>
@@ -145,7 +145,7 @@ export default async function Home() {
               titleLine2: priceText(l),
               desc: c.fields.filter((f) => f.showOnCard).map((f) => fieldValue(f, l.attributes[f.key])).filter(Boolean).join(" · ") || l.summary || undefined,
               img: mediaUrl(l.images[0]),
-              ctaText: `مشاهده‌ی ${c.labels.itemSingular}`,
+              ctaText: `Ansehen: ${c.labels.itemSingular}`,
               ctaUrl: `/items/${encodeURIComponent(l.slug)}`,
             }))}
           />
@@ -172,7 +172,7 @@ export default async function Home() {
       {/* Services — bento grid */}
       {bento.length > 0 && (
         <section id="services" className="py-20">
-          <SectionTitle eyebrow={h.servicesEyebrow ?? "خدمات ما"} title={h.servicesTitle || c.labels.servicesTitle} />
+          <SectionTitle eyebrow={h.servicesEyebrow ?? "Unsere Leistungen"} title={h.servicesTitle || c.labels.servicesTitle} />
           <BentoGrid
             items={bento.map((s, i) => {
               const Icon = BENTO_ICONS[i % BENTO_ICONS.length];
@@ -197,7 +197,7 @@ export default async function Home() {
         <section id="about" className="mx-auto grid max-w-6xl items-center gap-10 px-6 py-24 md:grid-cols-2">
           <div>
             <p className="mb-3 text-sm font-semibold text-primary">{c.brand.name}</p>
-            <MaskedTextReveal as="h2" text={h.aboutTitle || "درباره‌ی ما"} splitBy="words" className="text-3xl font-black md:text-5xl" />
+            <MaskedTextReveal as="h2" text={h.aboutTitle || "Über uns"} splitBy="words" className="text-3xl font-black md:text-5xl" />
             {h.aboutText && <p className="mt-6 whitespace-pre-line text-lg leading-8 text-muted-foreground">{h.aboutText}</p>}
           </div>
           {h.aboutImageUrl && (
@@ -212,7 +212,7 @@ export default async function Home() {
         <section id="partners" className="py-16">
           {h.partnersTitle && <SectionTitle eyebrow={h.partnersEyebrow} title={h.partnersTitle} />}
           <LogoMarquee
-            label={h.partnersTitle ?? "همکاران"}
+            label={h.partnersTitle ?? "Partner"}
             speed={36}
             gap={56}
             items={partners.map((o, i) => ({
@@ -231,11 +231,11 @@ export default async function Home() {
       {/* Call to action */}
       {h.showCta && c.pages.contact && (
         <CTA
-          title={h.ctaTitle ?? "سؤالی دارید؟"}
+          title={h.ctaTitle ?? "Noch Fragen?"}
           description={h.ctaText ?? ""}
           primaryText={h.ctaButtonText || c.labels.requestButton}
           primaryHref={h.ctaButtonUrl || "/contact"}
-          secondaryText={c.contact.phone ? `تماس: ${c.contact.phone.replace(/\d/g, (d) => "۰۱۲۳۴۵۶۷۸۹"[Number(d)])}` : `دیدن ${c.labels.itemPlural}`}
+          secondaryText={c.contact.phone ? `Telefon: ${c.contact.phone}` : `Alle ${c.labels.itemPlural}`}
           secondaryHref={c.contact.phone ? `tel:${c.contact.phone}` : "/items"}
         />
       )}
@@ -243,7 +243,7 @@ export default async function Home() {
       {/* Testimonials — vertical marquee */}
       {(h.showTestimonials ?? true) && reviews.length > 0 && (
         <section id="reviews" className="py-20">
-          <SectionTitle eyebrow={h.testimonialsEyebrow ?? "نظر مشتری‌ها"} title={h.testimonialsTitle || "صدای مشتری‌ها"} text={h.testimonialsText} />
+          <SectionTitle eyebrow={h.testimonialsEyebrow ?? "Kundenstimmen"} title={h.testimonialsTitle || "Das sagen unsere Kunden"} text={h.testimonialsText} />
           <VerticalMarqueeDemo reviews={reviews} />
         </section>
       )}
@@ -251,7 +251,7 @@ export default async function Home() {
       {/* FAQ */}
       {h.showFaq && h.faq.length > 0 && (
         <section className="mx-auto max-w-3xl px-6 py-24">
-          <SectionTitle title="پرسش‌های متداول" />
+          <SectionTitle title="Häufige Fragen" />
           <div className="space-y-3">
             {h.faq.map((f) => (
               <details key={f.question} className="group rounded-[var(--radius)] border border-border bg-card p-5 open:border-primary/50">
@@ -267,14 +267,14 @@ export default async function Home() {
 
       {/* Gallery — zoom parallax */}
       {(h.showGallery ?? true) && gallery.length > 0 && (
-        <section aria-label={h.galleryTitle ?? "گالری"} className="relative">
+        <section aria-label={h.galleryTitle ?? "Galerie"} className="relative">
           {(h.galleryTitle || h.galleryEyebrow) && (
             <div className="pointer-events-none absolute inset-x-0 top-24 z-10 px-6 text-center">
               {h.galleryEyebrow && <p className="text-sm font-semibold text-primary">{h.galleryEyebrow}</p>}
               {h.galleryTitle && <h2 className="mt-2 text-3xl font-black md:text-5xl">{h.galleryTitle}</h2>}
             </div>
           )}
-          <ZoomParallax images={gallery.map((src, i) => ({ src: mediaUrl(src), alt: `${h.galleryTitle ?? "گالری"} ${faDigits(i + 1)}` }))} />
+          <ZoomParallax images={gallery.map((src, i) => ({ src: mediaUrl(src), alt: `${h.galleryTitle ?? "Galerie"} ${faDigits(i + 1)}` }))} />
         </section>
       )}
     </>

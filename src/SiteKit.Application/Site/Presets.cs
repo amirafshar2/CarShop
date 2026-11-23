@@ -19,15 +19,15 @@ public sealed record DemoService(
 /// </summary>
 public static class Presets
 {
-    private const long M = 10_000_000; // 1 million toman in Rial
+    private const long E = 100; // 1 euro in cents (prices are stored as integer cents)
     private static string U(string id) => $"https://images.unsplash.com/photo-{id}?w=1600&q=80&auto=format&fit=crop";
 
     public static readonly IReadOnlyList<PresetInfo> All =
     [
-        new("car", "گالری خودرو", "موجودی خودرو با سال، کارکرد، گیربکس و سوخت", "car"),
-        new("travel", "آژانس مسافرتی", "تورها با مقصد، مدت، تاریخ رفت و هتل", "plane"),
-        new("shop", "فروشگاه", "محصولات با برند، رنگ و سایز", "bag"),
-        new("services", "خدمات / سالن / کلینیک", "نمونه‌کارها و لیست خدمات با قیمت و رزرو نوبت", "sparkles"),
+        new("car", "Autohaus", "Fahrzeugbestand mit Baujahr, Kilometerstand, Getriebe und Kraftstoff", "car"),
+        new("travel", "Reisebüro", "Reisen mit Ziel, Dauer, Abreisedatum und Hotel", "plane"),
+        new("shop", "Shop", "Produkte mit Marke, Farbe und Größe", "bag"),
+        new("services", "Dienstleistung / Salon / Praxis", "Arbeitsbeispiele und Leistungen mit Preisen und Terminbuchung", "sparkles"),
     ];
 
     public static bool Exists(string key) => All.Any(p => p.Key == key);
@@ -43,22 +43,22 @@ public static class Presets
         };
         c.Nav =
         [
-            new() { Label = "خانه", Href = "/" },
+            new() { Label = "Start", Href = "/" },
             new() { Label = c.Labels.ItemPlural, Href = "/items" },
-            new() { Label = "خدمات", Href = "/services" },
-            new() { Label = "تماس", Href = "/contact" },
+            new() { Label = "Leistungen", Href = "/services" },
+            new() { Label = "Kontakt", Href = "/contact" },
         ];
-        c.Home.HeroCtaText ??= $"دیدن {c.Labels.ItemPlural}";
+        c.Home.HeroCtaText ??= $"Alle {c.Labels.ItemPlural}";
         c.Home.HeroCtaUrl ??= "/items";
-        c.Home.FeaturedTitle ??= $"{c.Labels.ItemPlural}ی ویژه";
-        c.Home.CtaTitle ??= "سؤالی دارید؟";
-        c.Home.CtaText ??= "با ما در تماس باشید؛ در کوتاه‌ترین زمان پاسخ می‌دهیم.";
+        c.Home.FeaturedTitle ??= $"{c.Labels.ItemPlural} – Highlights";
+        c.Home.CtaTitle ??= "Noch Fragen?";
+        c.Home.CtaText ??= "Melden Sie sich bei uns – wir antworten so schnell wie möglich.";
         c.Home.HighlightsEyebrow ??= c.Brand.Name;
         c.Home.FeaturedEyebrow ??= c.Labels.ItemPlural;
-        c.Home.ServicesEyebrow ??= "خدمات ما";
+        c.Home.ServicesEyebrow ??= "Unsere Leistungen";
         c.Home.ServicesTitle ??= c.Labels.ServicesTitle;
-        c.Home.TestimonialsEyebrow ??= "نظر مشتری‌ها";
-        c.Home.TestimonialsTitle ??= "صدای مشتری‌ها";
+        c.Home.TestimonialsEyebrow ??= "Kundenstimmen";
+        c.Home.TestimonialsTitle ??= "Das sagen unsere Kunden";
         c.Home.GalleryTitle ??= c.Brand.Name;
         if (demo)
         {
@@ -71,15 +71,15 @@ public static class Presets
             // Clearly marked samples — replaced by real reviews from the panel.
             if (c.Home.Testimonials.Count == 0)
             {
-                c.Home.TestimonialsText = "(متن نمونه — نظرات واقعی مشتری‌ها را از پنل جایگزین کنید)";
+                c.Home.TestimonialsText = "(Beispieltext – ersetzen Sie die Stimmen im Admin-Panel durch echte Kundenmeinungen)";
                 c.Home.Testimonials =
                 [
-                    new() { Name = "متن نمونه", Role = c.Labels.ItemSingular, Text = "«اینجا نظر واقعی مشتری بعد از خرید نمایش داده می‌شود.»" },
-                    new() { Name = "متن نمونه", Role = "خدمات", Text = "«فقط نظراتی را بگذارید که مشتری اجازه‌ی انتشارشان را داده.»" },
-                    new() { Name = "متن نمونه", Role = "پشتیبانی", Text = "«نام، توضیح کوتاه و متن نظر از بخش صفحه‌ی اول پنل عوض می‌شود.»" },
-                    new() { Name = "متن نمونه", Role = c.Labels.ItemPlural, Text = "«ستون‌ها خودکار حرکت می‌کنند و روی هاور می‌ایستند.»" },
-                    new() { Name = "متن نمونه", Role = "تماس", Text = "«هر تعداد نظر تا ۲۰ مورد قابل افزودن است.»" },
-                    new() { Name = "متن نمونه", Role = "رضایت", Text = "«این متن‌ها نمونه‌اند و در سایت شما جایگزین می‌شوند.»" },
+                    new() { Name = "Beispieltext", Role = c.Labels.ItemSingular, Text = "„Hier erscheint die echte Meinung eines Kunden nach dem Kauf.“" },
+                    new() { Name = "Beispieltext", Role = "Leistungen", Text = "„Veröffentlichen Sie nur Meinungen, für die der Kunde zugestimmt hat.“" },
+                    new() { Name = "Beispieltext", Role = "Support", Text = "„Name, Kurzbeschreibung und Text ändern Sie im Admin-Panel unter Startseite.“" },
+                    new() { Name = "Beispieltext", Role = c.Labels.ItemPlural, Text = "„Die Spalten laufen automatisch und halten an, wenn man mit der Maus darüberfährt.“" },
+                    new() { Name = "Beispieltext", Role = "Kontakt", Text = "„Sie können bis zu 20 Stimmen hinzufügen.“" },
+                    new() { Name = "Beispieltext", Role = "Zufriedenheit", Text = "„Diese Texte sind Beispiele und werden auf Ihrer Website ersetzt.“" },
                 ];
             }
         }
@@ -103,161 +103,161 @@ public static class Presets
     // ---------------------------------------------------------------- car
     private static SiteContent Car(bool demo) => new()
     {
-        Brand = new() { Name = "اتو گالری نمونه", Tagline = "از انتخاب تا تحویل، کنار شما", Description = "خرید و فروش خودروی نو و کارکرده با کارشناسی و قیمت شفاف." },
+        Brand = new() { Name = "Autohaus Muster", Tagline = "Von der Auswahl bis zur Übergabe an Ihrer Seite", Description = "Neu- und Gebrauchtwagen mit Prüfung und transparenten Preisen." },
         Theme = new() { Primary = "#f97316", Mode = "dark" },
-        Labels = new() { ItemSingular = "خودرو", ItemPlural = "خودروها", ItemsPageTitle = "موجودی خودرو", RequestButton = "درخواست بازدید", CategoryLabel = "نوع", SoldOutLabel = "فروخته شد" },
+        Labels = new() { ItemSingular = "Fahrzeug", ItemPlural = "Fahrzeuge", ItemsPageTitle = "Fahrzeugbestand", RequestButton = "Besichtigung anfragen", CategoryLabel = "Typ", SoldOutLabel = "Verkauft" },
         Fields =
         [
-            new() { Key = "year", Label = "سال ساخت", Type = "number", ShowOnCard = true },
-            new() { Key = "km", Label = "کارکرد", Type = "number", Suffix = "کیلومتر", ShowOnCard = true },
-            new() { Key = "gearbox", Label = "گیربکس", Type = "select", Options = ["اتوماتیک", "دنده‌ای"], Filter = true },
-            new() { Key = "fuel", Label = "سوخت", Type = "select", Options = ["بنزینی", "هیبرید", "برقی", "دیزل"], Filter = true },
-            new() { Key = "color", Label = "رنگ", Type = "text" },
+            new() { Key = "year", Label = "Baujahr", Type = "number", ShowOnCard = true },
+            new() { Key = "km", Label = "Kilometerstand", Type = "number", Suffix = "km", ShowOnCard = true },
+            new() { Key = "gearbox", Label = "Getriebe", Type = "select", Options = ["Automatik", "Schaltgetriebe"], Filter = true },
+            new() { Key = "fuel", Label = "Kraftstoff", Type = "select", Options = ["Benzin", "Hybrid", "Elektro", "Diesel"], Filter = true },
+            new() { Key = "color", Label = "Farbe", Type = "text" },
         ],
-        Categories = ["نو", "کارکرده", "حواله"],
+        Categories = ["Neuwagen", "Gebrauchtwagen", "Vorführwagen"],
         Home = new()
         {
-            HeroTitle = "خودروی بعدی‌ات اینجاست",
-            HeroSubtitle = "موجودی به‌روز، کارشناسی شفاف و همراهی تا روز تحویل.",
+            HeroTitle = "Ihr nächstes Auto wartet hier",
+            HeroSubtitle = "Aktueller Bestand, transparente Prüfung und Begleitung bis zur Übergabe.",
             HeroImageUrl = U("1503376780353-7e6692767b70"),
-            HighlightsTitle = "چرا ما؟",
+            HighlightsTitle = "Warum wir?",
             Highlights =
             [
-                new() { Title = "کارشناسی کامل", Text = "هر خودرو قبل از فروش بررسی می‌شود.", Icon = "shield" },
-                new() { Title = "قیمت شفاف", Text = "بدون هزینه‌ی پنهان.", Icon = "check" },
-                new() { Title = "تحویل سریع", Text = "انجام کارهای اداری با ما.", Icon = "clock" },
+                new() { Title = "Vollständige Prüfung", Text = "Jedes Fahrzeug wird vor dem Verkauf geprüft.", Icon = "shield" },
+                new() { Title = "Transparente Preise", Text = "Keine versteckten Kosten.", Icon = "check" },
+                new() { Title = "Schnelle Übergabe", Text = "Zulassung und Papiere übernehmen wir.", Icon = "clock" },
             ],
-            AboutTitle = "درباره‌ی ما",
-            AboutText = "این یک متن نمونه است. از پنل مدیریت، معرفی کسب‌وکار خودتان را اینجا بنویسید.",
+            AboutTitle = "Über uns",
+            AboutText = "Dies ist ein Beispieltext. Im Admin-Panel stellen Sie hier Ihr eigenes Unternehmen vor.",
             AboutImageUrl = U("1590362891991-f776e747a588"),
-            Stats = [new() { Value = "۵۰۰+", Label = "خودروی فروخته‌شده" }, new() { Value = "۱۰", Label = "سال تجربه" }],
+            Stats = [new() { Value = "500+", Label = "verkaufte Fahrzeuge" }, new() { Value = "10", Label = "Jahre Erfahrung" }],
             Faq =
             [
-                new() { Question = "امکان کارشناسی قبل از خرید هست؟", Answer = "بله، هر خودرو قبل از تحویل کارشناسی می‌شود." },
-                new() { Question = "خودروی خودم را هم می‌خرید؟", Answer = "بله، با کارشناسی رایگان قیمت‌گذاری می‌کنیم." },
+                new() { Question = "Kann ich das Fahrzeug vor dem Kauf prüfen lassen?", Answer = "Ja, jedes Fahrzeug wird vor der Übergabe geprüft." },
+                new() { Question = "Kaufen Sie auch mein Auto?", Answer = "Ja, wir bewerten es kostenlos und machen Ihnen ein Angebot." },
             ],
         },
-        Contact = new() { Phone = "02100000000", Whatsapp = "989120000000", Instagram = "sample.gallery", Address = "خیابان نمونه، پلاک ۱", Hours = "شنبه تا پنجشنبه ۹ تا ۲۰" },
-        Footer = new() { Text = "این سایت نمونه است؛ همه‌ی متن‌ها و قیمت‌ها نمایشی‌اند." },
+        Contact = new() { Phone = "0711 000000", Whatsapp = "4915100000000", Instagram = "sample.gallery", Address = "Musterstraße 1", Hours = "Mo–Fr 9–19 Uhr, Sa 10–16 Uhr" },
+        Footer = new() { Text = "Dies ist eine Beispiel-Website; alle Texte und Preise dienen nur der Vorführung." },
     };
 
     // ---------------------------------------------------------------- travel
     private static SiteContent Travel(bool demo) => new()
     {
-        Brand = new() { Name = "آژانس سفر آسمان", Tagline = "سفر بی‌دغدغه، از رزرو تا برگشت", Description = "تورهای داخلی و خارجی، بلیت و هتل با پشتیبانی شبانه‌روزی." },
+        Brand = new() { Name = "Reisebüro Himmelblau", Tagline = "Sorglos reisen – von der Buchung bis zur Rückkehr", Description = "Reisen im In- und Ausland, Flüge und Hotels mit Rund-um-die-Uhr-Service." },
         Theme = new() { Primary = "#0ea5e9", Mode = "light" },
-        Labels = new() { ItemSingular = "تور", ItemPlural = "تورها", ItemsPageTitle = "همه‌ی تورها", RequestButton = "رزرو تور", CategoryLabel = "نوع تور", SoldOutLabel = "تکمیل ظرفیت" },
+        Labels = new() { ItemSingular = "Reise", ItemPlural = "Reisen", ItemsPageTitle = "Alle Reisen", RequestButton = "Reise buchen", CategoryLabel = "Reiseart", SoldOutLabel = "Ausgebucht" },
         Fields =
         [
-            new() { Key = "destination", Label = "مقصد", Type = "text", ShowOnCard = true },
-            new() { Key = "duration", Label = "مدت", Type = "text", ShowOnCard = true },
-            new() { Key = "departure", Label = "تاریخ رفت", Type = "text" },
-            new() { Key = "hotel", Label = "هتل", Type = "select", Options = ["۳ ستاره", "۴ ستاره", "۵ ستاره"], Filter = true },
-            new() { Key = "transport", Label = "حمل‌ونقل", Type = "select", Options = ["هوایی", "زمینی", "دریایی"], Filter = true },
+            new() { Key = "destination", Label = "Ziel", Type = "text", ShowOnCard = true },
+            new() { Key = "duration", Label = "Dauer", Type = "text", ShowOnCard = true },
+            new() { Key = "departure", Label = "Abreise", Type = "text" },
+            new() { Key = "hotel", Label = "Hotel", Type = "select", Options = ["3 Sterne", "4 Sterne", "5 Sterne"], Filter = true },
+            new() { Key = "transport", Label = "Anreise", Type = "select", Options = ["Flug", "Bus/Bahn", "Schiff"], Filter = true },
         ],
-        Categories = ["تور خارجی", "تور داخلی", "لحظه‌آخری"],
+        Categories = ["Fernreise", "Deutschland", "Last Minute"],
         Home = new()
         {
-            HeroTitle = "سفر بعدی‌ات را همین‌جا انتخاب کن",
-            HeroSubtitle = "تورهای منتخب با بهترین قیمت و پشتیبانی کامل در طول سفر.",
+            HeroTitle = "Wählen Sie hier Ihre nächste Reise",
+            HeroSubtitle = "Ausgewählte Reisen zum besten Preis und mit Betreuung während der ganzen Reise.",
             HeroImageUrl = U("1507525428034-b723cf961d3e"),
-            HighlightsTitle = "با ما سفر کنید",
+            HighlightsTitle = "Reisen Sie mit uns",
             Highlights =
             [
-                new() { Title = "پشتیبانی شبانه‌روزی", Text = "در طول سفر همیشه در دسترسیم.", Icon = "phone" },
-                new() { Title = "بهترین قیمت", Text = "قیمت مستقیم از هتل و ایرلاین.", Icon = "star" },
-                new() { Title = "ویزا و بیمه", Text = "انجام کارهای سفر با ما.", Icon = "map" },
+                new() { Title = "Rund-um-die-Uhr-Service", Text = "Während der Reise sind wir immer für Sie da.", Icon = "phone" },
+                new() { Title = "Bester Preis", Text = "Direkte Preise von Hotels und Airlines.", Icon = "star" },
+                new() { Title = "Visum und Versicherung", Text = "Alle Reiseformalitäten übernehmen wir.", Icon = "map" },
             ],
-            AboutTitle = "درباره‌ی ما",
-            AboutText = "این یک متن نمونه است. از پنل مدیریت، معرفی آژانس خودتان را اینجا بنویسید.",
+            AboutTitle = "Über uns",
+            AboutText = "Dies ist ein Beispieltext. Im Admin-Panel stellen Sie hier Ihr eigenes Reisebüro vor.",
             AboutImageUrl = U("1535262412227-85541e910204"),
-            Stats = [new() { Value = "۲۰۰۰+", Label = "مسافر راضی" }, new() { Value = "۳۰", Label = "مقصد" }],
+            Stats = [new() { Value = "2000+", Label = "zufriedene Reisende" }, new() { Value = "30", Label = "Ziel" }],
             Faq =
             [
-                new() { Question = "برای رزرو چه مدارکی لازم است؟", Answer = "برای تور خارجی گذرنامه با حداقل ۶ ماه اعتبار." },
-                new() { Question = "امکان پرداخت قسطی هست؟", Answer = "برای برخی تورها بله؛ با ما تماس بگیرید." },
+                new() { Question = "Welche Unterlagen brauche ich für die Buchung?", Answer = "Für Fernreisen einen Reisepass, der noch mindestens 6 Monate gültig ist." },
+                new() { Question = "Kann ich in Raten zahlen?", Answer = "Bei einigen Reisen ja – sprechen Sie uns an." },
             ],
         },
-        Contact = new() { Phone = "02100000000", Whatsapp = "989120000000", Instagram = "sample.travel", Address = "خیابان نمونه، پلاک ۲", Hours = "همه‌روزه ۹ تا ۲۱" },
-        Footer = new() { Text = "این سایت نمونه است؛ همه‌ی تورها و قیمت‌ها نمایشی‌اند." },
+        Contact = new() { Phone = "0711 000000", Whatsapp = "4915100000000", Instagram = "sample.travel", Address = "Musterstraße 2", Hours = "Täglich 9–21 Uhr" },
+        Footer = new() { Text = "Dies ist eine Beispiel-Website; alle Reisen und Preise dienen nur der Vorführung." },
     };
 
     // ---------------------------------------------------------------- shop
     private static SiteContent Shop(bool demo) => new()
     {
-        Brand = new() { Name = "فروشگاه نمونه", Tagline = "انتخاب خوب، قیمت منصفانه", Description = "کفش، ساعت و لوازم آرایشی اصل با ضمانت." },
+        Brand = new() { Name = "Musterladen", Tagline = "Gute Auswahl, faire Preise", Description = "Originale Schuhe, Uhren und Kosmetik mit Garantie." },
         Theme = new() { Primary = "#e11d48", Mode = "light" },
-        Labels = new() { ItemSingular = "محصول", ItemPlural = "محصولات", ItemsPageTitle = "همه‌ی محصولات", RequestButton = "ثبت سفارش", CategoryLabel = "دسته", SoldOutLabel = "ناموجود" },
+        Labels = new() { ItemSingular = "Produkt", ItemPlural = "Produkte", ItemsPageTitle = "Alle Produkte", RequestButton = "Bestellen", CategoryLabel = "Kategorie", SoldOutLabel = "Nicht verfügbar" },
         Fields =
         [
-            new() { Key = "brand", Label = "برند", Type = "text", ShowOnCard = true },
-            new() { Key = "size", Label = "سایز", Type = "text" },
-            new() { Key = "color", Label = "رنگ", Type = "text" },
-            new() { Key = "warranty", Label = "ضمانت", Type = "select", Options = ["دارد", "ندارد"], Filter = true },
+            new() { Key = "brand", Label = "Marke", Type = "text", ShowOnCard = true },
+            new() { Key = "size", Label = "Größe", Type = "text" },
+            new() { Key = "color", Label = "Farbe", Type = "text" },
+            new() { Key = "warranty", Label = "Garantie", Type = "select", Options = ["ja", "nein"], Filter = true },
         ],
-        Categories = ["کفش", "ساعت", "آرایشی"],
+        Categories = ["Schuhe", "Uhren", "Kosmetik"],
         Home = new()
         {
-            HeroTitle = "جدیدترین‌ها رسید",
-            HeroSubtitle = "محصولات اصل با ارسال سریع به سراسر کشور.",
+            HeroTitle = "Die Neuheiten sind da",
+            HeroSubtitle = "Originalprodukte mit schnellem Versand in ganz Deutschland.",
             HeroImageUrl = U("1560769629-975ec94e6a86"),
-            HighlightsTitle = "خرید مطمئن",
+            HighlightsTitle = "Sicher einkaufen",
             Highlights =
             [
-                new() { Title = "ضمانت اصالت", Text = "همه‌ی کالاها اصل هستند.", Icon = "shield" },
-                new() { Title = "ارسال سریع", Text = "ارسال به سراسر کشور.", Icon = "truck" },
-                new() { Title = "مرجوعی آسان", Text = "تا ۷ روز امکان مرجوعی.", Icon = "gift" },
+                new() { Title = "Echtheitsgarantie", Text = "Alle Artikel sind Originale.", Icon = "shield" },
+                new() { Title = "Schneller Versand", Text = "Versand in ganz Deutschland.", Icon = "truck" },
+                new() { Title = "Einfache Rückgabe", Text = "Rückgabe innerhalb von 14 Tagen.", Icon = "gift" },
             ],
-            AboutTitle = "درباره‌ی ما",
-            AboutText = "این یک متن نمونه است. از پنل مدیریت، معرفی فروشگاه خودتان را اینجا بنویسید.",
+            AboutTitle = "Über uns",
+            AboutText = "Dies ist ein Beispieltext. Im Admin-Panel stellen Sie hier Ihren eigenen Shop vor.",
             AboutImageUrl = U("1611930022073-b7a4ba5fcccd"),
-            Stats = [new() { Value = "۱۰۰۰+", Label = "سفارش موفق" }],
+            Stats = [new() { Value = "1000+", Label = "erfolgreiche Bestellungen" }],
             Faq =
             [
-                new() { Question = "ارسال چند روز طول می‌کشد؟", Answer = "معمولاً ۲ تا ۴ روز کاری." },
-                new() { Question = "امکان تعویض سایز هست؟", Answer = "بله، تا ۷ روز بعد از دریافت." },
+                new() { Question = "Wie lange dauert der Versand?", Answer = "Meist 2 bis 4 Werktage." },
+                new() { Question = "Kann ich die Größe umtauschen?", Answer = "Ja, innerhalb von 14 Tagen nach Erhalt." },
             ],
         },
-        Contact = new() { Phone = "02100000000", Whatsapp = "989120000000", Instagram = "sample.shop", Address = "خیابان نمونه، پلاک ۳", Hours = "شنبه تا پنجشنبه ۱۰ تا ۲۲" },
-        Footer = new() { Text = "این سایت نمونه است؛ همه‌ی محصولات و قیمت‌ها نمایشی‌اند." },
+        Contact = new() { Phone = "0711 000000", Whatsapp = "4915100000000", Instagram = "sample.shop", Address = "Musterstraße 3", Hours = "Mo–Sa 10–20 Uhr" },
+        Footer = new() { Text = "Dies ist eine Beispiel-Website; alle Produkte und Preise dienen nur der Vorführung." },
     };
 
     // ---------------------------------------------------------------- services
     private static SiteContent Services(bool demo) => new()
     {
-        Brand = new() { Name = "سالن زیبایی رز", Tagline = "زیبایی با حوصله و دقت", Description = "خدمات مو، پوست و ناخن با متخصصان باتجربه." },
+        Brand = new() { Name = "Beauty-Salon Rosa", Tagline = "Schönheit mit Ruhe und Sorgfalt", Description = "Haare, Haut und Nägel – von erfahrenen Fachleuten." },
         Theme = new() { Primary = "#a855f7", Mode = "dark" },
-        Labels = new() { ItemSingular = "نمونه‌کار", ItemPlural = "نمونه‌کارها", ItemsPageTitle = "نمونه‌کارهای ما", RequestButton = "رزرو نوبت", CategoryLabel = "دسته", SoldOutLabel = "غیرفعال" },
+        Labels = new() { ItemSingular = "Arbeitsbeispiel", ItemPlural = "Arbeitsbeispiele", ItemsPageTitle = "Unsere Arbeiten", RequestButton = "Termin buchen", CategoryLabel = "Kategorie", SoldOutLabel = "Nicht verfügbar" },
         Fields =
         [
-            new() { Key = "duration", Label = "مدت انجام", Type = "text", ShowOnCard = true },
-            new() { Key = "specialist", Label = "متخصص", Type = "text" },
+            new() { Key = "duration", Label = "Dauer", Type = "text", ShowOnCard = true },
+            new() { Key = "specialist", Label = "Fachkraft", Type = "text" },
         ],
-        Categories = ["مو", "پوست", "ناخن"],
+        Categories = ["Haare", "Haut", "Nägel"],
         Home = new()
         {
-            HeroTitle = "زیبایی‌ات را به ما بسپار",
-            HeroSubtitle = "نوبت آنلاین، محیط آرام و متخصصان باتجربه.",
+            HeroTitle = "Ihre Schönheit in guten Händen",
+            HeroSubtitle = "Online-Termine, ruhige Atmosphäre und erfahrene Fachleute.",
             HeroImageUrl = U("1633681926022-84c23e8cb2d6"),
-            HighlightsTitle = "چرا ما؟",
+            HighlightsTitle = "Warum wir?",
             Highlights =
             [
-                new() { Title = "متخصصان باتجربه", Text = "سال‌ها سابقه‌ی کار.", Icon = "star" },
-                new() { Title = "مواد باکیفیت", Text = "فقط برندهای معتبر.", Icon = "sparkles" },
-                new() { Title = "نوبت سریع", Text = "رزرو آنلاین بدون انتظار.", Icon = "clock" },
+                new() { Title = "Erfahrene Fachleute", Text = "Viele Jahre Berufserfahrung.", Icon = "star" },
+                new() { Title = "Hochwertige Produkte", Text = "Nur bewährte Marken.", Icon = "sparkles" },
+                new() { Title = "Schnelle Termine", Text = "Online buchen ohne Wartezeit.", Icon = "clock" },
             ],
-            AboutTitle = "درباره‌ی ما",
-            AboutText = "این یک متن نمونه است. از پنل مدیریت، معرفی کسب‌وکار خودتان را اینجا بنویسید.",
+            AboutTitle = "Über uns",
+            AboutText = "Dies ist ein Beispieltext. Im Admin-Panel stellen Sie hier Ihr eigenes Unternehmen vor.",
             AboutImageUrl = U("1580618672591-eb180b1a973f"),
-            Stats = [new() { Value = "۳۰۰۰+", Label = "مشتری" }, new() { Value = "۸", Label = "متخصص" }],
+            Stats = [new() { Value = "3000+", Label = "Kundinnen und Kunden" }, new() { Value = "8", Label = "Fachkraft" }],
             Faq =
             [
-                new() { Question = "چطور نوبت بگیرم؟", Answer = "از دکمه‌ی رزرو نوبت یا با تماس تلفنی." },
-                new() { Question = "لغو نوبت هزینه دارد؟", Answer = "تا ۲۴ ساعت قبل رایگان است." },
+                new() { Question = "Wie bekomme ich einen Termin?", Answer = "Über den Button „Termin buchen“ oder telefonisch." },
+                new() { Question = "Kostet eine Absage etwas?", Answer = "Bis 24 Stunden vorher ist sie kostenlos." },
             ],
         },
-        Contact = new() { Phone = "02100000000", Whatsapp = "989120000000", Instagram = "sample.salon", Address = "خیابان نمونه، پلاک ۴", Hours = "شنبه تا پنجشنبه ۱۰ تا ۲۰" },
-        Footer = new() { Text = "این سایت نمونه است؛ همه‌ی خدمات و قیمت‌ها نمایشی‌اند." },
+        Contact = new() { Phone = "0711 000000", Whatsapp = "4915100000000", Instagram = "sample.salon", Address = "Musterstraße 4", Hours = "Di–Sa 10–19 Uhr" },
+        Footer = new() { Text = "Dies ist eine Beispiel-Website; alle Leistungen und Preise dienen nur der Vorführung." },
     };
 
     // ---------------------------------------------------------------- demo data
@@ -265,51 +265,51 @@ public static class Presets
     {
         "car" =>
         [
-            new("تویوتا کمری هیبرید", "نو", "صفر کیلومتر، فول آپشن", "خودروی نمونه برای نمایش. مشخصات و قیمت را از پنل عوض کنید.", PriceType.Fixed, 85 * 1000 * M / 10, null, null, "تحویل فوری",
-                [U("1621007947382-bb3c3994e3fb")], new() { ["year"] = "2025", ["km"] = "0", ["gearbox"] = "اتوماتیک", ["fuel"] = "هیبرید", ["color"] = "سفید" }, true),
-            new("بی‌ام‌و سری ۵", "کارکرده", "فابریک، تک‌مالک", null, PriceType.Fixed, 48 * 1000 * M / 10, 52 * 1000 * M / 10, null, null,
-                [U("1555215695-3004980ad54e")], new() { ["year"] = "2014", ["km"] = "98000", ["gearbox"] = "اتوماتیک", ["fuel"] = "بنزینی", ["color"] = "سفید" }, true),
-            new("تویوتا راوفور", "نو", "دو دیفرانسیل", null, PriceType.OnCall, null, null, null, null,
-                [U("1617469767053-d3b523a0b982")], new() { ["year"] = "2025", ["km"] = "0", ["gearbox"] = "اتوماتیک", ["fuel"] = "بنزینی" }, true),
-            new("آئودی Q5", "نو", "تیپ کامل", null, PriceType.OnCall, null, null, null, null,
-                [U("1606664515524-ed2f786a0bd6")], new() { ["year"] = "2024", ["km"] = "0", ["gearbox"] = "اتوماتیک", ["fuel"] = "بنزینی" }),
-            new("مرسدس بنز AMG GT", "کارکرده", "کم‌کارکرد", null, PriceType.From, 120 * 1000 * M / 10, null, null, "ویژه",
-                [U("1618843479313-40f8afb4b4d8")], new() { ["year"] = "2019", ["km"] = "21000", ["gearbox"] = "اتوماتیک", ["fuel"] = "بنزینی" }),
-            new("هاچ‌بک شهری", "کارکرده", "کم‌مصرف و تمیز", null, PriceType.Fixed, 9 * 1000 * M / 10, null, null, null,
-                [U("1550355291-bbee04a92027")], new() { ["year"] = "2020", ["km"] = "45000", ["gearbox"] = "دنده‌ای", ["fuel"] = "بنزینی" }),
+            new("Toyota Camry Hybrid", "Neuwagen", "Neuwagen, Vollausstattung", "Beispielfahrzeug zur Vorführung. Daten und Preis ändern Sie im Admin-Panel.", PriceType.Fixed, 39_900 * E, null, null, "Sofort verfügbar",
+                [U("1621007947382-bb3c3994e3fb")], new() { ["year"] = "2025", ["km"] = "0", ["gearbox"] = "Automatik", ["fuel"] = "Hybrid", ["color"] = "Weiß" }, true),
+            new("BMW 5er", "Gebrauchtwagen", "Unfallfrei, 1. Hand", null, PriceType.Fixed, 28_500 * E, 31_900 * E, null, null,
+                [U("1555215695-3004980ad54e")], new() { ["year"] = "2014", ["km"] = "98000", ["gearbox"] = "Automatik", ["fuel"] = "Benzin", ["color"] = "Weiß" }, true),
+            new("Toyota RAV4", "Neuwagen", "Allradantrieb", null, PriceType.OnCall, null, null, null, null,
+                [U("1617469767053-d3b523a0b982")], new() { ["year"] = "2025", ["km"] = "0", ["gearbox"] = "Automatik", ["fuel"] = "Benzin" }, true),
+            new("Audi Q5", "Neuwagen", "Vollausstattung", null, PriceType.OnCall, null, null, null, null,
+                [U("1606664515524-ed2f786a0bd6")], new() { ["year"] = "2024", ["km"] = "0", ["gearbox"] = "Automatik", ["fuel"] = "Benzin" }),
+            new("Mercedes-AMG GT", "Gebrauchtwagen", "Wenig Kilometer", null, PriceType.From, 89_000 * E, null, null, "Highlight",
+                [U("1618843479313-40f8afb4b4d8")], new() { ["year"] = "2019", ["km"] = "21000", ["gearbox"] = "Automatik", ["fuel"] = "Benzin" }),
+            new("Kompakter Stadtflitzer", "Gebrauchtwagen", "Sparsam und gepflegt", null, PriceType.Fixed, 8_900 * E, null, null, null,
+                [U("1550355291-bbee04a92027")], new() { ["year"] = "2020", ["km"] = "45000", ["gearbox"] = "Schaltgetriebe", ["fuel"] = "Benzin" }),
         ],
         "travel" =>
         [
-            new("تور استانبول", "تور خارجی", "۴ شب و ۵ روز، پرواز مستقیم", "تور نمونه برای نمایش. برنامه، هتل و قیمت را از پنل عوض کنید.", PriceType.From, 45 * M, 52 * M, "هر نفر", "پرفروش",
-                [U("1524231757912-21f4fe3a7200"), U("1589561454226-796a8aa89b05")], new() { ["destination"] = "استانبول", ["duration"] = "۴ شب", ["departure"] = "هر پنجشنبه", ["hotel"] = "۴ ستاره", ["transport"] = "هوایی" }, true),
-            new("تور دبی", "تور خارجی", "۵ شب، صبحانه و ترانسفر", null, PriceType.From, 60 * M, null, "هر نفر", null,
-                [U("1512453979798-5ea266f8880c"), U("1518684079-3c830dcef090")], new() { ["destination"] = "دبی", ["duration"] = "۵ شب", ["hotel"] = "۵ ستاره", ["transport"] = "هوایی" }, true),
-            new("تور جزیره‌ی استوایی", "لحظه‌آخری", "ظرفیت محدود", null, PriceType.Fixed, 38 * M, 46 * M, "هر نفر", "لحظه‌آخری",
-                [U("1603477849227-705c424d1d80")], new() { ["destination"] = "جزیره", ["duration"] = "۳ شب", ["hotel"] = "۴ ستاره", ["transport"] = "هوایی" }, true),
-            new("تور ساحلی", "تور داخلی", "۳ شب، اقامت کنار دریا", null, PriceType.From, 12 * M, null, "هر نفر", null,
-                [U("1535262412227-85541e910204")], new() { ["destination"] = "شمال", ["duration"] = "۳ شب", ["hotel"] = "۳ ستاره", ["transport"] = "زمینی" }),
+            new("Städtereise Istanbul", "Fernreise", "4 Nächte / 5 Tage, Direktflug", "Beispielreise zur Vorführung. Programm, Hotel und Preis ändern Sie im Admin-Panel.", PriceType.From, 649 * E, 749 * E, "pro Person", "Bestseller",
+                [U("1524231757912-21f4fe3a7200"), U("1589561454226-796a8aa89b05")], new() { ["destination"] = "Istanbul", ["duration"] = "4 Nächte", ["departure"] = "jeden Donnerstag", ["hotel"] = "4 Sterne", ["transport"] = "Flug" }, true),
+            new("Dubai-Reise", "Fernreise", "5 Nächte, Frühstück und Transfer", null, PriceType.From, 1_190 * E, null, "pro Person", null,
+                [U("1512453979798-5ea266f8880c"), U("1518684079-3c830dcef090")], new() { ["destination"] = "Dubai", ["duration"] = "5 Nächte", ["hotel"] = "5 Sterne", ["transport"] = "Flug" }, true),
+            new("Tropische Inselreise", "Last Minute", "Nur wenige Plätze", null, PriceType.Fixed, 1_490 * E, 1_790 * E, "pro Person", "Last Minute",
+                [U("1603477849227-705c424d1d80")], new() { ["destination"] = "Insel", ["duration"] = "3 Nächte", ["hotel"] = "4 Sterne", ["transport"] = "Flug" }, true),
+            new("Ostsee-Kurzurlaub", "Deutschland", "3 Nächte direkt am Meer", null, PriceType.From, 299 * E, null, "pro Person", null,
+                [U("1535262412227-85541e910204")], new() { ["destination"] = "Ostsee", ["duration"] = "3 Nächte", ["hotel"] = "3 Sterne", ["transport"] = "Bus/Bahn" }),
         ],
         "shop" =>
         [
-            new("کفش ورزشی قرمز", "کفش", "سبک و راحت برای پیاده‌روی", "محصول نمونه برای نمایش. مشخصات و قیمت را از پنل عوض کنید.", PriceType.Fixed, 3 * M, 4 * M, null, "تخفیف",
-                [U("1542291026-7eec264c27ff")], new() { ["brand"] = "نمونه", ["size"] = "۴۰ تا ۴۵", ["color"] = "قرمز", ["warranty"] = "دارد" }, true),
-            new("ساعت هوشمند", "ساعت", "ضدآب، باتری ۲ روزه", null, PriceType.Fixed, 12 * M, null, null, "جدید",
-                [U("1546868871-7041f2a55e12")], new() { ["brand"] = "نمونه", ["color"] = "خاکستری", ["warranty"] = "دارد" }, true),
-            new("عطر زنانه", "آرایشی", "۱۰۰ میلی‌لیتر", null, PriceType.Fixed, 5 * M, null, null, null,
-                [U("1563170351-be82bc888aa4")], new() { ["brand"] = "نمونه", ["warranty"] = "ندارد" }, true),
-            new("کفش رانینگ", "کفش", "مناسب دویدن", null, PriceType.Fixed, 4 * M, null, null, null,
-                [U("1491553895911-0055eca6402d")], new() { ["brand"] = "نمونه", ["size"] = "۳۸ تا ۴۴", ["color"] = "طوسی", ["warranty"] = "دارد" }),
-            new("پک مراقبت پوست", "آرایشی", "سه محصول", null, PriceType.From, 2 * M, null, null, null,
-                [U("1629198688000-71f23e745b6e")], new() { ["brand"] = "نمونه", ["warranty"] = "ندارد" }),
+            new("Roter Sportschuh", "Schuhe", "Leicht und bequem zum Gehen", "Beispielprodukt zur Vorführung. Daten und Preis ändern Sie im Admin-Panel.", PriceType.Fixed, 79 * E, 99 * E, null, "Rabatt",
+                [U("1542291026-7eec264c27ff")], new() { ["brand"] = "Beispiel", ["size"] = "40 bis 45", ["color"] = "Rot", ["warranty"] = "ja" }, true),
+            new("Smartwatch", "Uhren", "Wasserdicht, 2 Tage Akkulaufzeit", null, PriceType.Fixed, 199 * E, null, null, "Neu",
+                [U("1546868871-7041f2a55e12")], new() { ["brand"] = "Beispiel", ["color"] = "Grau", ["warranty"] = "ja" }, true),
+            new("Damenparfum", "Kosmetik", "100 ml", null, PriceType.Fixed, 69 * E, null, null, null,
+                [U("1563170351-be82bc888aa4")], new() { ["brand"] = "Beispiel", ["warranty"] = "nein" }, true),
+            new("Laufschuh", "Schuhe", "Ideal zum Joggen", null, PriceType.Fixed, 119 * E, null, null, null,
+                [U("1491553895911-0055eca6402d")], new() { ["brand"] = "Beispiel", ["size"] = "38 bis 44", ["color"] = "Grau", ["warranty"] = "ja" }),
+            new("Hautpflege-Set", "Kosmetik", "Drei Produkte", null, PriceType.From, 39 * E, null, null, null,
+                [U("1629198688000-71f23e745b6e")], new() { ["brand"] = "Beispiel", ["warranty"] = "nein" }),
         ],
         _ =>
         [
-            new("کوتاهی و حالت‌دهی مو", "مو", "مدل به انتخاب شما", "نمونه‌کار نمایشی. عکس‌های کارهای خودتان را از پنل بگذارید.", PriceType.From, 1 * M, null, null, null,
-                [U("1634449571010-02389ed0f9b0")], new() { ["duration"] = "۱ ساعت", ["specialist"] = "متخصص نمونه" }, true),
-            new("براشینگ و سشوار", "مو", null, null, PriceType.From, M / 2, null, null, null,
-                [U("1580618672591-eb180b1a973f")], new() { ["duration"] = "۴۵ دقیقه" }, true),
-            new("پاکسازی پوست", "پوست", "مناسب همه‌ی پوست‌ها", null, PriceType.Fixed, 2 * M, null, null, "پرطرفدار",
-                [U("1616394584738-fc6e612e71b9")], new() { ["duration"] = "۹۰ دقیقه" }, true),
+            new("Haarschnitt und Styling", "Haare", "Frisur nach Ihrem Wunsch", "Arbeitsbeispiel zur Vorführung. Fotos Ihrer eigenen Arbeiten fügen Sie im Admin-Panel ein.", PriceType.From, 45 * E, null, null, null,
+                [U("1634449571010-02389ed0f9b0")], new() { ["duration"] = "1 Stunde", ["specialist"] = "Beispiel-Fachkraft" }, true),
+            new("Föhnen und Brushing", "Haare", null, null, PriceType.From, 25 * E, null, null, null,
+                [U("1580618672591-eb180b1a973f")], new() { ["duration"] = "45 Minuten" }, true),
+            new("Gesichtsreinigung", "Haut", "Für jeden Hauttyp", null, PriceType.Fixed, 69 * E, null, null, "Beliebt",
+                [U("1616394584738-fc6e612e71b9")], new() { ["duration"] = "90 Minuten" }, true),
         ],
     };
 
@@ -317,27 +317,27 @@ public static class Presets
     {
         "car" =>
         [
-            new("کارشناسی خودرو", "خدمات خرید", "بررسی بدنه، رنگ، موتور و گیربکس با گزارش مکتوب.", ["بررسی رنگ و بدنه", "تست موتور و گیربکس"], PriceType.Fixed, 2 * M, "هر خودرو", null, true),
-            new("فروش خودروی شما", "خدمات خرید", "قیمت‌گذاری، عکاسی و پیدا کردن خریدار.", ["قیمت‌گذاری کارشناسی", "عکاسی حرفه‌ای"], PriceType.OnCall, null, null, "بدون کمیسیون"),
-            new("سرامیک بدنه", "دیتیلینگ", "پوشش محافظ براق و ماندگار.", ["پولیش", "دو لایه سرامیک"], PriceType.From, 25 * M, "هر خودرو"),
+            new("Fahrzeuggutachten", "Kaufberatung", "Prüfung von Karosserie, Lack, Motor und Getriebe mit schriftlichem Bericht.", ["Lack- und Karosserieprüfung", "Motor- und Getriebetest"], PriceType.Fixed, 149 * E, "pro Fahrzeug", null, true),
+            new("Verkauf Ihres Fahrzeugs", "Kaufberatung", "Bewertung, Fotos und Käufersuche.", ["Professionelle Bewertung", "Professionelle Fotos"], PriceType.OnCall, null, null, "Ohne Provision"),
+            new("Keramikversiegelung", "Fahrzeugaufbereitung", "Glänzender, langlebiger Lackschutz.", ["Politur", "Zwei Schichten Keramik"], PriceType.From, 399 * E, "pro Fahrzeug"),
         ],
         "travel" =>
         [
-            new("رزرو بلیت هواپیما", "بلیت و هتل", "پروازهای داخلی و خارجی.", ["مقایسه‌ی قیمت", "صدور فوری"], PriceType.OnCall, null, null, null, true),
-            new("رزرو هتل", "بلیت و هتل", "هتل در همه‌ی مقصدها.", ["تأیید فوری", "لغو انعطاف‌پذیر"], PriceType.OnCall, null, null),
-            new("انجام ویزا", "ویزا", "مشاوره و انجام مراحل ویزا.", ["بررسی مدارک", "نوبت سفارت"], PriceType.From, 5 * M, "هر نفر"),
+            new("Flugbuchung", "Flüge und Hotels", "Flüge im In- und Ausland.", ["Preisvergleich", "Sofortige Ausstellung"], PriceType.OnCall, null, null, null, true),
+            new("Hotelbuchung", "Flüge und Hotels", "Hotels an allen Reisezielen.", ["Sofortige Bestätigung", "Flexible Stornierung"], PriceType.OnCall, null, null),
+            new("Visum-Service", "Visum", "Beratung und Erledigung aller Visa-Schritte.", ["Prüfung der Unterlagen", "Botschaftstermin"], PriceType.From, 79 * E, "pro Person"),
         ],
         "shop" =>
         [
-            new("ارسال سریع", "ارسال", "ارسال همان‌روز در شهر.", ["بسته‌بندی ایمن"], PriceType.Fixed, 1 * M / 2, "هر سفارش"),
-            new("بسته‌بندی کادویی", "خدمات ویژه", "کادو با کارت تبریک.", ["کارت تبریک دست‌نویس"], PriceType.Fixed, 1 * M / 5, "هر محصول"),
+            new("Schneller Versand", "Versand", "Lieferung am selben Tag in der Stadt.", ["Sichere Verpackung"], PriceType.Fixed, 9 * E, "pro Bestellung"),
+            new("Geschenkverpackung", "Sonderleistungen", "Als Geschenk mit Grußkarte.", ["Handgeschriebene Grußkarte"], PriceType.Fixed, 4 * E, "pro Produkt"),
         ],
         _ =>
         [
-            new("کوتاهی مو", "مو", "مشاوره و کوتاهی به مدل دلخواه.", ["شست‌وشو", "سشوار"], PriceType.From, 1 * M, null, "پرطرفدار", true),
-            new("رنگ مو", "مو", "رنگ و مش با برندهای معتبر.", ["تست حساسیت", "مشاوره‌ی رنگ"], PriceType.From, 4 * M, null),
-            new("پاکسازی پوست", "پوست", "پاکسازی عمیق و ماسک.", ["آنالیز پوست", "ماسک تخصصی"], PriceType.Fixed, 2 * M, "هر جلسه", null, false, 25 * M / 10),
-            new("مانیکور", "ناخن", "مانیکور و لاک ژل.", ["فرم‌دهی", "لاک ژل"], PriceType.Fixed, 1 * M, null),
+            new("Haarschnitt", "Haare", "Beratung und Schnitt nach Wunsch.", ["Waschen", "Föhnen"], PriceType.From, 39 * E, null, "Beliebt", true),
+            new("Haarfarbe", "Haare", "Farbe und Strähnen mit bewährten Marken.", ["Verträglichkeitstest", "Farbberatung"], PriceType.From, 79 * E, null,
+            new("Gesichtsreinigung", "Haut", "Tiefenreinigung und Maske.", ["Hautanalyse", "Spezialmaske"], PriceType.Fixed, 69 * E, null, null, false, 85 * E),
+            new("Maniküre", "Nägel", "Maniküre und Gel-Lack.", ["Formen", "Gel-Lack"], PriceType.Fixed, 35 * E, null,
         ],
     };
 }

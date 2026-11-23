@@ -15,7 +15,7 @@ namespace SiteKit.Infrastructure.Account;
 
 public sealed class AccountService(AppDbContext db, UserManager<ApplicationUser> users) : IAccountService
 {
-    private static readonly Error NotFound = Error.NotFound("user.not_found", "کاربر پیدا نشد.");
+    private static readonly Error NotFound = Error.NotFound("user.not_found", "Benutzer nicht gefunden.");
 
     public async Task<Result<MeDto>> GetMeAsync(Guid userId, CancellationToken ct)
     {
@@ -84,7 +84,7 @@ public sealed class AdminService(AppDbContext db, UserManager<ApplicationUser> u
         var q = db.Users.AsNoTracking().AsQueryable();
         if (!string.IsNullOrWhiteSpace(search))
         {
-            var term = IranValidators.NormalizeDigits(search.Trim());
+            var term = PhoneValidators.NormalizeDigits(search.Trim());
             q = q.Where(u => (u.PhoneNumber != null && u.PhoneNumber.Contains(term)) || (u.FullName != null && u.FullName.Contains(term)));
         }
         if (!string.IsNullOrWhiteSpace(role))
@@ -107,7 +107,7 @@ public sealed class AdminService(AppDbContext db, UserManager<ApplicationUser> u
 
     public async Task<Result<AdminUserDto>> CreateUserAsync(CreateUserRequest request, CancellationToken ct)
     {
-        IranValidators.TryNormalizeMobile(request.Phone, out var phone);
+        PhoneValidators.TryNormalizeMobile(request.Phone, out var phone);
         var user = await users.Users.FirstOrDefaultAsync(u => u.PhoneNumber == phone, ct);
         if (user is null)
         {
@@ -119,7 +119,7 @@ public sealed class AdminService(AppDbContext db, UserManager<ApplicationUser> u
             };
             var created = await users.CreateAsync(user);
             if (!created.Succeeded)
-                return Error.Conflict("user.create_failed", "ساخت کاربر انجام نشد.");
+                return Error.Conflict("user.create_failed", "Der Benutzer konnte nicht angelegt werden.");
         }
         var set = await ApplyRoleAsync(user, request.Role);
         if (set.IsFailure) return set.Error!;
@@ -129,9 +129,9 @@ public sealed class AdminService(AppDbContext db, UserManager<ApplicationUser> u
     public async Task<Result> SetRoleAsync(Guid actingAdminId, Guid userId, string role, CancellationToken ct)
     {
         if (actingAdminId == userId && role != Roles.Admin)
-            return Result.Failure(Error.Conflict("user.self_demote", "نمی‌توانید نقش مدیر را از حساب خودتان بردارید."));
+            return Result.Failure(Error.Conflict("user.self_demote", "Sie können sich die Admin-Rolle nicht selbst entziehen."));
         var user = await users.Users.FirstOrDefaultAsync(u => u.Id == userId, ct);
-        if (user is null) return Result.Failure(Error.NotFound("user.not_found", "کاربر پیدا نشد."));
+        if (user is null) return Result.Failure(Error.NotFound("user.not_found", "Benutzer nicht gefunden."));
         return await ApplyRoleAsync(user, role);
     }
 

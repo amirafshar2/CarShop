@@ -44,13 +44,13 @@ public sealed class ThemeInfo
 
 public sealed class LabelInfo
 {
-    public string ItemSingular { get; set; } = "آیتم";
-    public string ItemPlural { get; set; } = "آیتم‌ها";
-    public string ItemsPageTitle { get; set; } = "همه‌ی آیتم‌ها";
-    public string RequestButton { get; set; } = "ثبت درخواست";
-    public string CategoryLabel { get; set; } = "دسته";
-    public string SoldOutLabel { get; set; } = "ناموجود";
-    public string ServicesTitle { get; set; } = "خدمات و قیمت‌ها";
+    public string ItemSingular { get; set; } = "Eintrag";
+    public string ItemPlural { get; set; } = "Einträge";
+    public string ItemsPageTitle { get; set; } = "Alle Einträge";
+    public string RequestButton { get; set; } = "Anfrage senden";
+    public string CategoryLabel { get; set; } = "Kategorie";
+    public string SoldOutLabel { get; set; } = "Nicht verfügbar";
+    public string ServicesTitle { get; set; } = "Leistungen und Preise";
 }
 
 public sealed class FieldDef
@@ -246,66 +246,66 @@ public static partial class SiteRules
     public static List<string> Validate(SiteContent c)
     {
         var errors = new List<string>();
-        void Len(string? v, int max, string name) { if (v is { Length: var l } && l > max) errors.Add($"«{name}» حداکثر {max} حرف است."); }
-        void Url(string? v, string name) { if (!IsSafeUrl(v)) errors.Add($"آدرس «{name}» باید با https:// یا / شروع شود."); }
+        void Len(string? v, int max, string name) { if (v is { Length: var l } && l > max) errors.Add($"«{name}“ darf höchstens {max} Zeichen lang sein."); }
+        void Url(string? v, string name) { if (!IsSafeUrl(v)) errors.Add($"Die Adresse „{name}“ muss mit https:// oder / beginnen."); }
 
-        if (string.IsNullOrWhiteSpace(c.Brand.Name)) errors.Add("نام کسب‌وکار الزامی است.");
-        Len(c.Brand.Name, 60, "نام");
-        Len(c.Brand.Tagline, 120, "شعار");
-        Len(c.Brand.Description, 500, "توضیح کوتاه");
-        Url(c.Brand.LogoUrl, "لوگو");
-        if (!Hex().IsMatch(c.Theme.Primary)) errors.Add("رنگ اصلی باید به شکل #RRGGBB باشد.");
-        if (c.Theme.Mode is not ("dark" or "light")) errors.Add("حالت رنگ نامعتبر است.");
-        if (c.Theme.Corners is not ("sharp" or "soft" or "round")) errors.Add("نوع گوشه‌ها نامعتبر است.");
+        if (string.IsNullOrWhiteSpace(c.Brand.Name)) errors.Add("Der Name des Unternehmens ist erforderlich.");
+        Len(c.Brand.Name, 60, "Name");
+        Len(c.Brand.Tagline, 120, "Slogan");
+        Len(c.Brand.Description, 500, "Kurzbeschreibung");
+        Url(c.Brand.LogoUrl, "Logo");
+        if (!Hex().IsMatch(c.Theme.Primary)) errors.Add("Die Hauptfarbe muss im Format #RRGGBB angegeben werden.");
+        if (c.Theme.Mode is not ("dark" or "light")) errors.Add("Ungültiger Farbmodus.");
+        if (c.Theme.Corners is not ("sharp" or "soft" or "round")) errors.Add("Ungültige Eckenform.");
 
-        Len(c.Home.HeroTitle, 120, "تیتر صفحه‌ی اول");
-        Len(c.Home.HeroSubtitle, 300, "زیرتیتر");
-        Url(c.Home.HeroImageUrl, "تصویر صفحه‌ی اول");
-        Url(c.Home.HeroVideoUrl, "ویدیوی صفحه‌ی اول");
-        if (c.Home.HeroVideoMode is not ("scroll" or "loop")) errors.Add("حالت پخش ویدیو نامعتبر است.");
-        Url(c.Home.AboutImageUrl, "تصویر درباره‌ی ما");
-        if (!IsSafeLink(c.Home.HeroCtaUrl)) errors.Add("لینک دکمه‌ی صفحه‌ی اول نامعتبر است.");
-        Len(c.Home.AboutText, 3000, "متن درباره‌ی ما");
-        if (c.Home.Highlights.Count > 8) errors.Add("حداکثر ۸ ویژگی برای صفحه‌ی اول.");
-        if (c.Home.Faq.Count > 20) errors.Add("حداکثر ۲۰ پرسش متداول.");
-        if (c.Home.Stats.Count > 6) errors.Add("حداکثر ۶ آمار.");
-        if (c.Nav.Any(n => n.Children.Count > 12)) errors.Add("هر منو حداکثر ۱۲ زیرلینک دارد.");
-        if (c.Home.Gallery.Count > 7) errors.Add("گالری حداکثر ۷ عکس دارد.");
-        if (c.Home.Partners.Count > 20) errors.Add("حداکثر ۲۰ نام در نوار همکاران.");
-        if (c.Home.Testimonials.Count > 20) errors.Add("حداکثر ۲۰ نظر.");
-        foreach (var g in c.Home.Gallery) Url(g, "عکس گالری");
-        foreach (var p in c.Home.Partners) Len(p, 80, "نام همکار");
+        Len(c.Home.HeroTitle, 120, "Überschrift der Startseite");
+        Len(c.Home.HeroSubtitle, 300, "Unterzeile");
+        Url(c.Home.HeroImageUrl, "Bild der Startseite");
+        Url(c.Home.HeroVideoUrl, "Video der Startseite");
+        if (c.Home.HeroVideoMode is not ("scroll" or "loop")) errors.Add("Ungültiger Wiedergabemodus für das Video.");
+        Url(c.Home.AboutImageUrl, "Bild „Über uns“");
+        if (!IsSafeLink(c.Home.HeroCtaUrl)) errors.Add("Der Button-Link auf der Startseite ist ungültig.");
+        Len(c.Home.AboutText, 3000, "Text „Über uns“");
+        if (c.Home.Highlights.Count > 8) errors.Add("Höchstens 8 Vorteile auf der Startseite.");
+        if (c.Home.Faq.Count > 20) errors.Add("Höchstens 20 häufige Fragen.");
+        if (c.Home.Stats.Count > 6) errors.Add("Höchstens 6 Kennzahlen.");
+        if (c.Nav.Any(n => n.Children.Count > 12)) errors.Add("Jedes Menü hat höchstens 12 Unterlinks.");
+        if (c.Home.Gallery.Count > 7) errors.Add("Die Galerie hat höchstens 7 Bilder.");
+        if (c.Home.Partners.Count > 20) errors.Add("Höchstens 20 Namen im Partner-Band.");
+        if (c.Home.Testimonials.Count > 20) errors.Add("Höchstens 20 Kundenstimmen.");
+        foreach (var g in c.Home.Gallery) Url(g, "Galeriebild");
+        foreach (var p in c.Home.Partners) Len(p, 80, "Partnername");
         foreach (var t in c.Home.Testimonials)
         {
-            if (string.IsNullOrWhiteSpace(t.Text)) errors.Add("هر نظر باید متن داشته باشد.");
-            Len(t.Name, 60, "نام نظردهنده");
-            Len(t.Role, 60, "توضیح نظردهنده");
-            Len(t.Text, 500, "متن نظر");
+            if (string.IsNullOrWhiteSpace(t.Text)) errors.Add("Jede Kundenstimme braucht einen Text.");
+            Len(t.Name, 60, "Name der Person");
+            Len(t.Role, 60, "Beschreibung der Person");
+            Len(t.Text, 500, "Text der Kundenstimme");
         }
-        Len(c.Home.HeroEyebrow, 80, "متن بالای تیتر");
-        foreach (var h in c.Home.Highlights) Url(h.ImageUrl, "عکس مرحله");
-        if (!IsSafeLink(c.Home.CtaButtonUrl)) errors.Add("لینک دکمه‌ی کادر تماس نامعتبر است.");
+        Len(c.Home.HeroEyebrow, 80, "Text über der Überschrift");
+        foreach (var h in c.Home.Highlights) Url(h.ImageUrl, "Bild des Schritts");
+        if (!IsSafeLink(c.Home.CtaButtonUrl)) errors.Add("Der Button-Link im Kontaktbereich ist ungültig.");
 
-        if (c.Nav.Count > 10) errors.Add("منو حداکثر ۱۰ لینک دارد.");
+        if (c.Nav.Count > 10) errors.Add("Das Menü hat höchstens 10 Links.");
         foreach (var n in c.Nav.Concat(c.Nav.SelectMany(x => x.Children)))
         {
-            Url(n.ImageUrl, "تصویر منو");
-            if (string.IsNullOrWhiteSpace(n.Label)) errors.Add("هر لینک منو باید عنوان داشته باشد.");
-            Len(n.Label, 30, "عنوان لینک منو");
-            if (!IsSafeLink(n.Href)) errors.Add($"لینک «{n.Label}» نامعتبر است.");
+            Url(n.ImageUrl, "Menübild");
+            if (string.IsNullOrWhiteSpace(n.Label)) errors.Add("Jeder Menülink braucht einen Titel.");
+            Len(n.Label, 30, "Titel des Menülinks");
+            if (!IsSafeLink(n.Href)) errors.Add($"Der Link „{n.Label}“ ist ungültig.");
         }
-        if (!IsSafeUrl(c.Contact.MapUrl)) errors.Add("لینک نقشه باید با https:// شروع شود.");
+        if (!IsSafeUrl(c.Contact.MapUrl)) errors.Add("Der Kartenlink muss mit https:// beginnen.");
 
-        if (c.Fields.Count > 12) errors.Add("حداکثر ۱۲ فیلد برای هر آیتم.");
-        if (c.Fields.Select(f => f.Key).Distinct().Count() != c.Fields.Count) errors.Add("کلید فیلدها نباید تکراری باشد.");
+        if (c.Fields.Count > 12) errors.Add("Höchstens 12 Felder pro Eintrag.");
+        if (c.Fields.Select(f => f.Key).Distinct().Count() != c.Fields.Count) errors.Add("Feldschlüssel dürfen sich nicht wiederholen.");
         foreach (var f in c.Fields)
         {
-            if (!FieldKey().IsMatch(f.Key)) errors.Add($"کلید فیلد «{f.Label}» فقط حروف کوچک انگلیسی و عدد (مثل year).");
-            if (string.IsNullOrWhiteSpace(f.Label)) errors.Add("هر فیلد باید عنوان داشته باشد.");
-            if (f.Type is not ("text" or "number" or "select")) errors.Add($"نوع فیلد «{f.Label}» نامعتبر است.");
-            if (f.Type == "select" && f.Options.Count == 0) errors.Add($"فیلد انتخابی «{f.Label}» باید گزینه داشته باشد.");
+            if (!FieldKey().IsMatch(f.Key)) errors.Add($"Der Feldschlüssel „{f.Label}“ darf nur englische Kleinbuchstaben und Ziffern enthalten (z. B. year).");
+            if (string.IsNullOrWhiteSpace(f.Label)) errors.Add("Jedes Feld braucht einen Titel.");
+            if (f.Type is not ("text" or "number" or "select")) errors.Add($"Der Feldtyp „{f.Label}“ ist ungültig.");
+            if (f.Type == "select" && f.Options.Count == 0) errors.Add($"Das Auswahlfeld „{f.Label}“ braucht Optionen.");
         }
-        if (c.Categories.Count > 30) errors.Add("حداکثر ۳۰ دسته.");
+        if (c.Categories.Count > 30) errors.Add("Höchstens 30 Kategorien.");
         return errors;
     }
 }

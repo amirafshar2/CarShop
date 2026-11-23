@@ -15,7 +15,7 @@ public sealed class ServiceItem : Entity, IAudited
     }
 
     public string Title { get; private set; } = default!;
-    /// <summary>Free text group, e.g. «تورهای داخلی» or «دیتیلینگ».</summary>
+    /// <summary>Free text group, e.g. "Fernreisen" or "Aufbereitung".</summary>
     public string? Category { get; private set; }
     public string? Description { get; set; }
     /// <summary>One feature per line.</summary>

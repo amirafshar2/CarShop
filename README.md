@@ -1,6 +1,8 @@
 # SiteKit – Website-Baukasten mit Einrichtungs-Assistent (Vibe-Coding-Projekt)
 
-> 🇮🇷 Persische Version: [README.fa.md](README.fa.md)
+> 🔗 **Live-Demo:** [carshop.amirrezaafshar.de](https://carshop.amirrezaafshar.de) – fiktives „Autohaus Berger“ in Esslingen, alle Daten sind Beispiele.
+>
+> 🌐 Die Oberfläche ist jetzt standardmäßig **Deutsch** (Euro, deutsche Handynummern, LTR). Die ursprüngliche persische Version liegt im Branch [`persisch`](../../tree/persisch); persische Projektbeschreibung: [README.fa.md](README.fa.md)
 
 <p>
   <img alt=".NET 9" src="https://img.shields.io/badge/.NET-9.0-512BD4?logo=dotnet&logoColor=white">
@@ -78,7 +80,7 @@ flowchart LR
 flowchart TB
     subgraph Container["1 Docker-Container pro Website"]
         direction TB
-        WEB["Next.js 15 (RTL)<br/>liest /api/v1/site → Farben, Logo, Menü, Texte"]
+        WEB["Next.js 15<br/>liest /api/v1/site → Farben, Logo, Menü, Texte"]
         API["ASP.NET Core 9 API"]
         subgraph Clean["Clean Architecture"]
             DOM["Domain<br/>Listing · Service · Lead · SiteSettings"]
@@ -107,7 +109,7 @@ die Liste wird gecacht und im Speicher gefiltert – für den Katalog eines klei
 | Cache | **HybridCache** mit Tags | Seite, Einträge, Leistungen; Invalidierung bei jeder Änderung |
 | Auth | ASP.NET Identity, **JWT** + HttpOnly-Refresh-Cookie mit Rotation | SMS-Code (OTP, als HMAC gespeichert), Setup-Key für den ersten Admin |
 | Uploads | eigene Ablage in `/app/data/uploads` | Prüfung per Magic Bytes (JPG/PNG/WEBP/GIF/MP4), kein SVG/HTML, zufällige Namen |
-| Frontend | **Next.js 15** (App Router), **React 19**, TypeScript, **Tailwind v4** | Theme per CSS-Variablen aus den Einstellungen, Vazirmatn-Schrift, RTL |
+| Frontend | **Next.js 15** (App Router), **React 19**, TypeScript, **Tailwind v4** | Theme per CSS-Variablen aus den Einstellungen, Vazirmatn-Schrift (mit lateinischen Zeichen), LTR |
 | UI | Komponenten von **21st.dev** (Navbar, Footer, Sidebar, CTA, Pricing Card …) + eigene Formular-Bausteine | siehe [docs/21st-components.md](docs/21st-components.md) |
 | Tests | **xUnit**, WebApplicationFactory, **Playwright** | 64 Tests (Unit + Integration), E2E des Assistenten |
 | Deployment | **Docker** (ein Container: API + Website), docker-compose | eine Instanz pro Website mit eigenem Volume |

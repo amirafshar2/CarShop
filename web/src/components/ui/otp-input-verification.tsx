@@ -110,7 +110,7 @@ export function Field({
   const labelEl = (
     <Label htmlFor={id} className="flex items-center gap-1.5">
       {label}
-      {optional && <span className="font-normal text-muted-foreground">اختیاری</span>}
+      {optional && <span className="font-normal text-muted-foreground">optional</span>}
     </Label>
   );
 
@@ -171,7 +171,7 @@ function OtpSlot({ char, hasFakeCaret, isActive, invalid }: SlotProps & { invali
         SQUIRCLE,
       )}
     >
-      {char && /^[0-9]$/.test(char) ? "۰۱۲۳۴۵۶۷۸۹"[Number(char)] : char}
+      {char}
       {hasFakeCaret && (
         <span aria-hidden className="pointer-events-none absolute inset-0 grid place-items-center">
           <span className="h-5 w-px bg-foreground motion-safe:animate-pulse" />
@@ -220,7 +220,7 @@ export function OtpInput({ length = 6, value, onChange, onComplete, alphanumeric
       autoFocus={autoFocus}
       containerClassName={cn("flex w-full max-w-[400px] items-center justify-center gap-2 sm:gap-2.5 has-[:disabled]:opacity-50", className)}
       {...fieldProps}
-      aria-label={fieldProps["aria-label"] ?? (fieldProps.id ? undefined : `کد ${length} رقمی`)}
+      aria-label={fieldProps["aria-label"] ?? (fieldProps.id ? undefined : `${length} -stelliger Code`)}
       render={({ slots }) => (
         <>
           {slots.map((slot, i) => (

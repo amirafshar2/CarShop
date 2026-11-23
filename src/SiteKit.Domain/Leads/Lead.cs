@@ -4,10 +4,10 @@ namespace SiteKit.Domain.Leads;
 
 public enum LeadType
 {
-    General = 0,      // پیام از صفحه‌ی تماس
-    ItemRequest = 1,  // درخواست درباره‌ی یک آیتم (خودرو، تور، محصول …)
+    General = 0,      // message from the contact page
+    ItemRequest = 1,  // request about an item (car, trip, product …)
     ServiceRequest = 2,
-    Booking = 3       // رزرو / وقت ملاقات
+    Booking = 3       // booking / appointment
 }
 
 public enum LeadStatus

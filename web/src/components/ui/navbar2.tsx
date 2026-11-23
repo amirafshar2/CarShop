@@ -33,10 +33,10 @@ export default function Navbar2({ site }: { site: SiteContent }) {
   const headerRef = useRef<HTMLElement>(null);
   const { user } = useSession();
   const account = !user
-    ? { href: "/login", label: "ورود" }
+    ? { href: "/login", label: "Anmelden" }
     : isStaff(user)
-      ? { href: "/admin", label: "پنل مدیریت" }
-      : { href: "/account", label: "حساب من" };
+      ? { href: "/admin", label: "Admin-Panel" }
+      : { href: "/account", label: "Mein Konto" };
   const cta = site.pages.contact ? { href: "/contact", label: site.labels.requestButton } : null;
   const socials = [
     { href: instagramLink(site.contact.instagram), label: "Instagram", icon: FaInstagram },
@@ -93,7 +93,7 @@ export default function Navbar2({ site }: { site: SiteContent }) {
             </Link>
 
             {/* Desktop nav */}
-            <nav aria-label="منوی اصلی" className="hidden items-center gap-1 lg:flex">
+            <nav aria-label="Hauptmenü" className="hidden items-center gap-1 lg:flex">
               {site.nav.map((item) => {
                 const isOpen = openMenu === item.label;
                 if (!hasMenu(item)) {
@@ -148,7 +148,7 @@ export default function Navbar2({ site }: { site: SiteContent }) {
             <button
               onClick={() => setMobileOpen((v) => !v)}
               className="flex items-center justify-center rounded-full p-2 text-muted-foreground lg:hidden"
-              aria-label={mobileOpen ? "بستن منو" : "باز کردن منو"}
+              aria-label={mobileOpen ? "Menü schließen" : "Menü öffnen"}
               aria-expanded={mobileOpen}
             >
               {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}

@@ -4,7 +4,7 @@ import { mediaUrl, type Listing } from "@/lib/api";
 import { fieldValue, priceText, type SiteContent } from "@/lib/site";
 import { toman } from "@/lib/format";
 
-/** Card used on the home page and the list page; chips come from the fields marked «نمایش روی کارت». */
+/** Card used on the home page and the list page; chips come from the fields marked "Auf der Karte anzeigen". */
 export default function ListingCard({ item, site }: { item: Listing; site: SiteContent }) {
   const cover = item.images[0];
   const chips = site.fields

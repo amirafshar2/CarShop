@@ -30,7 +30,7 @@ export default function SetupPage() {
     setError(undefined);
     try {
       await claimAdmin(phone, name || undefined, key || undefined);
-      toast.success(status?.hasAdmin ? "خوش آمدید" : "حساب مدیر ساخته شد. بریم سراغ ساختن سایت!");
+      toast.success(status?.hasAdmin ? "Willkommen" : "Admin-Konto angelegt. Jetzt geht es an die Website!");
       router.push(status?.hasAdmin ? "/admin" : "/admin/setup");
     } catch (e) {
       setError((e as Error).message);
@@ -45,22 +45,22 @@ export default function SetupPage() {
       <Card className="w-full max-w-md">
         <CardHeader>
           <span className="mb-2 grid size-12 place-items-center rounded-2xl bg-primary/15 text-primary"><KeyRound className="size-6" aria-hidden /></span>
-          <CardTitle className="text-2xl">{first ? "راه‌اندازی سایت" : "ورود مدیر با کلید"}</CardTitle>
+          <CardTitle className="text-2xl">{first ? "Website einrichten" : "Admin-Anmeldung mit Schlüssel"}</CardTitle>
           <CardDescription>
-            {status === undefined ? "در حال بررسی…" : status === null ? "ارتباط با سرور برقرار نشد." : first
-              ? "شماره‌ی موبایلتان را وارد کنید تا مدیر این سایت شوید. بعد دستیار، قدم‌به‌قدم کمکتان می‌کند سایت را بسازید."
-              : "اگر پیامک فعال نیست، با شماره‌ی مدیر و کلید راه‌اندازی وارد شوید."}
+            {status === undefined ? "Wird geprüft…" : status === null ? "Keine Verbindung zum Server." : first
+              ? "Geben Sie Ihre Handynummer ein, um Admin dieser Website zu werden. Danach hilft Ihnen der Assistent Schritt für Schritt beim Aufbau der Website."
+              : "Wenn SMS nicht aktiv ist, melden Sie sich mit der Admin-Nummer und dem Einrichtungsschlüssel an."}
           </CardDescription>
         </CardHeader>
         {status && (
           <CardContent>
             <form className="grid gap-4" onSubmit={(e) => { e.preventDefault(); void submit(); }}>
-              <TextField label="شماره موبایل" dir="ltr" required value={phone} onChange={setPhone} placeholder="09xxxxxxxxx" type="tel" />
-              {first && <TextField label="نام شما (اختیاری)" value={name} onChange={setName} max={80} />}
-              {status.requiresKey && <TextField label="کلید راه‌اندازی" dir="ltr" type="password" required value={key} onChange={setKey} hint="کلیدی که همراه سایت دریافت کرده‌اید." />}
+              <TextField label="Handynummer" dir="ltr" required value={phone} onChange={setPhone} placeholder="0151 23456789" type="tel" />
+              {first && <TextField label="Ihr Name (optional)" value={name} onChange={setName} max={80} />}
+              {status.requiresKey && <TextField label="Einrichtungsschlüssel" dir="ltr" type="password" required value={key} onChange={setKey} hint="Den Schlüssel haben Sie zusammen mit der Website erhalten." />}
               {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
-              <Button size="lg" disabled={busy}>{busy && <Loader2 className="size-4 animate-spin" />}{first ? "ساخت حساب مدیر" : "ورود"}</Button>
-              <p className="text-center text-sm text-muted-foreground"><Link href="/login" className="hover:text-foreground hover:underline">ورود با کد پیامکی</Link></p>
+              <Button size="lg" disabled={busy}>{busy && <Loader2 className="size-4 animate-spin" />}{first ? "Admin-Konto anlegen" : "Anmelden"}</Button>
+              <p className="text-center text-sm text-muted-foreground"><Link href="/login" className="hover:text-foreground hover:underline">Mit SMS-Code anmelden</Link></p>
             </form>
           </CardContent>
         )}

@@ -43,7 +43,7 @@ public sealed class ClaimAdminRequestValidator : AbstractValidator<ClaimAdminReq
 {
     public ClaimAdminRequestValidator()
     {
-        RuleFor(x => x.Phone).Must(p => IranValidators.TryNormalizeMobile(p, out _)).WithMessage("شماره موبایل نامعتبر است.");
+        RuleFor(x => x.Phone).Must(p => PhoneValidators.TryNormalizeMobile(p, out _)).WithMessage("Ungültige Handynummer.");
         RuleFor(x => x.FullName).MaximumLength(80);
         RuleFor(x => x.Key).MaximumLength(200);
     }
@@ -58,7 +58,7 @@ public sealed class RequestOtpRequestValidator : AbstractValidator<RequestOtpReq
 {
     public RequestOtpRequestValidator()
     {
-        RuleFor(x => x.Phone).Must(p => IranValidators.TryNormalizeMobile(p, out _)).WithMessage("شماره موبایل نامعتبر است.");
+        RuleFor(x => x.Phone).Must(p => PhoneValidators.TryNormalizeMobile(p, out _)).WithMessage("Ungültige Handynummer.");
     }
 }
 
@@ -66,9 +66,9 @@ public sealed class VerifyOtpRequestValidator : AbstractValidator<VerifyOtpReque
 {
     public VerifyOtpRequestValidator()
     {
-        RuleFor(x => x.Phone).Must(p => IranValidators.TryNormalizeMobile(p, out _)).WithMessage("شماره موبایل نامعتبر است.");
-        RuleFor(x => x.Code).Must(c => IranValidators.NormalizeDigits(c ?? "").Length == 6 && IranValidators.NormalizeDigits(c!).All(char.IsAsciiDigit))
-            .WithMessage("کد تأیید باید ۶ رقم باشد.");
+        RuleFor(x => x.Phone).Must(p => PhoneValidators.TryNormalizeMobile(p, out _)).WithMessage("Ungültige Handynummer.");
+        RuleFor(x => x.Code).Must(c => PhoneValidators.NormalizeDigits(c ?? "").Length == 6 && PhoneValidators.NormalizeDigits(c!).All(char.IsAsciiDigit))
+            .WithMessage("Der Bestätigungscode muss 6 Ziffern haben.");
         RuleFor(x => x.FullName).MaximumLength(80);
     }
 }

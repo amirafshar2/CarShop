@@ -1,18 +1,18 @@
 import type { LeadStatus, LeadType, ListingStatus } from "@/lib/api";
 
 export const leadTypeLabels: Record<LeadType, string> = {
-  General: "پیام / سؤال",
-  ItemRequest: "درخواست درباره‌ی آیتم",
-  ServiceRequest: "درخواست خدمت",
-  Booking: "رزرو / وقت",
+  General: "Nachricht / Frage",
+  ItemRequest: "Anfrage zu einem Eintrag",
+  ServiceRequest: "Anfrage zu einer Leistung",
+  Booking: "Buchung / Termin",
 };
 
 export const leadStatusLabels: Record<LeadStatus, string> = {
-  New: "جدید",
-  Contacted: "تماس گرفته شد",
-  Visit: "بازدید",
-  Won: "موفق",
-  Lost: "ناموفق",
+  New: "Neu",
+  Contacted: "Zurückgerufen",
+  Visit: "Besichtigung",
+  Won: "Erfolgreich",
+  Lost: "Nicht erfolgreich",
 };
 
 export const leadStatusColor: Record<LeadStatus, string> = {
@@ -24,10 +24,10 @@ export const leadStatusColor: Record<LeadStatus, string> = {
 };
 
 export const listingStatusLabels: Record<ListingStatus, string> = {
-  Draft: "پیش‌نویس",
-  Published: "منتشر شده",
-  Hidden: "پنهان",
-  SoldOut: "ناموجود / تکمیل",
+  Draft: "Entwurf",
+  Published: "Veröffentlicht",
+  Hidden: "Versteckt",
+  SoldOut: "Nicht verfügbar / ausgebucht",
 };
 
 export const listingStatusColor: Record<ListingStatus, string> = {
@@ -37,7 +37,7 @@ export const listingStatusColor: Record<ListingStatus, string> = {
   SoldOut: "bg-sky-500/15 text-sky-600 dark:text-sky-300 border-sky-500/40",
 };
 
-export const roleLabels: Record<string, string> = { Admin: "مدیر", Staff: "کارمند", Customer: "مشتری" };
+export const roleLabels: Record<string, string> = { Admin: "Admin", Staff: "Mitarbeiter", Customer: "Kundinnen und Kunden" };
 
 export const faDate = (iso: string) =>
-  new Intl.DateTimeFormat("fa-IR", { dateStyle: "medium", timeStyle: "short" }).format(new Date(iso));
+  new Intl.DateTimeFormat("de-DE", { dateStyle: "medium", timeStyle: "short" }).format(new Date(iso));

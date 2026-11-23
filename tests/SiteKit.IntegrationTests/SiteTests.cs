@@ -23,13 +23,13 @@ public sealed class SiteTests(ApiFactory factory) : IClassFixture<ApiFactory>
         return client;
     }
 
-    private Task<HttpClient> Admin() => Login(factory, factory.Sms, "09120000001");
+    private Task<HttpClient> Admin() => Login(factory, factory.Sms, "015120000001");
 
     private static object Listing(string title, string status = "Published", long? price = 10_000_000, string[]? images = null, Guid? version = null) => new
     {
-        title, category = "نو", summary = "خلاصه", description = (string?)null, priceType = price is null ? "OnCall" : "Fixed",
+        title, category = "Neuwagen", summary = "Zusammenfassung", description = (string?)null, priceType = price is null ? "OnCall" : "Fixed",
         priceRial = price, originalPriceRial = (long?)null, unit = (string?)null, badge = (string?)null,
-        images = images ?? ["https://example.com/a.jpg"], attributes = new Dictionary<string, string> { ["year"] = "2024", ["fuel"] = "برقی" },
+        images = images ?? ["https://example.com/a.jpg"], attributes = new Dictionary<string, string> { ["year"] = "2024", ["fuel"] = "Elektro" },
         status, isFeatured = false, sortOrder = 0, version
     };
 
@@ -39,7 +39,7 @@ public sealed class SiteTests(ApiFactory factory) : IClassFixture<ApiFactory>
         var site = await factory.CreateClient().GetFromJsonAsync<JsonElement>("/api/v1/site", Json);
         Assert.Equal("car", site.GetProperty("preset").GetString());
         Assert.True(site.GetProperty("isPublished").GetBoolean());
-        Assert.Equal("خودرو", site.GetProperty("content").GetProperty("labels").GetProperty("itemSingular").GetString());
+        Assert.Equal("Fahrzeug", site.GetProperty("content").GetProperty("labels").GetProperty("itemSingular").GetString());
         Assert.NotEmpty(site.GetProperty("content").GetProperty("fields").EnumerateArray());
     }
 
@@ -47,12 +47,12 @@ public sealed class SiteTests(ApiFactory factory) : IClassFixture<ApiFactory>
     public async Task Listings_filter_by_category_and_field_and_resolve_persian_slug()
     {
         var c = factory.CreateClient();
-        var used = await c.GetFromJsonAsync<JsonElement>("/api/v1/listings?category=" + Uri.EscapeDataString("کارکرده"), Json);
-        Assert.All(used.GetProperty("items").EnumerateArray(), i => Assert.Equal("کارکرده", i.GetProperty("category").GetString()));
+        var used = await c.GetFromJsonAsync<JsonElement>("/api/v1/listings?category=" + Uri.EscapeDataString("Gebrauchtwagen"), Json);
+        Assert.All(used.GetProperty("items").EnumerateArray(), i => Assert.Equal("Gebrauchtwagen", i.GetProperty("category").GetString()));
 
-        var hybrid = await c.GetFromJsonAsync<JsonElement>("/api/v1/listings?f_fuel=" + Uri.EscapeDataString("هیبرید"), Json);
+        var hybrid = await c.GetFromJsonAsync<JsonElement>("/api/v1/listings?f_fuel=" + Uri.EscapeDataString("Hybrid"), Json);
         Assert.True(hybrid.GetProperty("totalCount").GetInt32() >= 1);
-        Assert.All(hybrid.GetProperty("items").EnumerateArray(), i => Assert.Equal("هیبرید", i.GetProperty("attributes").GetProperty("fuel").GetString()));
+        Assert.All(hybrid.GetProperty("items").EnumerateArray(), i => Assert.Equal("Hybrid", i.GetProperty("attributes").GetProperty("fuel").GetString()));
 
         var slug = hybrid.GetProperty("items")[0].GetProperty("slug").GetString()!;
         Assert.Equal(HttpStatusCode.OK, (await c.GetAsync("/api/v1/listings/" + Uri.EscapeDataString(slug))).StatusCode);
@@ -63,20 +63,20 @@ public sealed class SiteTests(ApiFactory factory) : IClassFixture<ApiFactory>
     public async Task Admin_creates_listing_drafts_stay_private_and_unsafe_images_are_rejected()
     {
         var admin = await Admin();
-        var a = await admin.PostAsJsonAsync("/api/v1/admin/listings", Listing("تور تست اسلاگ"));
-        var b = await admin.PostAsJsonAsync("/api/v1/admin/listings", Listing("تور تست اسلاگ"));
-        var draft = await admin.PostAsJsonAsync("/api/v1/admin/listings", Listing("پیش‌نویس مخفی", status: "Draft"));
-        var bad = await admin.PostAsJsonAsync("/api/v1/admin/listings", Listing("بد", images: ["javascript:alert(1)"]));
+        var a = await admin.PostAsJsonAsync("/api/v1/admin/listings", Listing("Testreise Slug"));
+        var b = await admin.PostAsJsonAsync("/api/v1/admin/listings", Listing("Testreise Slug"));
+        var draft = await admin.PostAsJsonAsync("/api/v1/admin/listings", Listing("Versteckter Entwurf", status: "Draft"));
+        var bad = await admin.PostAsJsonAsync("/api/v1/admin/listings", Listing("Schlecht", images: ["javascript:alert(1)"]));
         Assert.Equal(HttpStatusCode.Created, a.StatusCode);
         Assert.Equal(HttpStatusCode.Created, b.StatusCode);
         Assert.Equal(HttpStatusCode.Created, draft.StatusCode);
         Assert.Equal(HttpStatusCode.UnprocessableEntity, bad.StatusCode);
 
-        var pub = await factory.CreateClient().GetFromJsonAsync<JsonElement>("/api/v1/listings?pageSize=48&q=" + Uri.EscapeDataString("تور تست اسلاگ"), Json);
+        var pub = await factory.CreateClient().GetFromJsonAsync<JsonElement>("/api/v1/listings?pageSize=48&q=" + Uri.EscapeDataString("Testreise Slug"), Json);
         var slugs = pub.GetProperty("items").EnumerateArray().Select(i => i.GetProperty("slug").GetString()).ToList();
-        Assert.Contains("تور-تست-اسلاگ", slugs);
-        Assert.Contains("تور-تست-اسلاگ-2", slugs);
-        var hidden = await factory.CreateClient().GetFromJsonAsync<JsonElement>("/api/v1/listings?q=" + Uri.EscapeDataString("پیش‌نویس مخفی"), Json);
+        Assert.Contains("testreise-slug", slugs);
+        Assert.Contains("testreise-slug-2", slugs);
+        var hidden = await factory.CreateClient().GetFromJsonAsync<JsonElement>("/api/v1/listings?q=" + Uri.EscapeDataString("Versteckter Entwurf"), Json);
         Assert.Equal(0, hidden.GetProperty("totalCount").GetInt32());
     }
 
@@ -84,17 +84,17 @@ public sealed class SiteTests(ApiFactory factory) : IClassFixture<ApiFactory>
     public async Task Stale_listing_edit_is_rejected_and_staff_cannot_edit()
     {
         var admin = await Admin();
-        var created = await admin.PostAsJsonAsync("/api/v1/admin/listings", Listing("رقابت ویرایش"));
+        var created = await admin.PostAsJsonAsync("/api/v1/admin/listings", Listing("Bearbeitungskonflikt"));
         var id = (await created.Content.ReadFromJsonAsync<JsonElement>(Json)).GetProperty("id").GetGuid();
         var v = (await admin.GetFromJsonAsync<JsonElement>($"/api/v1/admin/listings/{id}", Json)).GetProperty("version").GetGuid();
 
-        var first = await admin.PutAsJsonAsync($"/api/v1/admin/listings/{id}", Listing("رقابت ویرایش", price: 20_000_000, version: v));
-        var stale = await admin.PutAsJsonAsync($"/api/v1/admin/listings/{id}", Listing("رقابت ویرایش", price: 30_000_000, version: v));
+        var first = await admin.PutAsJsonAsync($"/api/v1/admin/listings/{id}", Listing("Bearbeitungskonflikt", price: 20_000_000, version: v));
+        var stale = await admin.PutAsJsonAsync($"/api/v1/admin/listings/{id}", Listing("Bearbeitungskonflikt", price: 30_000_000, version: v));
         Assert.Equal(HttpStatusCode.NoContent, first.StatusCode);
         Assert.Equal(HttpStatusCode.Conflict, stale.StatusCode);
 
-        await admin.PostAsJsonAsync("/api/v1/admin/users", new { phone = "09170000201", fullName = "کارمند", role = "Staff" });
-        var staff = await Login(factory, factory.Sms, "09170000201");
+        await admin.PostAsJsonAsync("/api/v1/admin/users", new { phone = "015170000201", fullName = "Mitarbeiter", role = "Staff" });
+        var staff = await Login(factory, factory.Sms, "015170000201");
         Assert.Equal(HttpStatusCode.Forbidden, (await staff.PutAsJsonAsync($"/api/v1/admin/listings/{id}", Listing("x"))).StatusCode);
         Assert.Equal(HttpStatusCode.OK, (await staff.GetAsync("/api/v1/admin/site")).StatusCode);
         var content = (await staff.GetFromJsonAsync<JsonElement>("/api/v1/admin/site", Json)).GetProperty("content");
@@ -110,16 +110,16 @@ public sealed class SiteTests(ApiFactory factory) : IClassFixture<ApiFactory>
 
         var evil = new Dictionary<string, object>(content.ToDictionary(k => k.Key, k => (object)k.Value))
         {
-            ["nav"] = new[] { new { label = "بد", href = "javascript:alert(1)" } }
+            ["nav"] = new[] { new { label = "Schlecht", href = "javascript:alert(1)" } }
         };
         Assert.Equal(HttpStatusCode.UnprocessableEntity, (await admin.PutAsJsonAsync("/api/v1/admin/site", new { content = evil })).StatusCode);
 
         var brand = JsonSerializer.Deserialize<Dictionary<string, object?>>(content["brand"].GetRawText(), Json)!;
-        brand["name"] = "نام جدید تست";
+        brand["name"] = "Neuer Testname";
         var good = new Dictionary<string, object>(content.ToDictionary(k => k.Key, k => (object)k.Value)) { ["brand"] = brand };
         Assert.Equal(HttpStatusCode.NoContent, (await admin.PutAsJsonAsync("/api/v1/admin/site", new { content = good })).StatusCode);
         var pub = await factory.CreateClient().GetFromJsonAsync<JsonElement>("/api/v1/site", Json);
-        Assert.Equal("نام جدید تست", pub.GetProperty("content").GetProperty("brand").GetProperty("name").GetString());
+        Assert.Equal("Neuer Testname", pub.GetProperty("content").GetProperty("brand").GetProperty("name").GetString());
 
         Assert.Equal(HttpStatusCode.NoContent, (await admin.PostAsJsonAsync("/api/v1/admin/site/publish", new { published = false })).StatusCode);
         Assert.False((await factory.CreateClient().GetFromJsonAsync<JsonElement>("/api/v1/site", Json)).GetProperty("isPublished").GetBoolean());
@@ -132,7 +132,7 @@ public sealed class SiteTests(ApiFactory factory) : IClassFixture<ApiFactory>
         var home = (await factory.CreateClient().GetFromJsonAsync<JsonElement>("/api/v1/site", Json)).GetProperty("content").GetProperty("home");
         Assert.All(home.GetProperty("highlights").EnumerateArray(), h => Assert.StartsWith("https://", h.GetProperty("imageUrl").GetString()));
         Assert.InRange(home.GetProperty("gallery").GetArrayLength(), 1, 7);
-        Assert.All(home.GetProperty("testimonials").EnumerateArray(), t => Assert.Equal("متن نمونه", t.GetProperty("name").GetString()));
+        Assert.All(home.GetProperty("testimonials").EnumerateArray(), t => Assert.Equal("Beispieltext", t.GetProperty("name").GetString()));
     }
 
     [Fact]
@@ -142,18 +142,18 @@ public sealed class SiteTests(ApiFactory factory) : IClassFixture<ApiFactory>
         var site = await admin.GetFromJsonAsync<JsonElement>("/api/v1/admin/site", Json);
         var content = JsonSerializer.Deserialize<Dictionary<string, object>>(site.GetProperty("content").GetRawText(), Json)!;
 
-        content["nav"] = new[] { new { label = "منو", href = "/", children = new[] { new { label = "بد", href = "javascript:alert(1)" } } } };
+        content["nav"] = new[] { new { label = "Menü", href = "/", children = new[] { new { label = "Schlecht", href = "javascript:alert(1)" } } } };
         Assert.Equal(HttpStatusCode.UnprocessableEntity, (await admin.PutAsJsonAsync("/api/v1/admin/site", new { content })).StatusCode);
 
         content["nav"] = new object[]
         {
-            new { label = "موجودی", href = "/items", imageUrl = "https://example.com/m.jpg", caption = "عکس", note = "یادداشت",
-                  children = new[] { new { label = "همه", href = "/items", group = "موجودی", badge = "جدید" }, new { label = "تماس", href = "tel:0912", group = "ارتباط", badge = "" } } },
-            new { label = "تماس", href = "/contact" },
+            new { label = "Bestand", href = "/items", imageUrl = "https://example.com/m.jpg", caption = "Bild", note = "Notiz",
+                  children = new[] { new { label = "Alle", href = "/items", group = "Bestand", badge = "Neu" }, new { label = "Kontakt", href = "tel:0912", group = "Kontakt", badge = "" } } },
+            new { label = "Kontakt", href = "/contact" },
         };
         Assert.Equal(HttpStatusCode.NoContent, (await admin.PutAsJsonAsync("/api/v1/admin/site", new { content })).StatusCode);
         var nav = (await factory.CreateClient().GetFromJsonAsync<JsonElement>("/api/v1/site", Json)).GetProperty("content").GetProperty("nav");
-        Assert.Equal("ارتباط", nav[0].GetProperty("children")[1].GetProperty("group").GetString());
+        Assert.Equal("Kontakt", nav[0].GetProperty("children")[1].GetProperty("group").GetString());
 
         var home = JsonSerializer.Deserialize<Dictionary<string, object?>>(site.GetProperty("content").GetProperty("home").GetRawText(), Json)!;
         home["gallery"] = Enumerable.Range(0, 8).Select(i => $"https://example.com/{i}.jpg").ToArray();
@@ -232,12 +232,12 @@ public sealed class SiteTests(ApiFactory factory) : IClassFixture<ApiFactory>
         Assert.False(status.GetProperty("hasAdmin").GetBoolean());
         Assert.Equal(0, (await anon.GetFromJsonAsync<JsonElement>("/api/v1/listings", Json)).GetProperty("totalCount").GetInt32());
 
-        Assert.Equal(HttpStatusCode.Unauthorized, (await anon.PostAsJsonAsync("/api/v1/auth/setup", new { phone = "09121110000", key = "wrong-key" })).StatusCode);
-        var claim = await anon.PostAsJsonAsync("/api/v1/auth/setup", new { phone = "09121110000", fullName = "صاحب سایت", key = "secret-key-123" });
+        Assert.Equal(HttpStatusCode.Unauthorized, (await anon.PostAsJsonAsync("/api/v1/auth/setup", new { phone = "015121110000", key = "wrong-key" })).StatusCode);
+        var claim = await anon.PostAsJsonAsync("/api/v1/auth/setup", new { phone = "015121110000", fullName = "Website-Inhaber", key = "secret-key-123" });
         Assert.Equal(HttpStatusCode.OK, claim.StatusCode);
         var token = (await claim.Content.ReadFromJsonAsync<JsonElement>(Json)).GetProperty("accessToken").GetString();
         // Someone else with the key cannot take over an already claimed site.
-        Assert.Equal(HttpStatusCode.Forbidden, (await anon.PostAsJsonAsync("/api/v1/auth/setup", new { phone = "09121119999", key = "secret-key-123" })).StatusCode);
+        Assert.Equal(HttpStatusCode.Forbidden, (await anon.PostAsJsonAsync("/api/v1/auth/setup", new { phone = "015121119999", key = "secret-key-123" })).StatusCode);
 
         var owner = fresh.CreateClient();
         owner.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);

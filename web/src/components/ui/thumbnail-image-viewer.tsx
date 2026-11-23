@@ -165,7 +165,7 @@ export default function ThumbnailImageViewer({
       <header className="flex items-start justify-between gap-4 mb-6">
         <div>
           <span className="text-xs font-semibold text-muted-foreground">
-            گالری خودرو
+            Autohaus
           </span>
           <h2 className="text-2xl sm:text-[26px] font-semibold tracking-tight text-foreground mt-1 mb-1">
             {title}
@@ -175,10 +175,10 @@ export default function ThumbnailImageViewer({
           </p>
         </div>
         <div className="text-sm font-semibold text-foreground bg-muted/80 px-2.5 py-1 rounded-md border border-border/50 shrink-0">
-          {(active + 1).toLocaleString("fa-IR")}
+          {(active + 1).toLocaleString("de-DE")}
           <span className="text-muted-foreground font-normal">
             {" "}
-            از {images.length.toLocaleString("fa-IR")}
+            von {images.length.toLocaleString("de-DE")}
           </span>
         </div>
       </header>
@@ -200,7 +200,7 @@ export default function ThumbnailImageViewer({
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-xs text-muted-foreground">
-            تصویری برای نمایش وجود ندارد.
+            Keine Bilder vorhanden.
           </div>
         )}
 
@@ -218,21 +218,21 @@ export default function ThumbnailImageViewer({
         <div className="absolute right-4 bottom-4 flex items-center gap-2 z-10">
           <button
             type="button"
-            aria-label="تصویر قبلی"
+            aria-label="Vorheriges Bild"
             disabled={images.length < 2}
             onClick={() => choose(active - 1)}
             className="w-11 h-11 rounded-full bg-background/90 text-foreground backdrop-blur-sm shadow flex items-center justify-center hover:scale-105 active:scale-95 transition-all disabled:opacity-40 disabled:pointer-events-none border border-border/30"
           >
-            <ChevronRight className="w-5 h-5" />
+            <ChevronLeft className="w-5 h-5" />
           </button>
           <button
             type="button"
-            aria-label="تصویر بعدی"
+            aria-label="Nächstes Bild"
             disabled={images.length < 2}
             onClick={() => choose(active + 1)}
             className="w-11 h-11 rounded-full bg-background/90 text-foreground backdrop-blur-sm shadow flex items-center justify-center hover:scale-105 active:scale-95 transition-all disabled:opacity-40 disabled:pointer-events-none border border-border/30"
           >
-            <ChevronLeft className="w-5 h-5" />
+            <ChevronRight className="w-5 h-5" />
           </button>
         </div>
       </div>
@@ -243,7 +243,7 @@ export default function ThumbnailImageViewer({
           {current?.title}
         </h3>
         <span className="text-xs text-muted-foreground whitespace-nowrap">
-          عکس: {current?.credit ?? "مروجی موتورز"}
+          Bild: {current?.credit ?? "Autohaus Berger"}
         </span>
       </div>
 
@@ -251,7 +251,7 @@ export default function ThumbnailImageViewer({
       <div
         className="flex items-center gap-2 sm:gap-2.5 overflow-x-auto pb-1 pt-1"
         role="tablist"
-        aria-label="انتخاب تصویر"
+        aria-label="Bild auswählen"
         ref={tabs}
         onKeyDown={(e) => {
           let next = active;
@@ -286,7 +286,7 @@ export default function ThumbnailImageViewer({
             >
               <img src={im.src} alt="" draggable={false} className="w-full h-full object-cover" />
               <span className="absolute bottom-1 left-1.5 text-xs font-semibold text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
-                {(i + 1).toLocaleString("fa-IR")}
+                {(i + 1).toLocaleString("de-DE")}
               </span>
             </button>
           );
@@ -295,7 +295,7 @@ export default function ThumbnailImageViewer({
 
       {/* Footer */}
       <footer className="flex items-center justify-between gap-4 flex-wrap mt-6 pt-4 border-t border-border text-xs text-muted-foreground">
-        <span>برای دیدن تصاویر روی پیش‌نمایش‌ها بزنید یا از کلیدهای جهت استفاده کنید.</span>
+        <span>Tippen Sie auf die Vorschaubilder oder nutzen Sie die Pfeiltasten, um die Bilder anzusehen.</span>
       </footer>
     </section>
   );

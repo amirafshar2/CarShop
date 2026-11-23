@@ -51,8 +51,8 @@ export const getSiteRaw = <T,>() => get<T>(`/api/v1/site`);
 export type LeadType = "General" | "ItemRequest" | "ServiceRequest" | "Booking";
 export type LeadStatus = "New" | "Contacted" | "Visit" | "Won" | "Lost";
 
-const TOO_MANY = "تعداد درخواست‌ها زیاد بود. چند دقیقه‌ی دیگر دوباره تلاش کنید.";
-const OFFLINE = "ارتباط با سرور برقرار نشد. مطمئن شوید API (بک‌اند روی پورت ۵۰۸۰) روشن است و دوباره تلاش کنید.";
+const TOO_MANY = "Zu viele Anfragen. Bitte in ein paar Minuten erneut versuchen.";
+const OFFLINE = "Keine Verbindung zum Server. Prüfen Sie, ob die API (Backend auf Port 5080) läuft, und versuchen Sie es erneut.";
 
 /** fetch that turns network failures ("Failed to fetch") into a clear Persian message. */
 async function call(path: string, init: RequestInit = {}): Promise<Response> {
@@ -68,7 +68,7 @@ async function fail(res: Response, fallback: string): Promise<never> {
   if (res.status === 429) throw new Error(TOO_MANY);
   const body = await res.json().catch(() => null);
   const first = body?.errors ? (Object.values(body.errors as Record<string, string[]>)[0]?.[0] ?? null) : null;
-  if (res.status === 403) throw new Error("شما به این بخش دسترسی ندارید.");
+  if (res.status === 403) throw new Error("Sie haben keinen Zugriff auf diesen Bereich.");
   throw new Error(first ?? body?.title ?? fallback);
 }
 
@@ -78,7 +78,7 @@ export async function createLead(input: { name: string; phone: string; type: Lea
     headers: { "content-type": "application/json" },
     body: JSON.stringify(input),
   });
-  if (!res.ok) await fail(res, "ارسال انجام نشد.");
+  if (!res.ok) await fail(res, "Senden fehlgeschlagen.");
 }
 
 // ---------- Auth (access token in memory, refresh token in HttpOnly cookie) ----------
@@ -141,19 +141,19 @@ export async function authFetch(path: string, init: RequestInit = {}): Promise<R
     });
   let res = await send();
   if (res.status === 401 && (await refreshSession())) res = await send();
-  if (res.status === 401) throw new Error("لطفاً دوباره وارد شوید.");
+  if (res.status === 401) throw new Error("Bitte erneut anmelden.");
   return res;
 }
 
 export async function apiGet<T>(path: string): Promise<T> {
   const res = await authFetch(path);
-  if (!res.ok) await fail(res, "دریافت اطلاعات انجام نشد.");
+  if (!res.ok) await fail(res, "Daten konnten nicht geladen werden.");
   return (await res.json()) as T;
 }
 
 export async function apiSend<T = void>(path: string, method: "POST" | "PUT" | "PATCH" | "DELETE", body?: unknown): Promise<T> {
   const res = await authFetch(path, { method, body: body === undefined ? undefined : JSON.stringify(body) });
-  if (!res.ok) await fail(res, "عملیات انجام نشد.");
+  if (!res.ok) await fail(res, "Vorgang fehlgeschlagen.");
   const text = await res.text();
   return (text ? JSON.parse(text) : undefined) as T;
 }
@@ -165,7 +165,7 @@ export async function requestOtp(phone: string) {
     credentials: "include",
     body: JSON.stringify({ phone }),
   });
-  if (!res.ok) await fail(res, "ارسال کد انجام نشد.");
+  if (!res.ok) await fail(res, "Der Code konnte nicht gesendet werden.");
   return (await res.json()) as { expiresInSeconds: number; resendAfterSeconds: number; devCode?: string | null };
 }
 
@@ -176,7 +176,7 @@ export async function verifyOtp(phone: string, code: string, fullName?: string) 
     credentials: "include",
     body: JSON.stringify({ phone, code, fullName }),
   });
-  if (!res.ok) await fail(res, "کد تأیید نادرست است.");
+  if (!res.ok) await fail(res, "Der Bestätigungscode ist falsch.");
   const body = (await res.json()) as AuthResponse;
   setSession(body);
   return body;
@@ -199,7 +199,7 @@ export async function demoLogin(role: "Admin" | "Staff", key?: string) {
     credentials: "include",
     body: JSON.stringify({ role, key }),
   });
-  if (!res.ok) await fail(res, "ورود نمایشی انجام نشد.");
+  if (!res.ok) await fail(res, "Demo-Anmeldung fehlgeschlagen.");
   const body = (await res.json()) as AuthResponse;
   setSession(body);
   return body;
@@ -254,7 +254,7 @@ export async function uploadMedia(file: File): Promise<UploadResult> {
   const form = new FormData();
   form.append("file", file);
   const res = await authFetch(`/api/v1/admin/uploads`, { method: "POST", body: form });
-  if (!res.ok) await fail(res, "آپلود انجام نشد.");
+  if (!res.ok) await fail(res, "Hochladen fehlgeschlagen.");
   return (await res.json()) as UploadResult;
 }
 
@@ -266,7 +266,7 @@ export const uploadId = (url: string | null | undefined) => url?.match(/^\/api\/
 /** Is the background optimisation of an uploaded video finished? */
 export async function getUploadStatus(id: string): Promise<{ ready: boolean; poster: string | null; failed?: string | null }> {
   const res = await authFetch(`/api/v1/admin/uploads/${id}/status`);
-  if (!res.ok) await fail(res, "وضعیت ویدیو خوانده نشد.");
+  if (!res.ok) await fail(res, "Videostatus konnte nicht gelesen werden.");
   return res.json();
 }
 
@@ -287,7 +287,7 @@ export async function claimAdmin(phone: string, fullName: string | undefined, ke
     credentials: "include",
     body: JSON.stringify({ phone, fullName, key }),
   });
-  if (!res.ok) await fail(res, "ورود انجام نشد.");
+  if (!res.ok) await fail(res, "Anmeldung fehlgeschlagen.");
   const body = (await res.json()) as AuthResponse;
   setSession(body);
   return body;

@@ -94,14 +94,14 @@ public sealed class SiteService(IAppDbContext db, HybridCache cache, TimeProvide
         if (errors.Count > 0) return Result.Failure(Error.Validation("site.invalid", errors[0]));
         var row = await RowAsync(ct);
         if (r.Version is { } v && v != row.Version)
-            return Result.Failure(Error.Conflict("site.stale", "تنظیمات بعد از باز کردن این صفحه تغییر کرده است. صفحه را تازه کنید."));
+            return Result.Failure(Error.Conflict("site.stale", "Die Einstellungen wurden geändert, nachdem Sie diese Seite geöffnet haben. Bitte die Seite neu laden."));
         row.ContentJson = SiteJson.Write(Normalise(r.Content));
         return await SaveAsync(ct);
     }
 
     public async Task<Result> ApplyPresetAsync(ApplyPresetRequest r, CancellationToken ct)
     {
-        if (!Presets.Exists(r.Preset)) return Result.Failure(Error.Validation("site.preset", "نوع کسب‌وکار نامعتبر است."));
+        if (!Presets.Exists(r.Preset)) return Result.Failure(Error.Validation("site.preset", "Ungültige Unternehmensart."));
         var row = await RowAsync(ct);
         var old = SiteJson.Read(row.ContentJson);
         var fresh = Presets.Content(r.Preset, r.WithDemoData);
@@ -122,7 +122,7 @@ public sealed class SiteService(IAppDbContext db, HybridCache cache, TimeProvide
     {
         var row = await RowAsync(ct);
         if (published && string.IsNullOrWhiteSpace(SiteJson.Read(row.ContentJson).Brand.Name))
-            return Result.Failure(Error.Validation("site.no_name", "قبل از انتشار، نام کسب‌وکار را وارد کنید."));
+            return Result.Failure(Error.Validation("site.no_name", "Bitte vor der Veröffentlichung den Namen des Unternehmens eingeben."));
         row.IsPublished = published;
         if (published) Mark(row, "publish");
         return await SaveAsync(ct);
@@ -130,7 +130,7 @@ public sealed class SiteService(IAppDbContext db, HybridCache cache, TimeProvide
 
     public async Task<Result> CompleteStepAsync(string step, CancellationToken ct)
     {
-        if (!Steps.Contains(step)) return Result.Failure(Error.Validation("site.step", "مرحله نامعتبر است."));
+        if (!Steps.Contains(step)) return Result.Failure(Error.Validation("site.step", "Ungültiger Schritt."));
         var row = await RowAsync(ct);
         Mark(row, step);
         return await SaveAsync(ct);
@@ -153,7 +153,7 @@ public sealed class SiteService(IAppDbContext db, HybridCache cache, TimeProvide
 
     public async Task<Result> ResetAsync(ResetRequest r, CancellationToken ct)
     {
-        if (!Presets.Exists(r.Preset)) return Result.Failure(Error.Validation("site.preset", "نوع کسب‌وکار نامعتبر است."));
+        if (!Presets.Exists(r.Preset)) return Result.Failure(Error.Validation("site.preset", "Ungültige Unternehmensart."));
         var demo = r.Mode.Equals("demo", StringComparison.OrdinalIgnoreCase);
         var row = await RowAsync(ct);
         foreach (var l in await db.Listings.ToListAsync(ct)) l.IsDeleted = true;
@@ -186,15 +186,15 @@ public sealed class SiteService(IAppDbContext db, HybridCache cache, TimeProvide
     /// <summary>Replaces the whole content (settings, listings, services) with the package. Leads and users stay.</summary>
     public async Task<Result> ImportAsync(SitePackage p, CancellationToken ct)
     {
-        if (p.Format != 1) return Result.Failure(Error.Validation("package.format", "فرمت فایل محتوا پشتیبانی نمی‌شود."));
-        if (!Presets.Exists(p.Preset)) return Result.Failure(Error.Validation("package.preset", "نوع کسب‌وکار فایل نامعتبر است."));
+        if (p.Format != 1) return Result.Failure(Error.Validation("package.format", "Dieses Dateiformat wird nicht unterstützt."));
+        if (!Presets.Exists(p.Preset)) return Result.Failure(Error.Validation("package.preset", "Die Unternehmensart in der Datei ist ungültig."));
         var errors = SiteRules.Validate(p.Content);
         if (errors.Count > 0) return Result.Failure(Error.Validation("package.invalid", errors[0]));
         if (p.Listings.Count > 500 || p.Services.Count > 200)
-            return Result.Failure(Error.Validation("package.too_big", "فایل محتوا بیش از حد بزرگ است."));
+            return Result.Failure(Error.Validation("package.too_big", "Die Inhaltsdatei ist zu groß."));
         if (p.Listings.Any(l => string.IsNullOrWhiteSpace(l.Title) || !(l.Images ?? []).All(SiteRules.IsSafeUrl))
             || p.Services.Any(s => string.IsNullOrWhiteSpace(s.Title) || !SiteRules.IsSafeUrl(s.ImageUrl)))
-            return Result.Failure(Error.Validation("package.items", "بعضی از آیتم‌های فایل عنوان ندارند یا آدرس تصویر نامعتبر دارند."));
+            return Result.Failure(Error.Validation("package.items", "Einige Einträge in der Datei haben keinen Titel oder eine ungültige Bildadresse."));
 
         var row = await RowAsync(ct);
         row.Preset = p.Preset;
@@ -325,7 +325,7 @@ public sealed class SiteService(IAppDbContext db, HybridCache cache, TimeProvide
         c.Home.Stats = c.Home.Stats.Where(s => !string.IsNullOrWhiteSpace(s.Value)).ToList();
         c.Categories = c.Categories.Select(x => x.Trim()).Where(x => x.Length > 0).Distinct().ToList();
         c.Contact.Instagram = T(c.Contact.Instagram?.TrimStart('@'));
-        c.Contact.Whatsapp = T(c.Contact.Whatsapp is { } w ? IranValidators.NormalizeDigits(w).Replace("+", "").Replace(" ", "") : null);
+        c.Contact.Whatsapp = T(c.Contact.Whatsapp is { } w ? PhoneValidators.NormalizeDigits(w).Replace("+", "").Replace(" ", "") : null);
         return c;
     }
 

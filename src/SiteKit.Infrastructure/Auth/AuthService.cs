@@ -26,7 +26,7 @@ public sealed class AuthService(
 
     public async Task<Result<OtpSentResponse>> RequestOtpAsync(RequestOtpRequest request, CancellationToken ct)
     {
-        IranValidators.TryNormalizeMobile(request.Phone, out var phone);
+        PhoneValidators.TryNormalizeMobile(request.Phone, out var phone);
         var now = clock.GetUtcNow();
         var windowStart = now.AddMinutes(-_otp.WindowMinutes);
 
@@ -37,9 +37,9 @@ public sealed class AuthService(
             .ToListAsync(ct);
 
         if (recent.Count >= _otp.MaxSendsPerWindow)
-            return Error.TooMany("otp.too_many", $"تعداد درخواست کد زیاد است. {_otp.WindowMinutes} دقیقه‌ی دیگر دوباره تلاش کنید.");
+            return Error.TooMany("otp.too_many", $"Zu viele Code-Anfragen. {_otp.WindowMinutes} Minuten erneut versuchen.");
         if (recent.Count > 0 && now - recent[0] < TimeSpan.FromSeconds(_otp.ResendCooldownSeconds))
-            return Error.TooMany("otp.cooldown", "لطفاً چند لحظه صبر کنید و دوباره درخواست کد بدهید.");
+            return Error.TooMany("otp.cooldown", "Bitte einen Moment warten und dann erneut einen Code anfordern.");
 
         // Invalidate previous unused codes for this phone.
         await db.OtpCodes.Where(o => o.Phone == phone && !o.Used)
@@ -62,10 +62,10 @@ public sealed class AuthService(
 
     public async Task<Result<AuthTokens>> VerifyOtpAsync(VerifyOtpRequest request, CancellationToken ct)
     {
-        IranValidators.TryNormalizeMobile(request.Phone, out var phone);
-        var code = IranValidators.NormalizeDigits(request.Code.Trim());
+        PhoneValidators.TryNormalizeMobile(request.Phone, out var phone);
+        var code = PhoneValidators.NormalizeDigits(request.Code.Trim());
         var now = clock.GetUtcNow();
-        var invalid = Error.Unauthorized("otp.invalid", "کد تأیید نادرست یا منقضی شده است.");
+        var invalid = Error.Unauthorized("otp.invalid", "Der Bestätigungscode ist falsch oder abgelaufen.");
 
         var otp = await db.OtpCodes.AsNoTracking()
             .Where(o => o.Phone == phone && !o.Used)
@@ -81,7 +81,7 @@ public sealed class AuthService(
         if (counted == 0)
         {
             await db.OtpCodes.Where(o => o.Id == otp.Id).ExecuteUpdateAsync(s => s.SetProperty(o => o.Used, true), ct);
-            return Error.TooMany("otp.locked", "تعداد تلاش‌ها زیاد بود. کد جدید درخواست کنید.");
+            return Error.TooMany("otp.locked", "Zu viele Versuche. Bitte einen neuen Code anfordern.");
         }
 
         var expected = Convert.FromHexString(otp.CodeHash);
@@ -114,12 +114,12 @@ public sealed class AuthService(
                 // A parallel first login may have created the account a moment ago.
                 user = await users.Users.FirstOrDefaultAsync(u => u.PhoneNumber == phone, ct);
                 if (user is null)
-                    return Error.Validation("user.create_failed", "ساخت حساب کاربری انجام نشد.");
+                    return Error.Validation("user.create_failed", "Das Benutzerkonto konnte nicht angelegt werden.");
             }
         }
 
         if (await users.IsLockedOutAsync(user))
-            return Error.Forbidden("user.locked", "حساب کاربری شما موقتاً قفل است.");
+            return Error.Forbidden("user.locked", "Ihr Konto ist vorübergehend gesperrt.");
 
         return await IssueTokensAsync(user, familyId: Guid.NewGuid(), ct);
     }
@@ -129,7 +129,7 @@ public sealed class AuthService(
         var now = clock.GetUtcNow();
         var hash = TokenService.Hash(refreshToken);
         var stored = await db.RefreshTokens.AsNoTracking().FirstOrDefaultAsync(t => t.TokenHash == hash, ct);
-        var invalid = Error.Unauthorized("auth.invalid_refresh", "نشست شما منقضی شده است. دوباره وارد شوید.");
+        var invalid = Error.Unauthorized("auth.invalid_refresh", "Ihre Sitzung ist abgelaufen. Bitte erneut anmelden.");
 
         if (stored is null) return invalid;
 
@@ -183,9 +183,9 @@ public sealed class AuthService(
     public async Task<Result<AuthTokens>> DemoSignInAsync(string role, CancellationToken ct)
     {
         if (role is not (Roles.Admin or Roles.Staff))
-            return Error.Validation("demo.role", "نقش نامعتبر است.");
+            return Error.Validation("demo.role", "Ungültige Rolle.");
         var user = (await users.GetUsersInRoleAsync(role)).OrderBy(u => u.CreatedAt).FirstOrDefault();
-        if (user is null) return Error.NotFound("demo.no_user", "حساب نمایشی پیدا نشد.");
+        if (user is null) return Error.NotFound("demo.no_user", "Demo-Konto nicht gefunden.");
         return await IssueTokensAsync(user, familyId: Guid.NewGuid(), ct);
     }
 
@@ -193,13 +193,13 @@ public sealed class AuthService(
 
     public async Task<Result<AuthTokens>> ClaimFirstAdminAsync(string phoneInput, string? fullName, CancellationToken ct)
     {
-        IranValidators.TryNormalizeMobile(phoneInput, out var phone);
+        PhoneValidators.TryNormalizeMobile(phoneInput, out var phone);
         var user = await users.Users.FirstOrDefaultAsync(u => u.PhoneNumber == phone, ct);
         if (await HasAdminAsync(ct))
         {
             // Site already has an admin: the setup key works as the admin's sign-in (useful before an SMS panel is connected).
             if (user is null || !await users.IsInRoleAsync(user, Roles.Admin))
-                return Error.Forbidden("setup.not_admin", "این شماره مدیر این سایت نیست.");
+                return Error.Forbidden("setup.not_admin", "Diese Nummer gehört nicht zum Admin dieser Website.");
             return await IssueTokensAsync(user, familyId: Guid.NewGuid(), ct);
         }
         if (user is null)
@@ -207,10 +207,10 @@ public sealed class AuthService(
             user = new ApplicationUser
             {
                 UserName = phone, PhoneNumber = phone, PhoneNumberConfirmed = true,
-                FullName = string.IsNullOrWhiteSpace(fullName) ? "مدیر سایت" : fullName.Trim(), CreatedAt = clock.GetUtcNow()
+                FullName = string.IsNullOrWhiteSpace(fullName) ? "Website-Admin" : fullName.Trim(), CreatedAt = clock.GetUtcNow()
             };
             var created = await users.CreateAsync(user);
-            if (!created.Succeeded) return Error.Conflict("setup.create_failed", "ساخت حساب مدیر انجام نشد.");
+            if (!created.Succeeded) return Error.Conflict("setup.create_failed", "Das Admin-Konto konnte nicht angelegt werden.");
         }
         if (!await users.IsInRoleAsync(user, Roles.Admin)) await users.AddToRoleAsync(user, Roles.Admin);
         return await IssueTokensAsync(user, familyId: Guid.NewGuid(), ct);

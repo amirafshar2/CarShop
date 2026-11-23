@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/launchsettings.json",
   "profiles": {
-    "SiteKit (سایت + API)": {
+    "SiteKit (Website + API)": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
@@ -12,7 +12,7 @@
         "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": "Microsoft.AspNetCore.SpaProxy"
       }
     },
-    "فقط API (Swagger)": {
+    "Nur API (Swagger)": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,

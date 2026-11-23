@@ -39,7 +39,7 @@ public class ListingTests
     }
 
     [Theory]
-    [InlineData("تور استانبول ۴ شب", "تور-استانبول-4-شب")]
+    [InlineData("Tour Istanbul 4 Nächte", "tour-istanbul-4-nächte")]
     [InlineData("  BMW 528i!! ", "bmw-528i")]
     [InlineData("???", "item")]
     public void Slugify_keeps_persian_and_normalises(string input, string expected) =>
@@ -60,10 +60,10 @@ public class SiteRulesTests
     public void Blank_preset_needs_a_name_before_it_is_valid()
     {
         var c = Presets.Content("travel", demo: false);
-        Assert.Contains(SiteRules.Validate(c), e => e.Contains("نام"));
-        c.Brand.Name = "سفر";
+        Assert.Contains(SiteRules.Validate(c), e => e.Contains("Name"));
+        c.Brand.Name = "Reise";
         Assert.Empty(SiteRules.Validate(c));
-        Assert.Equal("تور", c.Labels.ItemSingular);
+        Assert.Equal("Reise", c.Labels.ItemSingular);
     }
 
     [Theory]
@@ -80,10 +80,10 @@ public class SiteRulesTests
     {
         var c = Presets.Content("car", demo: true);
         c.Theme.Primary = "red";
-        c.Fields.Add(new FieldDef { Key = "year", Label = "دوباره", Type = "text" });
+        c.Fields.Add(new FieldDef { Key = "year", Label = "Erneut", Type = "text" });
         var errors = SiteRules.Validate(c);
-        Assert.Contains(errors, e => e.Contains("رنگ"));
-        Assert.Contains(errors, e => e.Contains("تکراری"));
+        Assert.Contains(errors, e => e.Contains("Farbe"));
+        Assert.Contains(errors, e => e.Contains("Doppelt"));
     }
 
     [Fact]
@@ -91,28 +91,28 @@ public class SiteRulesTests
         Assert.Equal("dark", SiteJson.Read("{not json").Theme.Mode);
 }
 
-public class IranValidatorTests
+public class PhoneValidatorTests
 {
     [Theory]
-    [InlineData("09171006003", "09171006003")]
-    [InlineData("۰۹۱۷۱۰۰۶۰۰۳", "09171006003")]
-    [InlineData("+989171006003", "09171006003")]
-    [InlineData("00989171006003", "09171006003")]
-    [InlineData("9171006003", "09171006003")]
-    [InlineData("0917 100 6003", "09171006003")]
-    public void Normalizes_iranian_mobiles(string input, string expected)
+    [InlineData("015171006003", "015171006003")]
+    [InlineData("+49 1517 1006003", "015171006003")]
+    [InlineData("004915171006003", "015171006003")]
+    [InlineData("15171006003", "015171006003")]
+    [InlineData("0151-7100 6003", "015171006003")]
+    [InlineData("01701234567", "01701234567")]
+    public void Normalizes_german_mobiles(string input, string expected)
     {
-        Assert.True(IranValidators.TryNormalizeMobile(input, out var phone));
+        Assert.True(PhoneValidators.TryNormalizeMobile(input, out var phone));
         Assert.Equal(expected, phone);
     }
 
     [Theory]
-    [InlineData("02112345678")]
-    [InlineData("0917123")]
+    [InlineData("07111234567")]
+    [InlineData("0151123")]
     [InlineData("")]
     [InlineData("abc")]
     public void Rejects_invalid_mobiles(string input) =>
-        Assert.False(IranValidators.TryNormalizeMobile(input, out _));
+        Assert.False(PhoneValidators.TryNormalizeMobile(input, out _));
 
     [Theory]
     [InlineData("0499370899", true)]
@@ -121,5 +121,5 @@ public class IranValidatorTests
     [InlineData("1111111111", false)]
     [InlineData("12345", false)]
     public void Validates_national_code(string code, bool valid) =>
-        Assert.Equal(valid, IranValidators.IsValidNationalCode(code));
+        Assert.Equal(valid, PhoneValidators.IsValidNationalCode(code));
 }

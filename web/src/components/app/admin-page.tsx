@@ -20,7 +20,7 @@ export function LoadState({ loading, error, onRetry }: { loading: boolean; error
         {error}{" "}
         {onRetry && (
           <button type="button" onClick={onRetry} className="font-semibold text-primary underline-offset-4 hover:underline">
-            تلاش دوباره
+            Erneut versuchen
           </button>
         )}
       </div>

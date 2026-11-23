@@ -47,7 +47,7 @@ export const defaultDishes: CarouselItem[] = [
     titleLine2: "– DELHI HERITAGE",
     desc: "Velvety roasted tomato and fenugreek gravy with tender charred chicken",
     img: "https://cdn.21st.dev/assets/mirror/84/84cb320f9692895054c9e1774ca48848f1c9c62ccba43ad8ad0b186460bb3751.jpg",
-    ctaText: "مشاهده",
+    ctaText: "Ansehen",
     ctaUrl: "#",
   },
   {
@@ -56,7 +56,7 @@ export const defaultDishes: CarouselItem[] = [
     titleLine2: "– SMOKED SPICE",
     desc: "Grass-fed lamb chops charred in live charcoal tandoor with Kashmiri spices",
     img: "https://cdn.21st.dev/assets/mirror/a4/a4712dee84e12432f1d3a1a3234914c0281c9bb12692e4bc8da5eaa4355bec33.jpg",
-    ctaText: "مشاهده",
+    ctaText: "Ansehen",
     ctaUrl: "#",
   },
   {
@@ -65,7 +65,7 @@ export const defaultDishes: CarouselItem[] = [
     titleLine2: "– CLAY ROASTED",
     desc: "Artisan cottage cheese marinated in spiced yogurt, bell peppers & saffron",
     img: "https://cdn.21st.dev/assets/mirror/56/56a6950cf4a436af231cf7cd707189e121e65934066f851c744bdab0cfee64d4.jpg",
-    ctaText: "مشاهده",
+    ctaText: "Ansehen",
     ctaUrl: "#",
   },
   {
@@ -74,7 +74,7 @@ export const defaultDishes: CarouselItem[] = [
     titleLine2: "– COCONUT GRAVY",
     desc: "Jumbo wild tiger prawns simmered in fragrant curry leaves and coconut milk",
     img: "https://cdn.21st.dev/assets/mirror/a3/a32877b070c563bbbcf54b6104761b1516814625209c806ee8b60f8a69598cd1.jpg",
-    ctaText: "مشاهده",
+    ctaText: "Ansehen",
     ctaUrl: "#",
   },
   {
@@ -83,7 +83,7 @@ export const defaultDishes: CarouselItem[] = [
     titleLine2: "– CHARCOAL OVEN",
     desc: "Crispy puffed leavened bread brushed with pure ghee and black winter truffle",
     img: "https://cdn.21st.dev/assets/mirror/5c/5c1b6f03cc2ace649f9025f304ca4fdce74cd413504e65a00ef3f68152e8ed92.jpg",
-    ctaText: "مشاهده",
+    ctaText: "Ansehen",
     ctaUrl: "#",
   },
 ];
@@ -308,7 +308,7 @@ export function CoverFlowCarousel({
                   }}
                 >
                   {/* Tag */}
-                  <div style={{ textAlign: "right", width: "100%", paddingRight: "4px" }}>
+                  <div style={{ textAlign: "left", width: "100%", paddingLeft: "4px" }}>
                     <span
                       style={{
                         display: "inline-block",
@@ -419,7 +419,7 @@ export function CoverFlowCarousel({
                         transition: "transform 200ms ease, box-shadow 200ms ease",
                       }}
                     >
-                      <span>{item.ctaText || "مشاهده"}</span>
+                      <span>{item.ctaText || "Ansehen"}</span>
                       <ArrowRightIcon />
                     </a>
                   </div>
@@ -432,7 +432,7 @@ export function CoverFlowCarousel({
         {/* Navigation Arrows */}
         <button
           onClick={prevSlide}
-          aria-label="خودروی قبلی"
+          aria-label="Vorheriges Fahrzeug"
           style={{
             position: "absolute",
             left: "24px",
@@ -459,7 +459,7 @@ export function CoverFlowCarousel({
 
         <button
           onClick={nextSlide}
-          aria-label="خودروی بعدی"
+          aria-label="Nächstes Fahrzeug"
           style={{
             position: "absolute",
             right: "24px",
@@ -490,7 +490,7 @@ export function CoverFlowCarousel({
             <button
               key={idx}
               onClick={() => goToSlide(idx)}
-              aria-label={`اسلاید ${(idx + 1).toLocaleString("fa-IR")}`}
+              aria-label={`Folie ${(idx + 1).toLocaleString("de-DE")}`}
               style={{
                 height: "32px",
                 width: idx === currentIndex ? "32px" : "12px",

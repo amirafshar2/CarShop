@@ -16,8 +16,8 @@ public sealed class CreateLeadRequestValidator : AbstractValidator<CreateLeadReq
 {
     public CreateLeadRequestValidator()
     {
-        RuleFor(x => x.Name).NotEmpty().WithMessage("نام الزامی است.").MaximumLength(80);
-        RuleFor(x => x.Phone).Must(p => IranValidators.TryNormalizeMobile(p, out _)).WithMessage("شماره موبایل نامعتبر است.");
+        RuleFor(x => x.Name).NotEmpty().WithMessage("Der Name ist erforderlich.").MaximumLength(80);
+        RuleFor(x => x.Phone).Must(p => PhoneValidators.TryNormalizeMobile(p, out _)).WithMessage("Ungültige Handynummer.");
         RuleFor(x => x.Message).MaximumLength(1000);
         RuleFor(x => x.Type).IsInEnum();
     }
@@ -34,9 +34,9 @@ public sealed class LeadService(IAppDbContext db, ICurrentUser user) : ILeadServ
 {
     public async Task<Result<Guid>> CreateAsync(CreateLeadRequest r, CancellationToken ct)
     {
-        IranValidators.TryNormalizeMobile(r.Phone, out var phone);
+        PhoneValidators.TryNormalizeMobile(r.Phone, out var phone);
         if (r.ListingId is { } listingId && !await db.Listings.AnyAsync(l => l.Id == listingId, ct))
-            return Error.NotFound("listing.not_found", "مورد انتخاب‌شده پیدا نشد.");
+            return Error.NotFound("listing.not_found", "Der ausgewählte Eintrag wurde nicht gefunden.");
 
         var lead = new Lead(r.Name, phone, r.Type, r.ListingId, r.Message);
         db.Leads.Add(lead);
@@ -70,7 +70,7 @@ public sealed class LeadService(IAppDbContext db, ICurrentUser user) : ILeadServ
     public async Task<Result> UpdateStatusAsync(Guid id, LeadStatus status, CancellationToken ct)
     {
         var lead = await VisibleLeads().FirstOrDefaultAsync(l => l.Id == id, ct);
-        if (lead is null) return Result.Failure(Error.NotFound("lead.not_found", "سرنخ پیدا نشد."));
+        if (lead is null) return Result.Failure(Error.NotFound("lead.not_found", "Anfrage nicht gefunden."));
 
         if (lead.AssignedStaffId is null && user.UserId is { } me && !user.IsInRole(Roles.Admin))
             lead.AssignTo(me); // staff claims the lead when they start working on it

@@ -8,7 +8,7 @@ public sealed class ServiceItemTests
     [Fact]
     public void Fixed_price_requires_positive_amount()
     {
-        var s = new ServiceItem("سرامیک", "دیتیلینگ");
+        var s = new ServiceItem("Keramik", "Fahrzeugaufbereitung");
         Assert.True(s.SetPrice(PriceType.Fixed, null, null).IsFailure);
         Assert.True(s.SetPrice(PriceType.Fixed, 0, null).IsFailure);
         Assert.True(s.SetPrice(PriceType.Fixed, 100, null).IsSuccess);
@@ -17,7 +17,7 @@ public sealed class ServiceItemTests
     [Fact]
     public void On_call_price_clears_amounts()
     {
-        var s = new ServiceItem("PPF", "دیتیلینگ");
+        var s = new ServiceItem("PPF", "Fahrzeugaufbereitung");
         s.SetPrice(PriceType.Fixed, 100, 200);
         Assert.True(s.SetPrice(PriceType.OnCall, null, null).IsSuccess);
         Assert.Null(s.PriceRial);
@@ -27,7 +27,7 @@ public sealed class ServiceItemTests
     [Fact]
     public void Original_price_must_be_higher_than_current_price()
     {
-        var s = new ServiceItem("پولیش", "دیتیلینگ");
+        var s = new ServiceItem("Politur", "Fahrzeugaufbereitung");
         Assert.True(s.SetPrice(PriceType.From, 100, 90).IsFailure);
         Assert.True(s.SetPrice(PriceType.From, 100, 100).IsFailure);
         Assert.True(s.SetPrice(PriceType.From, 100, 150).IsSuccess);

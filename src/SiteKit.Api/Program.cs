@@ -41,7 +41,7 @@ builder.Services.AddControllers(o => o.Filters.Add<ValidationFilter>())
         var problem = new Microsoft.AspNetCore.Mvc.ValidationProblemDetails(ctx.ModelState)
         {
             Status = StatusCodes.Status422UnprocessableEntity,
-            Title = "اطلاعات ارسال‌شده معتبر نیست.",
+            Title = "Die gesendeten Daten sind ungültig.",
             Extensions = { ["traceId"] = System.Diagnostics.Activity.Current?.Id ?? ctx.HttpContext.TraceIdentifier }
         };
         return new Microsoft.AspNetCore.Mvc.ObjectResult(problem) { StatusCode = StatusCodes.Status422UnprocessableEntity };

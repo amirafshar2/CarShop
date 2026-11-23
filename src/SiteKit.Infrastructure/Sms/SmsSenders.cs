@@ -33,7 +33,7 @@ public sealed class KavenegarSmsSender(HttpClient http, IOptions<SmsOptions> opt
         if (!response.IsSuccessStatusCode)
         {
             logger.LogError("Kavenegar OTP send failed with status {Status}", (int)response.StatusCode);
-            throw new InvalidOperationException("ارسال پیامک ناموفق بود.");
+            throw new InvalidOperationException("Die SMS konnte nicht gesendet werden.");
         }
     }
 }

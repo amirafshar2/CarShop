@@ -22,19 +22,19 @@ public sealed class UpsertServiceRequestValidator : AbstractValidator<UpsertServ
 {
     public UpsertServiceRequestValidator()
     {
-        RuleFor(x => x.Title).NotEmpty().WithMessage("عنوان خدمت الزامی است.").MaximumLength(120);
+        RuleFor(x => x.Title).NotEmpty().WithMessage("Der Titel der Leistung ist erforderlich.").MaximumLength(120);
         RuleFor(x => x.Category).MaximumLength(60);
         RuleFor(x => x.PriceType).IsInEnum();
         RuleFor(x => x.Description).MaximumLength(1000);
         RuleFor(x => x.Features).Must(f => f is null || (f.Count <= 15 && f.All(s => s.Length <= 120)))
-            .WithMessage("حداکثر ۱۵ ویژگی، هرکدام تا ۱۲۰ حرف.");
+            .WithMessage("Höchstens 15 Merkmale mit je bis zu 120 Zeichen.");
         RuleFor(x => x.PriceRial).GreaterThan(0).When(x => x.PriceType != PriceType.OnCall)
-            .WithMessage("قیمت باید بیشتر از صفر باشد.");
+            .WithMessage("Der Preis muss größer als null sein.");
         RuleFor(x => x.Unit).MaximumLength(40);
         RuleFor(x => x.Badge).MaximumLength(30);
         RuleFor(x => x.ImageUrl).MaximumLength(1000)
             .Must(SiteKit.Application.Site.SiteRules.IsSafeUrl)
-            .WithMessage("آدرس تصویر باید با https:// یا / شروع شود.");
+            .WithMessage("Die Bildadresse muss mit https:// oder / beginnen.");
     }
 }
 
@@ -86,11 +86,11 @@ public sealed class ServiceCatalog(IAppDbContext db, HybridCache cache, IPersist
     public async Task<Result> UpdateAsync(Guid id, UpsertServiceRequest r, CancellationToken ct)
     {
         var item = await db.ServiceItems.FirstOrDefaultAsync(s => s.Id == id, ct);
-        if (item is null) return Result.Failure(Error.NotFound("service.not_found", "خدمت پیدا نشد."));
+        if (item is null) return Result.Failure(Error.NotFound("service.not_found", "Leistung nicht gefunden."));
         if (r.Version is { } expected)
         {
             if (expected != item.Version)
-                return Result.Failure(Error.Conflict("service.stale", "این خدمت بعد از باز کردن فرم توسط شخص دیگری تغییر کرده است. صفحه را تازه کنید."));
+                return Result.Failure(Error.Conflict("service.stale", "Diese Leistung wurde geändert, nachdem Sie das Formular geöffnet haben. Bitte die Seite neu laden."));
             db.SetOriginalVersion(item, expected);
         }
 
@@ -101,7 +101,7 @@ public sealed class ServiceCatalog(IAppDbContext db, HybridCache cache, IPersist
         try { await db.SaveChangesAsync(ct); }
         catch (Exception ex) when (conflicts.IsConflict(ex))
         {
-            return Result.Failure(Error.Conflict("service.concurrent_update", "این خدمت همزمان توسط کاربر دیگری تغییر کرد. صفحه را تازه کنید."));
+            return Result.Failure(Error.Conflict("service.concurrent_update", "Diese Leistung wurde gleichzeitig von jemand anderem geändert. Bitte die Seite neu laden."));
         }
         await cache.RemoveByTagAsync(CacheTags.Services, ct);
         return Result.Success();
@@ -110,7 +110,7 @@ public sealed class ServiceCatalog(IAppDbContext db, HybridCache cache, IPersist
     public async Task<Result> DeleteAsync(Guid id, CancellationToken ct)
     {
         var item = await db.ServiceItems.FirstOrDefaultAsync(s => s.Id == id, ct);
-        if (item is null) return Result.Failure(Error.NotFound("service.not_found", "خدمت پیدا نشد."));
+        if (item is null) return Result.Failure(Error.NotFound("service.not_found", "Leistung nicht gefunden."));
         item.IsDeleted = true; // soft delete — history stays in the audit log
         item.IsActive = false;
         await db.SaveChangesAsync(ct);

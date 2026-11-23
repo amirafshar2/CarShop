@@ -19,7 +19,7 @@ function destination(roles: string[], next: string | null) {
   return isStaff({ id: "", phone: "", fullName: null, roles }) ? "/admin" : "/account";
 }
 
-/** «ورود نمایشی»: one click into the admin or staff panel for presentations. */
+/** "Demo-Login": one click into the admin or staff panel for presentations. */
 function DemoAccess({ onDone }: { onDone: (roles: string[]) => void }) {
   const [info, setInfo] = useState<{ enabled: boolean; requiresKey: boolean } | null>(null);
   const [key, setKey] = useState("");
@@ -37,7 +37,7 @@ function DemoAccess({ onDone }: { onDone: (roles: string[]) => void }) {
     setError(undefined);
     try {
       const r = await demoLogin(role, key || undefined);
-      toast.success(role === "Admin" ? "به پنل مدیریت خوش آمدید" : "به پنل کارمند خوش آمدید");
+      toast.success(role === "Admin" ? "Willkommen im Admin-Panel" : "Willkommen im Mitarbeiter-Panel");
       onDone(r.user.roles);
     } catch (e) {
       setError((e as Error).message);
@@ -47,21 +47,21 @@ function DemoAccess({ onDone }: { onDone: (roles: string[]) => void }) {
   };
 
   const roles = [
-    { role: "Admin" as const, icon: ShieldCheck, title: "مدیر", desc: "همه‌ی بخش‌ها: خودروها، خدمات، درخواست‌ها و کاربران", variant: "default" as const },
-    { role: "Staff" as const, icon: Briefcase, title: "کارمند", desc: "مدیریت خودروها و پیگیری درخواست‌ها", variant: "outline" as const },
+    { role: "Admin" as const, icon: ShieldCheck, title: "Admin", desc: "Alle Bereiche: Fahrzeuge, Leistungen, Anfragen und Benutzer", variant: "default" as const },
+    { role: "Staff" as const, icon: Briefcase, title: "Mitarbeiter", desc: "Fahrzeuge verwalten und Anfragen bearbeiten", variant: "outline" as const },
   ];
   const locked = !!busy || (info.requiresKey && !key);
 
   return (
     <section aria-labelledby="demo-title" className="space-y-3 rounded-xl border border-primary/40 bg-primary/5 p-3 text-sm sm:p-4">
       <div>
-        <p id="demo-title" className="font-bold text-foreground">ورود سریع نمایشی، با یک کلیک</p>
+        <p id="demo-title" className="font-bold text-foreground">Schnell-Login für die Demo, mit einem Klick</p>
         <p className="mt-1 text-xs text-muted-foreground sm:text-sm">
-          {info.requiresKey ? "رمز نمایشی را وارد کنید و نقش را انتخاب کنید. پیامک لازم نیست." : "نقش را انتخاب کنید. پیامک و کد لازم نیست."}
+          {info.requiresKey ? "Demo-Passwort eingeben und Rolle wählen. Keine SMS nötig." : "Rolle wählen. Keine SMS und kein Code nötig."}
         </p>
       </div>
       {info.requiresKey && (
-        <Input type="password" autoComplete="off" placeholder="رمز نمایشی" aria-label="رمز نمایشی" value={key} onChange={(e) => setKey(e.target.value)} />
+        <Input type="password" autoComplete="off" placeholder="Demo-Passwort" aria-label="Demo-Passwort" value={key} onChange={(e) => setKey(e.target.value)} />
       )}
       <div className="grid grid-cols-2 gap-2">
         {roles.map(({ role, icon: Icon, title, desc, variant }) => (
@@ -75,7 +75,7 @@ function DemoAccess({ onDone }: { onDone: (roles: string[]) => void }) {
           >
             <span className="flex items-center gap-1.5 text-sm font-bold">
               <Icon className="size-4 shrink-0" aria-hidden />
-              {busy === role ? "در حال ورود…" : `ورود ${title}`}
+              {busy === role ? "Anmeldung läuft…" : `Anmelden als ${title}`}
             </span>
             <span className="text-[11px] font-normal leading-snug opacity-80 sm:text-xs">{desc}</span>
           </Button>
@@ -85,7 +85,7 @@ function DemoAccess({ onDone }: { onDone: (roles: string[]) => void }) {
       <p className="flex items-start gap-1.5 text-xs leading-relaxed text-muted-foreground">
         <UserRound className="mt-0.5 size-3.5 shrink-0" aria-hidden />
         <span>
-          پنل مشتری: هر شماره‌ی موبایلی را وارد کنید، کد تأیید روی همین صفحه نمایش داده می‌شود.
+          Kundenbereich: Geben Sie eine beliebige Handynummer ein – der Bestätigungscode wird hier auf der Seite angezeigt.
         </span>
       </p>
     </section>
@@ -138,7 +138,7 @@ function LoginForm() {
     setError(undefined);
     try {
       const r = await verifyOtp(phone, value, name || undefined);
-      toast.success(`خوش آمدید${r.user.fullName ? ` ${r.user.fullName}` : ""}`);
+      toast.success(`Willkommen${r.user.fullName ? ` ${r.user.fullName}` : ""}`);
       router.push(destination(r.user.roles, nextParam));
     } catch (e) {
       setError((e as Error).message);
@@ -151,21 +151,21 @@ function LoginForm() {
   return (
     <Card className="w-full max-w-md">
       <CardHeader>
-        <CardTitle className="text-2xl">ورود / ثبت‌نام</CardTitle>
-        <CardDescription>با شماره موبایل؛ بدون رمز عبور.</CardDescription>
+        <CardTitle className="text-2xl">Anmelden / Registrieren</CardTitle>
+        <CardDescription>Mit Handynummer, ohne Passwort.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-5">
         {fresh && (
           <Link href="/setup" className="block rounded-xl border border-primary/50 bg-primary/10 p-4 text-sm">
-            <span className="block font-bold">این سایت هنوز مدیر ندارد</span>
-            <span className="mt-1 block text-muted-foreground">برای راه‌اندازی و ساخت حساب مدیر اینجا بزنید ←</span>
+            <span className="block font-bold">Diese Website hat noch keinen Admin</span>
+            <span className="mt-1 block text-muted-foreground">Hier klicken, um die Website einzurichten und ein Admin-Konto anzulegen →</span>
           </Link>
         )}
         {step === "phone" ? (
           <>
           <DemoAccess onDone={(roles) => router.push(destination(roles, nextParam))} />
           <div className="flex items-center gap-3 text-xs text-muted-foreground" aria-hidden>
-            <span className="h-px flex-1 bg-border" />یا با شماره موبایل<span className="h-px flex-1 bg-border" />
+            <span className="h-px flex-1 bg-border" />oder mit Handynummer<span className="h-px flex-1 bg-border" />
           </div>
           <form
             className="space-y-4"
@@ -174,16 +174,16 @@ function LoginForm() {
               void send();
             }}
           >
-            <Field label="شماره موبایل" error={error}>
-              <Input dir="ltr" inputMode="tel" autoComplete="tel" placeholder="09xxxxxxxxx" value={phone} onChange={(e) => setPhone(e.target.value)} required />
+            <Field label="Handynummer" error={error}>
+              <Input dir="ltr" inputMode="tel" autoComplete="tel" placeholder="0151 23456789" value={phone} onChange={(e) => setPhone(e.target.value)} required />
             </Field>
-            <Field label="نام و نام خانوادگی" optional>
+            <Field label="Vor- und Nachname" optional>
               <Input autoComplete="name" value={name} onChange={(e) => setName(e.target.value)} />
             </Field>
             <Button className="w-full" size="lg" disabled={busy}>
-              {busy ? "در حال ارسال…" : "دریافت کد تأیید"}
+              {busy ? "Wird gesendet…" : "Bestätigungscode anfordern"}
             </Button>
-            <p className="text-center text-sm text-muted-foreground"><Link href="/setup" className="hover:text-foreground hover:underline">ورود مدیر با کلید راه‌اندازی</Link></p>
+            <p className="text-center text-sm text-muted-foreground"><Link href="/setup" className="hover:text-foreground hover:underline">Admin-Anmeldung mit Einrichtungsschlüssel</Link></p>
           </form>
           </>
         ) : (
@@ -191,23 +191,23 @@ function LoginForm() {
             {devCode && (
               <div role="status" className="flex flex-col gap-3 rounded-xl border border-primary/50 bg-primary/10 p-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">حالت آزمایشی (پیامک واقعی ارسال نمی‌شود) — کد ورود:</p>
+                  <p className="text-sm text-muted-foreground">Testmodus (es wird keine echte SMS gesendet) – Anmeldecode:</p>
                   <p dir="ltr" className="mt-1 text-end text-2xl font-black tracking-[0.3em] text-primary sm:text-start">{devCode}</p>
                 </div>
                 <Button type="button" size="sm" disabled={busy} onClick={() => { setCode(devCode); void verify(devCode); }}>
-                  ورود با این کد
+                  Mit diesem Code anmelden
                 </Button>
               </div>
             )}
-            <Field label={`کد ۶ رقمی ارسال‌شده به ${phone}`} error={error} hint={busy ? "در حال بررسی…" : "کد بعد از وارد شدن رقم آخر خودکار بررسی می‌شود."}>
+            <Field label={`6-stelliger Code, gesendet an ${phone}`} error={error} hint={busy ? "Wird geprüft…" : "Der Code wird nach der letzten Ziffer automatisch geprüft."}>
               <div dir="ltr">
                 <OtpInput length={6} value={code} onChange={setCode} onComplete={verify} disabled={busy} autoFocus />
               </div>
             </Field>
             <div className="flex items-center justify-between text-sm">
-              <Button variant="ghost" size="sm" onClick={() => setStep("phone")}>تغییر شماره</Button>
+              <Button variant="ghost" size="sm" onClick={() => setStep("phone")}>Nummer ändern</Button>
               <Button variant="ghost" size="sm" disabled={cooldown > 0 || busy} onClick={() => void send()}>
-                {cooldown > 0 ? `ارسال مجدد تا ${fa(cooldown)} ثانیه` : "ارسال مجدد کد"}
+                {cooldown > 0 ? `Erneut senden in ${fa(cooldown)} Sekunden` : "Code erneut senden"}
               </Button>
             </div>
           </div>

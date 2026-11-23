@@ -36,19 +36,19 @@ export default function AdminDashboard() {
   const cards: StatCard[] = data
     ? [
         {
-          title: `${L?.itemPlural ?? "آیتم‌ها"}ی منتشرشده`, subtitle: "در سایت", value: fa(data.listingsPublished), valueColor: "text-emerald-500",
-          badge: { color: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-300", icon: LayoutGrid, text: `${fa(data.listingsSoldOut)} ${L?.soldOutLabel ?? "ناموجود"}` },
-          subtext: <span className="text-muted-foreground">{fa(data.listingsDraft + data.listingsHidden)} پنهان/پیش‌نویس</span>,
+          title: `${L?.itemPlural ?? "Einträge"} (veröffentlicht)`, subtitle: "auf der Website", value: fa(data.listingsPublished), valueColor: "text-emerald-500",
+          badge: { color: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-300", icon: LayoutGrid, text: `${fa(data.listingsSoldOut)} ${L?.soldOutLabel ?? "Nicht verfügbar"}` },
+          subtext: <span className="text-muted-foreground">{fa(data.listingsDraft + data.listingsHidden)} versteckt/Entwurf</span>,
         },
         {
-          title: "درخواست‌های جدید", subtitle: "منتظر تماس", value: fa(data.leadsNew), valueColor: "text-primary",
-          badge: { color: "bg-primary/15 text-primary", icon: Inbox, text: `${fa(data.leadsTotal)} کل` },
-          subtext: <Link href="/admin/leads" className="font-medium text-primary hover:underline">مشاهده‌ی درخواست‌ها</Link>,
+          title: "Neue Anfragen", subtitle: "warten auf Rückruf", value: fa(data.leadsNew), valueColor: "text-primary",
+          badge: { color: "bg-primary/15 text-primary", icon: Inbox, text: `${fa(data.leadsTotal)} gesamt` },
+          subtext: <Link href="/admin/leads" className="font-medium text-primary hover:underline">Anfragen ansehen</Link>,
         },
         {
-          title: "مشتریان و خدمات", subtitle: "حساب‌های ثبت‌نام‌شده", value: fa(data.customers), valueColor: "text-violet-500",
-          badge: { color: "bg-violet-500/15 text-violet-600 dark:text-violet-300", icon: Users, text: `${fa(data.activeServices)} خدمت` },
-          subtext: <Link href="/admin/services" className="font-medium text-primary hover:underline">ویرایش قیمت خدمات</Link>,
+          title: "Kunden und Leistungen", subtitle: "registrierte Konten", value: fa(data.customers), valueColor: "text-violet-500",
+          badge: { color: "bg-violet-500/15 text-violet-600 dark:text-violet-300", icon: Users, text: `${fa(data.activeServices)} Leistung` },
+          subtext: <Link href="/admin/services" className="font-medium text-primary hover:underline">Preise der Leistungen bearbeiten</Link>,
         },
       ]
     : [];
@@ -56,12 +56,12 @@ export default function AdminDashboard() {
   return (
     <>
       <AdminHeader
-        title={`سلام${user?.fullName ? ` ${user.fullName}` : ""}`}
-        description={site ? `خلاصه‌ی وضعیت ${site.content.brand.name || "سایت"}` : undefined}
+        title={`Hallo${user?.fullName ? ` ${user.fullName}` : ""}`}
+        description={site ? `Überblick: ${site.content.brand.name || "Website"}` : undefined}
         actions={
           <>
-            <Button asChild><Link href="/admin/items/new">{`+ افزودن ${L?.itemSingular ?? "آیتم"}`}</Link></Button>
-            <Button asChild variant="outline"><Link href="/admin/services"><Sparkles className="me-2 size-4" />خدمات و قیمت‌ها</Link></Button>
+            <Button asChild><Link href="/admin/items/new">{`+ Neu: ${L?.itemSingular ?? "Eintrag"}`}</Link></Button>
+            <Button asChild variant="outline"><Link href="/admin/services"><Sparkles className="me-2 size-4" />Leistungen und Preise</Link></Button>
           </>
         }
       />
@@ -69,10 +69,10 @@ export default function AdminDashboard() {
         <section className="mb-8 rounded-2xl border border-primary/40 bg-primary/5 p-5 sm:p-6" aria-labelledby="setup-card">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
-              <h2 id="setup-card" className="flex items-center gap-2 text-lg font-bold"><WandSparkles className="size-5 text-primary" aria-hidden />سایت شما تقریباً آماده است</h2>
-              <p className="mt-1 text-sm text-muted-foreground">{`${fa(done)} از ${fa(steps.length)} مرحله انجام شده. دستیار قدم‌به‌قدم کمکتان می‌کند.`}</p>
+              <h2 id="setup-card" className="flex items-center gap-2 text-lg font-bold"><WandSparkles className="size-5 text-primary" aria-hidden />Ihre Website ist fast fertig</h2>
+              <p className="mt-1 text-sm text-muted-foreground">{`${fa(done)} von ${fa(steps.length)} Schritte erledigt. Der Assistent hilft Ihnen Schritt für Schritt.`}</p>
             </div>
-            <Button asChild><Link href="/admin/setup">ادامه‌ی راه‌اندازی</Link></Button>
+            <Button asChild><Link href="/admin/setup">Einrichtung fortsetzen</Link></Button>
           </div>
           <ul className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
             {steps.map((s) => (
@@ -90,9 +90,9 @@ export default function AdminDashboard() {
         <div className={`mb-8 flex flex-wrap items-center justify-between gap-3 rounded-2xl border p-4 ${site.isPublished ? "border-emerald-500/40 bg-emerald-500/5" : "border-border bg-card"}`}>
           <p className="flex items-center gap-2 text-sm font-medium">
             {site.isPublished ? <Eye className="size-4 text-emerald-500" aria-hidden /> : <EyeOff className="size-4 text-muted-foreground" aria-hidden />}
-            {site.isPublished ? "سایت منتشر شده و برای همه قابل دیدن است." : "سایت هنوز منتشر نشده؛ بازدیدکننده‌ها صفحه‌ی «به‌زودی» را می‌بینند."}
+            {site.isPublished ? "Die Website ist veröffentlicht und für alle sichtbar." : "Die Website ist noch nicht veröffentlicht; Besucher sehen die Seite „Bald für Sie da“."}
           </p>
-          <Button asChild variant="outline" size="sm"><Link href="/admin/publish">{site.isPublished ? "مدیریت انتشار" : "انتشار سایت"}</Link></Button>
+          <Button asChild variant="outline" size="sm"><Link href="/admin/publish">{site.isPublished ? "Veröffentlichung verwalten" : "Website veröffentlichen"}</Link></Button>
         </div>
       )}
       <LoadState loading={loading && !data} error={error} onRetry={reload} />
@@ -101,18 +101,18 @@ export default function AdminDashboard() {
           <StatisticCard7 cards={cards} />
           <section>
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-xl font-bold">آخرین درخواست‌ها</h2>
-              <Button asChild variant="ghost"><Link href="/admin/leads">همه</Link></Button>
+              <h2 className="text-xl font-bold">Neueste Anfragen</h2>
+              <Button asChild variant="ghost"><Link href="/admin/leads">Alle</Link></Button>
             </div>
             <div className="overflow-x-auto rounded-2xl border border-border">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>نام</TableHead>
-                    <TableHead>موبایل</TableHead>
-                    <TableHead>نوع</TableHead>
-                    <TableHead>وضعیت</TableHead>
-                    <TableHead>زمان</TableHead>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Mobil</TableHead>
+                    <TableHead>Typ</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Zeit</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -126,7 +126,7 @@ export default function AdminDashboard() {
                     </TableRow>
                   ))}
                   {data.recentLeads.length === 0 && (
-                    <TableRow><TableCell colSpan={5} className="py-10 text-center text-muted-foreground">هنوز درخواستی ثبت نشده است.</TableCell></TableRow>
+                    <TableRow><TableCell colSpan={5} className="py-10 text-center text-muted-foreground">Noch keine Anfragen eingegangen.</TableCell></TableRow>
                   )}
                 </TableBody>
               </Table>

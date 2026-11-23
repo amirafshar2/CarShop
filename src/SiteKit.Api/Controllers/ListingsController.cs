@@ -10,7 +10,7 @@ namespace SiteKit.Api.Controllers;
 [Route("api/v1/listings")]
 public sealed class ListingsController(IListingService listings) : ControllerBase
 {
-    /// <summary>Public catalogue. Field filters are passed as f_{key}=value, e.g. f_fuel=هیبرید.</summary>
+    /// <summary>Public catalogue. Field filters are passed as f_{key}=value, e.g. f_fuel=Hybrid.</summary>
     [HttpGet]
     [ProducesResponseType<PagedResult<ListingDto>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> List([FromQuery] ListingQuery query, CancellationToken ct)

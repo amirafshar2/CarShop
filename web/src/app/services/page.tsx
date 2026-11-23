@@ -21,8 +21,8 @@ const anchor = (i: number) => `group-${i}`;
 export default async function ServicesPage() {
   const [services, site] = await Promise.all([getServices(), getSite()]);
   const c = site.content;
-  const names = [...new Set((services ?? []).map((s) => s.category ?? "سایر خدمات"))];
-  const groups = names.map((name, i) => ({ category: anchor(i), name, items: (services ?? []).filter((s) => (s.category ?? "سایر خدمات") === name) }));
+  const names = [...new Set((services ?? []).map((s) => s.category ?? "Weitere Leistungen"))];
+  const groups = names.map((name, i) => ({ category: anchor(i), name, items: (services ?? []).filter((s) => (s.category ?? "Weitere Leistungen") === name) }));
 
   return (
     <div className="mx-auto max-w-7xl px-4 pb-24 pt-36">
@@ -30,10 +30,10 @@ export default async function ServicesPage() {
         <p className="text-sm font-semibold text-primary">{c.brand.name}</p>
         <h1 className="mt-3 text-4xl font-black md:text-6xl">{c.labels.servicesTitle}</h1>
         <p className="mt-5 text-lg text-muted-foreground">
-          برای رزرو هر خدمت روی دکمه‌اش بزنید تا با شما تماس بگیریم.
+          Klicken Sie bei der gewünschten Leistung auf den Button – wir melden uns bei Ihnen.
         </p>
         {groups.length > 1 && (
-          <nav aria-label="دسته‌بندی خدمات" className="mt-8 flex flex-wrap justify-center gap-2">
+          <nav aria-label="Kategorien der Leistungen" className="mt-8 flex flex-wrap justify-center gap-2">
             {groups.map((g) => (
               <a key={g.category} href={`#${g.category}`} className="rounded-full border border-border px-4 py-2.5 text-[15px] font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground">
                 {g.name}
@@ -43,8 +43,8 @@ export default async function ServicesPage() {
         )}
       </header>
 
-      {!services && <p className="text-center text-muted-foreground">ارتباط با سرور برقرار نشد.</p>}
-      {services && services.length === 0 && <p className="text-center text-muted-foreground">هنوز خدمتی اضافه نشده است.</p>}
+      {!services && <p className="text-center text-muted-foreground">Keine Verbindung zum Server.</p>}
+      {services && services.length === 0 && <p className="text-center text-muted-foreground">Noch keine Leistungen vorhanden.</p>}
 
       <div className="space-y-20">
         {groups.map((g) => (
@@ -69,7 +69,7 @@ export default async function ServicesPage() {
                         {s.originalPriceRial && <PricingCard.OriginalPrice className="text-base">{toman(s.originalPriceRial)}</PricingCard.OriginalPrice>}
                       </PricingCard.Price>
                       <Button asChild className="w-full font-bold" variant={s.isFeatured ? "default" : "outline"}>
-                        <Link href={`/contact?${params.toString()}`}>{s.priceType === "OnCall" ? "استعلام قیمت" : "رزرو این خدمت"}</Link>
+                        <Link href={`/contact?${params.toString()}`}>{s.priceType === "OnCall" ? "Preis anfragen" : "Diese Leistung buchen"}</Link>
                       </Button>
                     </PricingCard.Header>
                     <PricingCard.Body className="flex-1">
@@ -96,8 +96,8 @@ export default async function ServicesPage() {
       {c.contact.phone && (
         <div className="mt-20 flex flex-col items-center justify-between gap-4 rounded-3xl border border-border bg-card p-8 text-center md:flex-row md:text-start">
           <div>
-            <p className="text-xl font-bold">خدمت مورد نظرتان را پیدا نکردید؟</p>
-            <p className="mt-1 text-muted-foreground">تماس بگیرید؛ راهنمایی‌تان می‌کنیم.</p>
+            <p className="text-xl font-bold">Nicht das Passende gefunden?</p>
+            <p className="mt-1 text-muted-foreground">Rufen Sie uns an – wir beraten Sie gern.</p>
           </div>
           <Button asChild size="lg">
             <a href={`tel:${c.contact.phone}`} className="inline-flex items-center gap-2">

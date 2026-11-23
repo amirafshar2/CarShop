@@ -39,13 +39,13 @@ export const FALLBACK_SITE: PublicSite = {
   isPublished: true,
   setupCompleted: true,
   content: {
-    brand: { name: "سایت", tagline: null, description: null, logoUrl: null },
+    brand: { name: "Website", tagline: null, description: null, logoUrl: null },
     theme: { primary: "#f97316", mode: "dark", corners: "soft" },
-    labels: { itemSingular: "آیتم", itemPlural: "آیتم‌ها", itemsPageTitle: "همه‌ی آیتم‌ها", requestButton: "ثبت درخواست", categoryLabel: "دسته", soldOutLabel: "ناموجود", servicesTitle: "خدمات و قیمت‌ها" },
+    labels: { itemSingular: "Eintrag", itemPlural: "Einträge", itemsPageTitle: "Alle Einträge", requestButton: "Anfrage senden", categoryLabel: "Kategorie", soldOutLabel: "Nicht verfügbar", servicesTitle: "Leistungen und Preise" },
     fields: [], categories: [],
     home: { heroTitle: "", heroSubtitle: null, heroImageUrl: null, heroVideoUrl: null, heroVideoMode: "scroll", heroVideoOptimized: false, heroCtaText: null, heroCtaUrl: null, showHighlights: false, highlightsTitle: null, highlights: [], showFeatured: false, featuredTitle: null, showServices: false, showAbout: false, aboutTitle: null, aboutText: null, aboutImageUrl: null, stats: [], showFaq: false, faq: [], showCta: false, ctaTitle: null, ctaText: null },
     contact: { phone: null, whatsapp: null, instagram: null, telegram: null, email: null, address: null, hours: null, mapUrl: null },
-    nav: [{ label: "خانه", href: "/" }], footer: { text: null, copyright: null }, seo: { title: null, description: null }, pages: { items: true, services: true, contact: true },
+    nav: [{ label: "Start", href: "/" }], footer: { text: null, copyright: null }, seo: { title: null, description: null }, pages: { items: true, services: true, contact: true },
   },
 };
 
@@ -84,18 +84,18 @@ export const initials = (name: string) => {
 };
 
 export function priceText(l: Pick<Listing, "priceType" | "priceRial">): string {
-  if (l.priceType === "OnCall" || l.priceRial == null) return "تماس بگیرید";
-  return l.priceType === "From" ? `از ${toman(l.priceRial)}` : toman(l.priceRial);
+  if (l.priceType === "OnCall" || l.priceRial == null) return "Auf Anfrage";
+  return l.priceType === "From" ? `von ${toman(l.priceRial)}` : toman(l.priceRial);
 }
 
-const faDigits = new Intl.NumberFormat("fa-IR", { useGrouping: true });
+const deDigits = new Intl.NumberFormat("de-DE", { useGrouping: true });
 /** Field value for display: numbers get Persian digits (years without separators), plus the suffix. */
 export function fieldValue(f: FieldDef, raw: string | undefined): string | null {
   if (!raw) return null;
   let v = raw;
   if (f.type === "number" && /^\d+$/.test(raw)) {
     const n = Number(raw);
-    v = n >= 1000 && n <= 2100 && f.key.includes("year") ? new Intl.NumberFormat("fa-IR", { useGrouping: false }).format(n) : faDigits.format(n);
+    v = n >= 1000 && n <= 2100 && f.key.includes("year") ? new Intl.NumberFormat("de-DE", { useGrouping: false }).format(n) : deDigits.format(n);
   }
   return f.suffix ? `${v} ${f.suffix}` : v;
 }

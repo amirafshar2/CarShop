@@ -72,7 +72,7 @@ public sealed class VideoOptimizer(UploadStore store, IConfiguration config, ILo
             catch (Exception ex) when (ex is not OperationCanceledException)
             {
                 logger.LogError(ex, "Video optimisation failed for {Id}; the original stays online", id);
-                await File.WriteAllTextAsync(Path.Combine(store.Root, $"{id}.failed"), "ساخت نسخه‌ی سبک انجام نشد؛ ویدیوی اصلی نمایش داده می‌شود.", CancellationToken.None);
+                await File.WriteAllTextAsync(Path.Combine(store.Root, $"{id}.failed"), "Die leichte Version konnte nicht erstellt werden; das Originalvideo wird angezeigt.", CancellationToken.None);
             }
         }
     }
@@ -84,9 +84,9 @@ public sealed class VideoOptimizer(UploadStore store, IConfiguration config, ILo
 
         // Check size and length first: a huge source is what would blow the memory limit.
         var (w, h, seconds) = await ProbeAsync(src, ct);
-        string? refuse = w * h > 3840 * 2160 ? "ویدیو بزرگ‌تر از 4K است؛ لطفاً نسخه‌ی 4K یا 1080 آپلود کنید."
-            : seconds > MaxSeconds ? $"ویدیو بیشتر از {MaxSeconds} ثانیه است؛ برای اسکرول ۵ تا ۱۵ ثانیه بهترین است."
-            : w == 0 ? "فایل ویدیو خوانده نشد." : null;
+        string? refuse = w * h > 3840 * 2160 ? "Das Video ist größer als 4K; bitte eine 4K- oder 1080p-Version hochladen."
+            : seconds > MaxSeconds ? $"Das Video ist länger als {MaxSeconds} Sekunden; für Scroll-Videos sind 5 bis 15 Sekunden ideal."
+            : w == 0 ? "Die Videodatei konnte nicht gelesen werden." : null;
         if (refuse is not null)
         {
             await File.WriteAllTextAsync(Path.Combine(root, $"{id}.failed"), refuse, ct);

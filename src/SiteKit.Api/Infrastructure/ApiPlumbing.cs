@@ -70,7 +70,7 @@ public sealed class ValidationFilter(IServiceProvider services) : IAsyncActionFi
             var problem = new ValidationProblemDetails(errors)
             {
                 Status = StatusCodes.Status422UnprocessableEntity,
-                Title = "اطلاعات ارسال‌شده معتبر نیست.",
+                Title = "Die gesendeten Daten sind ungültig.",
                 Extensions = { ["traceId"] = Activity.Current?.Id ?? context.HttpContext.TraceIdentifier }
             };
             context.Result = new ObjectResult(problem) { StatusCode = StatusCodes.Status422UnprocessableEntity };
@@ -97,7 +97,7 @@ public sealed class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logge
             ProblemDetails = new ProblemDetails
             {
                 Status = 500,
-                Title = "خطای غیرمنتظره‌ای رخ داد. لطفاً دوباره تلاش کنید.",
+                Title = "Ein unerwarteter Fehler ist aufgetreten. Bitte erneut versuchen.",
                 Extensions = { ["traceId"] = Activity.Current?.Id ?? http.TraceIdentifier }
             }
         });

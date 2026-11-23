@@ -34,12 +34,12 @@ export default function AdminUsersPage() {
   if (role !== "all") qs.set("role", role);
   const { data, error, loading, reload } = useApi<Paged<AdminUser>>(isAdmin(user) ? `/api/v1/admin/users?${qs.toString()}` : null);
 
-  if (!isAdmin(user)) return <p className="text-muted-foreground">فقط مدیر به این بخش دسترسی دارد.</p>;
+  if (!isAdmin(user)) return <p className="text-muted-foreground">Nur der Admin hat Zugriff auf diesen Bereich.</p>;
 
   const changeRole = async (u: AdminUser, next: string) => {
     try {
       await apiSend(`/api/v1/admin/users/${u.id}/role`, "PUT", { role: next });
-      toast.success(`نقش ${u.fullName ?? u.phone} شد: ${roleLabels[next]} (بعد از ورود دوباره‌ی او اعمال می‌شود)`);
+      toast.success(`Rolle von ${u.fullName ?? u.phone} geändert: ${roleLabels[next]} (gilt nach der nächsten Anmeldung)`);
       await reload();
     } catch (e) {
       toast.error((e as Error).message);
@@ -52,7 +52,7 @@ export default function AdminUsersPage() {
     setFormError(null);
     try {
       await apiSend(`/api/v1/admin/users`, "POST", { ...newUser, fullName: newUser.fullName || null });
-      toast.success("کاربر اضافه شد. با همین شماره و کد پیامکی وارد می‌شود.");
+      toast.success("Benutzer hinzugefügt. Die Anmeldung erfolgt mit dieser Nummer und einem SMS-Code.");
       setAdding(false);
       setNewUser({ phone: "", fullName: "", role: "Staff" });
       await reload();
@@ -66,19 +66,19 @@ export default function AdminUsersPage() {
   return (
     <>
       <AdminHeader
-        title="کاربران و کارمندان"
-        description={data ? `${fa(data.totalCount)} کاربر` : "نقش هر نفر را تعیین کنید: مدیر، کارشناس یا مشتری."}
-        actions={<Button onClick={() => { setFormError(null); setAdding(true); }}><Plus className="me-1.5 size-4" />افزودن کارمند</Button>}
+        title="Benutzer und Mitarbeiter"
+        description={data ? `${fa(data.totalCount)} Benutzer` : "Legen Sie die Rolle jeder Person fest: Admin, Mitarbeiter oder Kunde."}
+        actions={<Button onClick={() => { setFormError(null); setAdding(true); }}><Plus className="me-1.5 size-4" />Mitarbeiter hinzufügen</Button>}
       />
       <div className="mb-5 flex flex-col gap-3 sm:flex-row">
         <form className="flex flex-1 gap-2" role="search" onSubmit={(e) => { e.preventDefault(); setQuery(search.trim()); }}>
-          <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="جستجوی نام یا موبایل" aria-label="جستجو" className="sm:max-w-xs" />
-          <Button type="submit" variant="outline" size="icon" aria-label="جستجو"><Search className="size-4" /></Button>
+          <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Name oder Handynummer suchen" aria-label="Suchen" className="sm:max-w-xs" />
+          <Button type="submit" variant="outline" size="icon" aria-label="Suchen"><Search className="size-4" /></Button>
         </form>
         <Select value={role} onValueChange={setRole}>
-          <SelectTrigger className="sm:w-48" aria-label="فیلتر نقش"><SelectValue /></SelectTrigger>
+          <SelectTrigger className="sm:w-48" aria-label="Rolle filtern"><SelectValue /></SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">همه‌ی نقش‌ها</SelectItem>
+            <SelectItem value="all">Alle Rollen</SelectItem>
             {ROLES.map((r) => <SelectItem key={r} value={r}>{roleLabels[r]}</SelectItem>)}
           </SelectContent>
         </Select>
@@ -90,27 +90,27 @@ export default function AdminUsersPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>نام</TableHead>
-                <TableHead>موبایل</TableHead>
-                <TableHead>عضویت</TableHead>
-                <TableHead className="min-w-40">نقش</TableHead>
+                <TableHead>Name</TableHead>
+                <TableHead>Mobil</TableHead>
+                <TableHead>Mitglied seit</TableHead>
+                <TableHead className="min-w-40">Rolle</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {data.items.map((u) => (
                 <TableRow key={u.id}>
-                  <TableCell className="font-semibold">{u.fullName ?? "—"}{u.id === user?.id && <span className="ms-2 text-xs text-primary">(شما)</span>}</TableCell>
+                  <TableCell className="font-semibold">{u.fullName ?? "—"}{u.id === user?.id && <span className="ms-2 text-xs text-primary">(Sie)</span>}</TableCell>
                   <TableCell dir="ltr" className="text-end">{u.phone}</TableCell>
                   <TableCell className="whitespace-nowrap text-sm text-muted-foreground">{faDate(u.createdAt)}</TableCell>
                   <TableCell>
                     <Select value={mainRole(u.roles)} onValueChange={(v) => void changeRole(u, v)} disabled={u.id === user?.id}>
-                      <SelectTrigger className="h-10 text-sm" aria-label={`نقش ${u.fullName ?? u.phone}`}><SelectValue /></SelectTrigger>
+                      <SelectTrigger className="h-10 text-sm" aria-label={`Rolle von ${u.fullName ?? u.phone}`}><SelectValue /></SelectTrigger>
                       <SelectContent>{ROLES.map((r) => <SelectItem key={r} value={r}>{roleLabels[r]}</SelectItem>)}</SelectContent>
                     </Select>
                   </TableCell>
                 </TableRow>
               ))}
-              {data.items.length === 0 && <TableRow><TableCell colSpan={4} className="py-10 text-center text-muted-foreground">کاربری پیدا نشد.</TableCell></TableRow>}
+              {data.items.length === 0 && <TableRow><TableCell colSpan={4} className="py-10 text-center text-muted-foreground">Kein Benutzer gefunden.</TableCell></TableRow>}
             </TableBody>
           </Table>
         </div>
@@ -119,24 +119,24 @@ export default function AdminUsersPage() {
       <Dialog open={adding} onOpenChange={setAdding}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>افزودن کارمند / کاربر</DialogTitle>
-            <DialogDescription>شخص با همین شماره و کد پیامکی وارد پنل می‌شود؛ رمز عبوری لازم نیست.</DialogDescription>
+            <DialogTitle>Mitarbeiter / Benutzer hinzufügen</DialogTitle>
+            <DialogDescription>Die Person meldet sich mit dieser Nummer und einem SMS-Code an; ein Passwort ist nicht nötig.</DialogDescription>
           </DialogHeader>
           <form id="user-form" className="grid gap-4" onSubmit={(e) => { e.preventDefault(); void add(); }}>
-            <div className="grid gap-2"><Label htmlFor="u-phone">شماره موبایل</Label><Input id="u-phone" dir="ltr" inputMode="tel" placeholder="09xxxxxxxxx" value={newUser.phone} onChange={(e) => setNewUser({ ...newUser, phone: e.target.value })} required /></div>
-            <div className="grid gap-2"><Label htmlFor="u-name">نام (اختیاری)</Label><Input id="u-name" value={newUser.fullName} onChange={(e) => setNewUser({ ...newUser, fullName: e.target.value })} /></div>
+            <div className="grid gap-2"><Label htmlFor="u-phone">Handynummer</Label><Input id="u-phone" dir="ltr" inputMode="tel" placeholder="0151 23456789" value={newUser.phone} onChange={(e) => setNewUser({ ...newUser, phone: e.target.value })} required /></div>
+            <div className="grid gap-2"><Label htmlFor="u-name">Name (optional)</Label><Input id="u-name" value={newUser.fullName} onChange={(e) => setNewUser({ ...newUser, fullName: e.target.value })} /></div>
             <div className="grid gap-2">
-              <Label>نقش</Label>
+              <Label>Rolle</Label>
               <Select value={newUser.role} onValueChange={(v) => setNewUser({ ...newUser, role: v })}>
-                <SelectTrigger aria-label="نقش"><SelectValue /></SelectTrigger>
+                <SelectTrigger aria-label="Rolle"><SelectValue /></SelectTrigger>
                 <SelectContent>{ROLES.map((r) => <SelectItem key={r} value={r}>{roleLabels[r]}</SelectItem>)}</SelectContent>
               </Select>
             </div>
             {formError && <p role="alert" className="text-sm text-destructive">{formError}</p>}
           </form>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setAdding(false)}>انصراف</Button>
-            <Button type="submit" form="user-form" disabled={busy}>{busy ? "در حال ذخیره…" : "افزودن"}</Button>
+            <Button variant="outline" onClick={() => setAdding(false)}>Abbrechen</Button>
+            <Button type="submit" form="user-form" disabled={busy}>{busy ? "Wird gespeichert…" : "Hinzufügen"}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

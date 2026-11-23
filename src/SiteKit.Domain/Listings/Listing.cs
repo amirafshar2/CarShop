@@ -7,7 +7,7 @@ public enum ListingStatus
     Draft = 0,
     Published = 1,
     Hidden = 2,
-    /// <summary>Still visible, marked «فروخته شد» / «تکمیل ظرفیت».</summary>
+    /// <summary>Still visible, marked "Verkauft" / "Ausgebucht".</summary>
     SoldOut = 3
 }
 

@@ -31,11 +31,11 @@ public sealed class DbSeeder(
                 await roles.CreateAsync(new IdentityRole<Guid>(role));
 
         var o = options.Value;
-        if (IranValidators.TryNormalizeMobile(o.AdminPhone, out var adminPhone))
-            await EnsureUserAsync(adminPhone, "مدیر سایت", Roles.Admin);
+        if (PhoneValidators.TryNormalizeMobile(o.AdminPhone, out var adminPhone))
+            await EnsureUserAsync(adminPhone, "Website-Admin", Roles.Admin);
         foreach (var staff in o.StaffPhones)
-            if (IranValidators.TryNormalizeMobile(staff, out var staffPhone))
-                await EnsureUserAsync(staffPhone, "کارمند", Roles.Staff);
+            if (PhoneValidators.TryNormalizeMobile(staff, out var staffPhone))
+                await EnsureUserAsync(staffPhone, "Mitarbeiter", Roles.Staff);
 
         if (await db.SiteSettings.AnyAsync(ct)) return;
 

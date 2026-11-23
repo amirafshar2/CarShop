@@ -41,7 +41,7 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
         builder.UseSetting("Sms:Provider", "Console");
         builder.UseSetting("Seed:Mode", "demo");
         builder.UseSetting("Seed:Preset", "car");
-        builder.UseSetting("Seed:AdminPhone", "09120000001");
+        builder.UseSetting("Seed:AdminPhone", "015120000001");
         builder.UseSetting("RateLimits:OtpPerTenMinutes", "1000");
         builder.UseSetting("RateLimits:AuthPerMinute", "1000");
         builder.UseSetting("RateLimits:FormsPerMinute", "1000");
@@ -72,7 +72,7 @@ public sealed class ApiTests(ApiFactory factory) : IClassFixture<ApiFactory>
         var client = factory.CreateClient();
         (await client.PostAsJsonAsync("/api/v1/auth/otp", new { phone })).EnsureSuccessStatusCode();
         var code = factory.Sms.LastCode[phone];
-        var verify = await client.PostAsJsonAsync("/api/v1/auth/verify", new { phone, code, fullName = "تست" });
+        var verify = await client.PostAsJsonAsync("/api/v1/auth/verify", new { phone, code, fullName = "Test" });
         verify.EnsureSuccessStatusCode();
         var body = await verify.Content.ReadFromJsonAsync<JsonElement>(Json);
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", body.GetProperty("accessToken").GetString());
@@ -83,10 +83,10 @@ public sealed class ApiTests(ApiFactory factory) : IClassFixture<ApiFactory>
     public async Task Wrong_otp_is_rejected_and_never_issues_tokens()
     {
         var client = factory.CreateClient();
-        await client.PostAsJsonAsync("/api/v1/auth/otp", new { phone = "09170000099" });
+        await client.PostAsJsonAsync("/api/v1/auth/otp", new { phone = "015170000099" });
 
-        var wrong = factory.Sms.LastCode["09170000099"] == "000000" ? "111111" : "000000";
-        var response = await client.PostAsJsonAsync("/api/v1/auth/verify", new { phone = "09170000099", code = wrong });
+        var wrong = factory.Sms.LastCode["015170000099"] == "000000" ? "111111" : "000000";
+        var response = await client.PostAsJsonAsync("/api/v1/auth/verify", new { phone = "015170000099", code = wrong });
 
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
@@ -95,7 +95,7 @@ public sealed class ApiTests(ApiFactory factory) : IClassFixture<ApiFactory>
     public async Task Otp_code_cannot_be_reused()
     {
         var client = factory.CreateClient();
-        const string phone = "09170000098";
+        const string phone = "015170000098";
         await client.PostAsJsonAsync("/api/v1/auth/otp", new { phone });
         var code = factory.Sms.LastCode[phone];
 
@@ -109,7 +109,7 @@ public sealed class ApiTests(ApiFactory factory) : IClassFixture<ApiFactory>
     [Fact]
     public async Task Customer_cannot_use_admin_endpoints()
     {
-        var customer = await LoginAsync("09170000097");
+        var customer = await LoginAsync("015170000097");
 
         var response = await customer.GetAsync("/api/v1/leads");
 
@@ -124,12 +124,12 @@ public sealed class ApiTests(ApiFactory factory) : IClassFixture<ApiFactory>
         var listingId = page.GetProperty("items")[0].GetProperty("id").GetGuid();
 
         var lead = await client.PostAsJsonAsync("/api/v1/leads",
-            new { name = "علی", phone = "۰۹۱۷۵۵۵۴۴۳۳", type = "ItemRequest", listingId, message = "قیمت لطفاً" });
-        var admin = await LoginAsync("09120000001");
+            new { name = "Ali", phone = "015175554433", type = "ItemRequest", listingId, message = "Preis bitte" });
+        var admin = await LoginAsync("015120000001");
         var list = await admin.GetFromJsonAsync<JsonElement>("/api/v1/leads", Json);
 
         Assert.Equal(HttpStatusCode.Created, lead.StatusCode);
-        Assert.Contains(list.GetProperty("items").EnumerateArray(), l => l.GetProperty("phone").GetString() == "09175554433");
+        Assert.Contains(list.GetProperty("items").EnumerateArray(), l => l.GetProperty("phone").GetString() == "015175554433");
     }
 
     [Fact]
@@ -138,7 +138,7 @@ public sealed class ApiTests(ApiFactory factory) : IClassFixture<ApiFactory>
         var handler = factory.Server.CreateHandler();
         var cookies = new System.Net.CookieContainer();
         var client = new HttpClient(new CookieHandler(handler, cookies)) { BaseAddress = new Uri("http://localhost") };
-        const string phone = "09170000096";
+        const string phone = "015170000096";
 
         await client.PostAsJsonAsync("/api/v1/auth/otp", new { phone });
         (await client.PostAsJsonAsync("/api/v1/auth/verify", new { phone, code = factory.Sms.LastCode[phone] })).EnsureSuccessStatusCode();
@@ -162,7 +162,7 @@ public sealed class ApiTests(ApiFactory factory) : IClassFixture<ApiFactory>
     public async Task Parallel_wrong_otp_guesses_cannot_exceed_attempt_limit()
     {
         var client = factory.CreateClient();
-        const string phone = "09170000095";
+        const string phone = "015170000095";
         await client.PostAsJsonAsync("/api/v1/auth/otp", new { phone });
         var real = factory.Sms.LastCode[phone];
         var wrong = Enumerable.Range(0, 30).Select(i => (100000 + i).ToString()).Where(c => c != real).Take(25).ToList();

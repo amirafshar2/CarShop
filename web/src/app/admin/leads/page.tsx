@@ -28,7 +28,7 @@ export default function AdminLeadsPage() {
     try {
       await apiSend(`/api/v1/leads/${lead.id}/status`, "PATCH", { status: next });
       setData((d) => (d ? { ...d, items: d.items.map((l) => (l.id === lead.id ? { ...l, status: next } : l)) } : d));
-      toast.success(`وضعیت «${lead.name}» شد: ${leadStatusLabels[next]}`);
+      toast.success(`Status von „${lead.name}“ geändert: ${leadStatusLabels[next]}`);
     } catch (e) {
       toast.error((e as Error).message);
     }
@@ -37,23 +37,23 @@ export default function AdminLeadsPage() {
   return (
     <>
       <AdminHeader
-        title="درخواست‌های مشتری"
-        description={data ? `${fa(data.totalCount)} درخواست — ${fa(data.items.filter((l) => l.status === "New").length)} جدید` : "فرم‌های تماس و درخواست‌های بازدیدکننده‌ها"}
-        actions={<Button variant="outline" onClick={() => void reload()}>به‌روزرسانی</Button>}
+        title="Kundenanfragen"
+        description={data ? `${fa(data.totalCount)} Anfragen – ${fa(data.items.filter((l) => l.status === "New").length)} neu` : "Kontaktformulare und Anfragen von Besuchern"}
+        actions={<Button variant="outline" onClick={() => void reload()}>Aktualisieren</Button>}
       />
 
       <div className="mb-5 grid gap-3 sm:grid-cols-2 lg:w-[34rem]">
         <Select value={status} onValueChange={(v) => setStatus(v as LeadStatus | "all")}>
-          <SelectTrigger aria-label="فیلتر وضعیت"><SelectValue /></SelectTrigger>
+          <SelectTrigger aria-label="Status filtern"><SelectValue /></SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">همه‌ی وضعیت‌ها</SelectItem>
+            <SelectItem value="all">Alle Status</SelectItem>
             {(Object.keys(leadStatusLabels) as LeadStatus[]).map((s) => <SelectItem key={s} value={s}>{leadStatusLabels[s]}</SelectItem>)}
           </SelectContent>
         </Select>
         <Select value={type} onValueChange={(v) => setType(v as LeadType | "all")}>
-          <SelectTrigger aria-label="فیلتر نوع"><SelectValue /></SelectTrigger>
+          <SelectTrigger aria-label="Art filtern"><SelectValue /></SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">همه‌ی انواع</SelectItem>
+            <SelectItem value="all">Alle Arten</SelectItem>
             {(Object.keys(leadTypeLabels) as LeadType[]).map((t) => <SelectItem key={t} value={t}>{leadTypeLabels[t]}</SelectItem>)}
           </SelectContent>
         </Select>
@@ -65,11 +65,11 @@ export default function AdminLeadsPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>مشتری</TableHead>
-                <TableHead>نوع</TableHead>
-                <TableHead className="min-w-56">پیام</TableHead>
-                <TableHead>زمان</TableHead>
-                <TableHead className="min-w-44">وضعیت</TableHead>
+                <TableHead>Kundinnen und Kunden</TableHead>
+                <TableHead>Typ</TableHead>
+                <TableHead className="min-w-56">Nachricht</TableHead>
+                <TableHead>Zeit</TableHead>
+                <TableHead className="min-w-44">Status</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -79,7 +79,7 @@ export default function AdminLeadsPage() {
                     <div className="font-semibold">{l.name}</div>
                     <div className="mt-1 flex items-center gap-2 text-sm">
                       <a href={`tel:${l.phone}`} dir="ltr" className="inline-flex items-center gap-1 text-muted-foreground hover:text-primary"><Phone className="size-3.5" />{l.phone}</a>
-                      <a href={wa(l.phone)} target="_blank" rel="noopener noreferrer" aria-label={`واتس‌اپ ${l.name}`} className="text-muted-foreground hover:text-emerald-400"><MessageCircle className="size-4" /></a>
+                      <a href={wa(l.phone)} target="_blank" rel="noopener noreferrer" aria-label={`WhatsApp ${l.name}`} className="text-muted-foreground hover:text-emerald-400"><MessageCircle className="size-4" /></a>
                     </div>
                   </TableCell>
                   <TableCell className="whitespace-nowrap">{leadTypeLabels[l.type]}</TableCell>
@@ -87,7 +87,7 @@ export default function AdminLeadsPage() {
                   <TableCell className="whitespace-nowrap text-sm text-muted-foreground">{faDate(l.createdAt)}</TableCell>
                   <TableCell>
                     <Select value={l.status} onValueChange={(v) => void change(l, v as LeadStatus)}>
-                      <SelectTrigger aria-label={`وضعیت ${l.name}`} className="h-10 text-sm">
+                      <SelectTrigger aria-label={`Status ${l.name}`} className="h-10 text-sm">
                         <StatusPill className={leadStatusColor[l.status]}>{leadStatusLabels[l.status]}</StatusPill>
                       </SelectTrigger>
                       <SelectContent>
@@ -98,7 +98,7 @@ export default function AdminLeadsPage() {
                 </TableRow>
               ))}
               {rows.length === 0 && (
-                <TableRow><TableCell colSpan={5} className="py-10 text-center text-muted-foreground">درخواستی با این فیلتر وجود ندارد.</TableCell></TableRow>
+                <TableRow><TableCell colSpan={5} className="py-10 text-center text-muted-foreground">Keine Anfragen für diesen Filter.</TableCell></TableRow>
               )}
             </TableBody>
           </Table>

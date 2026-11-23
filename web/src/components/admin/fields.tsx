@@ -62,7 +62,7 @@ export function ImageField({ label, value, onChange, hint, accept = "image", cla
     setBusy(true);
     try {
       onChange(await uploadFile(file));
-      toast.success("آپلود شد.");
+      toast.success("Hochgeladen.");
     } catch (e) {
       toast.error((e as Error).message);
     } finally {
@@ -82,15 +82,15 @@ export function ImageField({ label, value, onChange, hint, accept = "image", cla
           ) : <ImagePlus className="size-7 text-muted-foreground" aria-hidden />}
         </div>
         <div className="flex flex-wrap gap-2">
-          <input ref={input} type="file" accept={accept === "video" ? "video/mp4" : "image/jpeg,image/png,image/webp,image/gif"} className="sr-only" onChange={(e) => void pick(e.target.files?.[0])} aria-label={`آپلود ${label}`} />
+          <input ref={input} type="file" accept={accept === "video" ? "video/mp4" : "image/jpeg,image/png,image/webp,image/gif"} className="sr-only" onChange={(e) => void pick(e.target.files?.[0])} aria-label={`Hochladen: ${label}`} />
           <Button type="button" variant="outline" onClick={() => input.current?.click()} disabled={busy}>
-            {busy ? <Loader2 className="size-4 animate-spin" /> : <ImagePlus className="size-4" />}{value ? "عوض کردن" : "آپلود"}
+            {busy ? <Loader2 className="size-4 animate-spin" /> : <ImagePlus className="size-4" />}{value ? "Ersetzen" : "Hochladen"}
           </Button>
-          {value && <Button type="button" variant="ghost" onClick={() => onChange(null)}><X className="size-4" />حذف</Button>}
-          <Button type="button" variant="ghost" className="text-xs text-muted-foreground" onClick={() => setShowUrl((v) => !v)}>لینک</Button>
+          {value && <Button type="button" variant="ghost" onClick={() => onChange(null)}><X className="size-4" />Löschen</Button>}
+          <Button type="button" variant="ghost" className="text-xs text-muted-foreground" onClick={() => setShowUrl((v) => !v)}>Link</Button>
         </div>
       </div>
-      {showUrl && <Input dir="ltr" value={value ?? ""} onChange={(e) => onChange(e.target.value || null)} placeholder="https://…" className="h-10" aria-label={`لینک ${label}`} />}
+      {showUrl && <Input dir="ltr" value={value ?? ""} onChange={(e) => onChange(e.target.value || null)} placeholder="https://…" className="h-10" aria-label={`Link: ${label}`} />}
       {hint && <p className="text-xs leading-5 text-muted-foreground">{hint}</p>}
     </div>
   );
@@ -120,15 +120,15 @@ export function ImagesField({ value, onChange }: { value: string[]; onChange: (v
   return (
     <div className="grid gap-3">
       <div className="flex items-center justify-between">
-        <span className="text-sm font-medium">تصاویر <span className="text-xs text-muted-foreground">(اولی عکس اصلی است)</span></span>
-        <input ref={input} type="file" multiple accept="image/jpeg,image/png,image/webp,image/gif" className="sr-only" onChange={(e) => void pick(e.target.files)} aria-label="آپلود تصاویر" />
+        <span className="text-sm font-medium">Bilder <span className="text-xs text-muted-foreground">(das erste ist das Hauptbild)</span></span>
+        <input ref={input} type="file" multiple accept="image/jpeg,image/png,image/webp,image/gif" className="sr-only" onChange={(e) => void pick(e.target.files)} aria-label="Bilder hochladen" />
         <Button type="button" variant="outline" size="sm" onClick={() => input.current?.click()} disabled={busy || value.length >= 12}>
-          {busy ? <Loader2 className="size-4 animate-spin" /> : <ImagePlus className="size-4" />}افزودن عکس
+          {busy ? <Loader2 className="size-4 animate-spin" /> : <ImagePlus className="size-4" />}Bild hinzufügen
         </Button>
       </div>
       {value.length === 0 ? (
         <button type="button" onClick={() => input.current?.click()} className="grid h-32 place-items-center rounded-xl border border-dashed border-border text-sm text-muted-foreground hover:bg-accent">
-          برای آپلود عکس اینجا بزنید
+          Zum Hochladen eines Bildes hier klicken
         </button>
       ) : (
         <ul className="grid grid-cols-3 gap-3 sm:grid-cols-4">
@@ -136,11 +136,11 @@ export function ImagesField({ value, onChange }: { value: string[]; onChange: (v
             <li key={src + i} className="group relative aspect-square overflow-hidden rounded-xl border border-border">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={mediaUrl(src)} alt="" className="h-full w-full object-cover" />
-              {i === 0 && <span className="absolute start-1.5 top-1.5 rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold text-primary-foreground">اصلی</span>}
+              {i === 0 && <span className="absolute start-1.5 top-1.5 rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold text-primary-foreground">Hauptbild</span>}
               <div className="absolute inset-x-1 bottom-1 flex justify-center gap-1">
-                {i > 0 && <button type="button" onClick={() => move(i, -1)} aria-label="جلوتر" className="grid size-7 place-items-center rounded-md bg-background/90"><ArrowUp className="size-3.5" /></button>}
-                {i < value.length - 1 && <button type="button" onClick={() => move(i, 1)} aria-label="عقب‌تر" className="grid size-7 place-items-center rounded-md bg-background/90"><ArrowDown className="size-3.5" /></button>}
-                <button type="button" onClick={() => onChange(value.filter((_, j) => j !== i))} aria-label="حذف عکس" className="grid size-7 place-items-center rounded-md bg-background/90 text-destructive"><Trash2 className="size-3.5" /></button>
+                {i > 0 && <button type="button" onClick={() => move(i, -1)} aria-label="nach vorn" className="grid size-7 place-items-center rounded-md bg-background/90"><ArrowUp className="size-3.5" /></button>}
+                {i < value.length - 1 && <button type="button" onClick={() => move(i, 1)} aria-label="nach hinten" className="grid size-7 place-items-center rounded-md bg-background/90"><ArrowDown className="size-3.5" /></button>}
+                <button type="button" onClick={() => onChange(value.filter((_, j) => j !== i))} aria-label="Bild löschen" className="grid size-7 place-items-center rounded-md bg-background/90 text-destructive"><Trash2 className="size-3.5" /></button>
               </div>
             </li>
           ))}
@@ -155,14 +155,14 @@ export const SWATCHES = ["#f97316", "#ef4444", "#e11d48", "#a855f7", "#6366f1", 
 export function ColorField({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   return (
     <div className="grid gap-3">
-      <span className="text-sm font-medium">رنگ اصلی سایت</span>
+      <span className="text-sm font-medium">Hauptfarbe der Website</span>
       <div className="flex flex-wrap items-center gap-2">
         {SWATCHES.map((c) => (
-          <button key={c} type="button" onClick={() => onChange(c)} aria-label={`رنگ ${c}`} aria-pressed={value.toLowerCase() === c}
+          <button key={c} type="button" onClick={() => onChange(c)} aria-label={`Farbe ${c}`} aria-pressed={value.toLowerCase() === c}
             className={`size-10 rounded-full border-2 transition-transform ${value.toLowerCase() === c ? "scale-110 border-foreground" : "border-transparent"}`} style={{ background: c }} />
         ))}
         <label className="flex items-center gap-2 rounded-full border border-border px-3 py-1.5 text-sm">
-          <input type="color" value={value} onChange={(e) => onChange(e.target.value)} className="size-7 cursor-pointer rounded-full border-0 bg-transparent p-0" aria-label="رنگ دلخواه" />
+          <input type="color" value={value} onChange={(e) => onChange(e.target.value)} className="size-7 cursor-pointer rounded-full border-0 bg-transparent p-0" aria-label="Eigene Farbe" />
           <span dir="ltr">{value}</span>
         </label>
       </div>
@@ -188,9 +188,9 @@ export function ListEditor<T>({ items, onChange, make, render, addLabel, max = 2
         <div key={i} className="rounded-xl border border-border bg-background p-3">
           <div className="grid gap-3">{render(item, (v) => onChange(items.map((x, j) => (j === i ? v : x))), i)}</div>
           <div className="mt-2 flex justify-end gap-1">
-            <Button type="button" variant="ghost" size="icon" disabled={i === 0} onClick={() => move(i, -1)} aria-label="بالاتر"><ArrowUp className="size-4" /></Button>
-            <Button type="button" variant="ghost" size="icon" disabled={i === items.length - 1} onClick={() => move(i, 1)} aria-label="پایین‌تر"><ArrowDown className="size-4" /></Button>
-            <Button type="button" variant="ghost" size="icon" className="text-destructive" onClick={() => onChange(items.filter((_, j) => j !== i))} aria-label="حذف"><Trash2 className="size-4" /></Button>
+            <Button type="button" variant="ghost" size="icon" disabled={i === 0} onClick={() => move(i, -1)} aria-label="nach oben"><ArrowUp className="size-4" /></Button>
+            <Button type="button" variant="ghost" size="icon" disabled={i === items.length - 1} onClick={() => move(i, 1)} aria-label="nach unten"><ArrowDown className="size-4" /></Button>
+            <Button type="button" variant="ghost" size="icon" className="text-destructive" onClick={() => onChange(items.filter((_, j) => j !== i))} aria-label="Löschen"><Trash2 className="size-4" /></Button>
           </div>
         </div>
       ))}
@@ -223,7 +223,7 @@ export function HeroVideoField({ value, optimized, mode, onChange }: {
       try {
         const s = await getUploadStatus(id);
         if (stop) return;
-        if (s.ready) { onChange({ optimized: true, poster: s.poster }); toast.success("ویدیو برای پخش روان آماده شد."); return; }
+        if (s.ready) { onChange({ optimized: true, poster: s.poster }); toast.success("Das Video ist für flüssige Wiedergabe bereit."); return; }
         if (s.failed) { setFailed(s.failed); toast.error(s.failed); return; }
       } catch { /* try again */ }
       if (!stop) timer = setTimeout(check, 4000);
@@ -240,7 +240,7 @@ export function HeroVideoField({ value, optimized, mode, onChange }: {
       const r = await uploadMedia(file);
       setFailed(null);
       onChange({ url: r.url, optimized: false });
-      toast.success(r.optimizing ? "آپلود شد؛ نسخه‌ی سبک و روان در حال ساخت است…" : "آپلود شد.");
+      toast.success(r.optimizing ? "Hochgeladen; die leichte, flüssige Version wird erstellt…" : "Hochgeladen.");
     } catch (e) {
       toast.error((e as Error).message);
     } finally {
@@ -251,39 +251,39 @@ export function HeroVideoField({ value, optimized, mode, onChange }: {
 
   return (
     <div className="grid gap-3 sm:col-span-2">
-      <span className="text-sm font-medium">ویدیوی صفحه‌ی اول (اختیاری)</span>
+      <span className="text-sm font-medium">Video der Startseite (optional)</span>
       <div className="flex flex-wrap items-center gap-3">
         <div className="grid h-24 w-40 shrink-0 place-items-center overflow-hidden rounded-xl border border-dashed border-border bg-muted">
           {value ? <video src={mediaUrl(value)} className="h-full w-full object-cover" muted /> : <ImagePlus className="size-7 text-muted-foreground" aria-hidden />}
         </div>
         <div className="flex flex-wrap gap-2">
-          <input ref={input} type="file" accept="video/mp4,video/quicktime" className="sr-only" onChange={(e) => void pick(e.target.files?.[0])} aria-label="آپلود ویدیو" />
+          <input ref={input} type="file" accept="video/mp4,video/quicktime" className="sr-only" onChange={(e) => void pick(e.target.files?.[0])} aria-label="Video hochladen" />
           <Button type="button" variant="outline" onClick={() => input.current?.click()} disabled={busy}>
-            {busy ? <Loader2 className="size-4 animate-spin" /> : <ImagePlus className="size-4" />}{value ? "عوض کردن" : "آپلود ویدیو"}
+            {busy ? <Loader2 className="size-4 animate-spin" /> : <ImagePlus className="size-4" />}{value ? "Ersetzen" : "Video hochladen"}
           </Button>
-          {value && <Button type="button" variant="ghost" onClick={() => onChange({ url: null, optimized: false })}><X className="size-4" />حذف</Button>}
-          <Button type="button" variant="ghost" className="text-xs text-muted-foreground" onClick={() => setShowUrl((v) => !v)}>لینک</Button>
+          {value && <Button type="button" variant="ghost" onClick={() => onChange({ url: null, optimized: false })}><X className="size-4" />Löschen</Button>}
+          <Button type="button" variant="ghost" className="text-xs text-muted-foreground" onClick={() => setShowUrl((v) => !v)}>Link</Button>
         </div>
       </div>
-      {showUrl && <Input dir="ltr" value={value ?? ""} onChange={(e) => onChange({ url: e.target.value || null, optimized: false })} placeholder="https://….mp4" className="h-10" aria-label="لینک ویدیو" />}
+      {showUrl && <Input dir="ltr" value={value ?? ""} onChange={(e) => onChange({ url: e.target.value || null, optimized: false })} placeholder="https://….mp4" className="h-10" aria-label="Videolink" />}
       {value && (
         <p role="status" className={`flex items-center gap-2 text-xs ${waiting ? "text-primary" : "text-muted-foreground"}`}>
           {waiting && <Loader2 className="size-3.5 animate-spin" aria-hidden />}
           {waiting
-            ? "در حال بهینه‌سازی برای کامپیوترهای ضعیف… (چند دقیقه؛ می‌توانید ذخیره کنید و بروید)"
+            ? "Wird für schwächere Computer optimiert… (einige Minuten; Sie können speichern und weiterarbeiten)"
             : failed ? failed
-            : optimized ? "بهینه شده: نسخه‌ی ۱۰۸۰ و ۷۲۰ مخصوص اسکرول + عکس اول ساخته شد." : "لینک بیرونی بهینه نمی‌شود؛ برای بهترین نتیجه ویدیو را آپلود کنید."}
+            : optimized ? "Optimiert: 1080p- und 720p-Version für das Scrollen + erstes Bild erstellt." : "Externe Links werden nicht optimiert; für das beste Ergebnis das Video hochladen."}
         </p>
       )}
       <div className="grid gap-2 sm:max-w-sm">
-        <span className="text-sm font-medium">نحوه‌ی پخش</span>
+        <span className="text-sm font-medium">Wiedergabe</span>
         <div className="grid grid-cols-2 gap-2">
-          {([["scroll", "با اسکرول جلو/عقب می‌رود"], ["loop", "خودکار و تکراری"]] as const).map(([k, t]) => (
+          {([["scroll", "Läuft beim Scrollen vor und zurück"], ["loop", "Automatisch in Schleife"]] as const).map(([k, t]) => (
             <Button key={k} type="button" variant={mode === k ? "default" : "outline"} onClick={() => onChange({ mode: k })} className="h-auto whitespace-normal py-2 text-xs">{t}</Button>
           ))}
         </div>
       </div>
-      <p className="text-xs leading-5 text-muted-foreground">MP4 یا MOV، حداکثر ۸۰ مگابایت، ۵ تا ۱۵ ثانیه بهترین است. صدا حذف می‌شود. روی گوشی با «صرفه‌جویی داده» فقط عکس اول نشان داده می‌شود.</p>
+      <p className="text-xs leading-5 text-muted-foreground">MP4 oder MOV, höchstens 80 MB, ideal sind 5 bis 15 Sekunden. Der Ton wird entfernt. Auf Handys mit „Datensparmodus“ wird nur das erste Bild angezeigt.</p>
     </div>
   );
 }

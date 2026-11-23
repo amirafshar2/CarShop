@@ -378,7 +378,7 @@ export const Sidebar = React.forwardRef<HTMLElement, SidebarProps>(
               role="separator"
               tabIndex={0}
               aria-orientation="vertical"
-              aria-label="تغییر اندازه‌ی منو"
+              aria-label="Menübreite ändern"
               aria-valuemin={minWidth}
               aria-valuemax={maxWidth}
               aria-valuenow={Math.round(resize.width)}
@@ -461,7 +461,7 @@ export const SidebarHeader = React.forwardRef<
       data-collapsed={collapsed ? "true" : "false"}
       role={collapsed && isCollapsible ? "button" : undefined}
       tabIndex={collapsed && isCollapsible ? 0 : undefined}
-      aria-label={collapsed && isCollapsible ? "باز کردن منو" : undefined}
+      aria-label={collapsed && isCollapsible ? "Menü öffnen" : undefined}
       onClick={(e) => {
         onClick?.(e);
         if (collapsed && isCollapsible) toggleCollapsed();
@@ -873,7 +873,7 @@ export const SidebarToggle = React.forwardRef<
         data-slot="sidebar-toggle"
         data-collapsed={collapsed ? "true" : "false"}
         onClick={toggle}
-        aria-label={collapsed ? "باز کردن منو" : "جمع کردن منو"}
+        aria-label={collapsed ? "Menü öffnen" : "Menü einklappen"}
         aria-expanded={!collapsed}
         className={cn(
           "flex size-7 shrink-0 items-center justify-center rounded-[var(--primitive-radius-control-sm,0.625rem)] outline-none",

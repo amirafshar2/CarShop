@@ -13,12 +13,12 @@ import { patch, useAdminSite } from "@/lib/admin-site";
 import type { SiteContent } from "@/lib/site";
 
 const TABS = [
-  ["brand", "نام و لوگو"],
-  ["look", "رنگ و ظاهر"],
-  ["home", "صفحه‌ی اول"],
-  ["contact", "تماس"],
-  ["catalog", "آیتم‌ها و فیلدها"],
-  ["menu", "منو و صفحه‌ها"],
+  ["brand", "Name und Logo"],
+  ["look", "Farbe und Aussehen"],
+  ["home", "Startseite"],
+  ["contact", "Kontakt"],
+  ["catalog", "Einträge und Felder"],
+  ["menu", "Menü und Seiten"],
 ] as const;
 
 function SiteSettings() {
@@ -49,7 +49,7 @@ function SiteSettings() {
     setError(null);
     try {
       await save(draft);
-      toast.success("ذخیره شد و در سایت اعمال شد.");
+      toast.success("Gespeichert und auf der Website übernommen.");
     } catch (e) {
       setError((e as Error).message);
       toast.error((e as Error).message);
@@ -60,9 +60,9 @@ function SiteSettings() {
 
   return (
     <>
-      <AdminHeader title="تنظیمات سایت" description="همه‌ی متن‌ها، رنگ‌ها و بخش‌های سایت از اینجا عوض می‌شود."
-        actions={<Button asChild variant="outline"><a href="/" target="_blank" rel="noopener noreferrer"><ExternalLink className="size-4" />مشاهده‌ی سایت</a></Button>} />
-      <Tabs value={tab} onValueChange={(v) => router.replace(`/admin/site?tab=${v}`, { scroll: false })} dir="rtl">
+      <AdminHeader title="Website-Einstellungen" description="Alle Texte, Farben und Bereiche der Website ändern Sie hier."
+        actions={<Button asChild variant="outline"><a href="/" target="_blank" rel="noopener noreferrer"><ExternalLink className="size-4" />Website ansehen</a></Button>} />
+      <Tabs value={tab} onValueChange={(v) => router.replace(`/admin/site?tab=${v}`, { scroll: false })}>
         <div className="-mx-4 mb-6 overflow-x-auto px-4">
           <TabsList className="h-auto w-max">
             {TABS.map(([k, l]) => <TabsTrigger key={k} value={k} className="px-4 py-2.5 text-[15px]">{l}</TabsTrigger>)}
@@ -79,9 +79,9 @@ function SiteSettings() {
       </Tabs>
       <div className="sticky bottom-20 z-30 mt-6 flex flex-wrap items-center justify-end gap-3 rounded-2xl border border-border bg-background/90 p-3 backdrop-blur">
         {error && <p role="alert" className="me-auto text-sm text-destructive">{error}</p>}
-        {dirty && !error && <p className="me-auto text-sm text-muted-foreground">تغییرات ذخیره نشده دارید.</p>}
-        <Button variant="ghost" disabled={!dirty || busy} onClick={() => setDraft(site.content)}>لغو تغییرات</Button>
-        <Button onClick={() => void submit()} disabled={!dirty || busy}>{busy ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}ذخیره</Button>
+        {dirty && !error && <p className="me-auto text-sm text-muted-foreground">Sie haben ungespeicherte Änderungen.</p>}
+        <Button variant="ghost" disabled={!dirty || busy} onClick={() => setDraft(site.content)}>Änderungen verwerfen</Button>
+        <Button onClick={() => void submit()} disabled={!dirty || busy}>{busy ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}Speichern</Button>
       </div>
     </>
   );

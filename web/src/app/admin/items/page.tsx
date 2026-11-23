@@ -33,7 +33,7 @@ export default function AdminItemsPage() {
     if (!deleting) return;
     try {
       await apiSend(`/api/v1/admin/listings/${deleting.id}`, "DELETE");
-      toast.success("حذف شد.");
+      toast.success("Gelöscht.");
       setDeleting(null);
       await reload();
     } catch (e) {
@@ -43,20 +43,20 @@ export default function AdminItemsPage() {
 
   return (
     <>
-      <AdminHeader title={L?.itemPlural ?? "آیتم‌ها"} description={data ? `${fa(data.length)} مورد` : undefined}
+      <AdminHeader title={L?.itemPlural ?? "Einträge"} description={data ? `${fa(data.length)} Eintrag` : undefined}
         actions={<>
-          <Button asChild variant="outline"><a href="/items" target="_blank" rel="noopener noreferrer">مشاهده در سایت</a></Button>
-          <Button asChild><Link href="/admin/items/new"><Plus className="size-4" />{`افزودن ${L?.itemSingular ?? "آیتم"}`}</Link></Button>
+          <Button asChild variant="outline"><a href="/items" target="_blank" rel="noopener noreferrer">Auf der Website ansehen</a></Button>
+          <Button asChild><Link href="/admin/items/new"><Plus className="size-4" />{`Hinzufügen: ${L?.itemSingular ?? "Eintrag"}`}</Link></Button>
         </>} />
       <div className="relative mb-5 max-w-md">
         <Search className="pointer-events-none absolute start-3 top-3 size-5 text-muted-foreground" aria-hidden />
-        <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="جستجو" className="h-11 ps-10" aria-label="جستجو" />
+        <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Suchen" className="h-11 ps-10" aria-label="Suchen" />
       </div>
       <LoadState loading={loading && !data} error={error} onRetry={reload} />
       {data && rows.length === 0 && (
         <div className="rounded-2xl border border-dashed border-border p-12 text-center">
-          <p className="text-muted-foreground">{q ? "چیزی پیدا نشد." : `هنوز ${L?.itemSingular ?? "آیتم"}ی اضافه نکرده‌اید.`}</p>
-          {!q && <Button asChild className="mt-4"><Link href="/admin/items/new"><Plus className="size-4" />{`اولین ${L?.itemSingular ?? "آیتم"}`}</Link></Button>}
+          <p className="text-muted-foreground">{q ? "Nichts gefunden." : `Noch kein(e) ${L?.itemSingular ?? "Eintrag"} angelegt.`}</p>
+          {!q && <Button asChild className="mt-4"><Link href="/admin/items/new"><Plus className="size-4" />{`Erste(r/s) ${L?.itemSingular ?? "Eintrag"}`}</Link></Button>}
         </div>
       )}
       <ul className="grid gap-3">
@@ -71,15 +71,15 @@ export default function AdminItemsPage() {
                 <Link href={`/admin/items/${l.id}`} className="block truncate font-bold hover:text-primary">{l.title}</Link>
                 <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
                   <StatusPill className={listingStatusColor[l.status]}>{listingStatusLabels[l.status]}</StatusPill>
-                  {l.isFeatured && <StatusPill className="border-primary/40 bg-primary/10 text-primary">ویژه</StatusPill>}
+                  {l.isFeatured && <StatusPill className="border-primary/40 bg-primary/10 text-primary">Highlight</StatusPill>}
                   {l.category && <span>{l.category}</span>}
                   <span className="font-semibold text-foreground">{priceText(l)}</span>
                 </div>
               </div>
             </div>
             <div className="flex gap-2 self-end sm:self-auto">
-              <Button asChild variant="outline" size="sm"><Link href={`/admin/items/${l.id}`}><Pencil className="size-4" />ویرایش</Link></Button>
-              {canEdit && <Button variant="outline" size="sm" className="text-destructive" onClick={() => setDeleting(l)} aria-label={`حذف ${l.title}`}><Trash2 className="size-4" /></Button>}
+              <Button asChild variant="outline" size="sm"><Link href={`/admin/items/${l.id}`}><Pencil className="size-4" />Bearbeiten</Link></Button>
+              {canEdit && <Button variant="outline" size="sm" className="text-destructive" onClick={() => setDeleting(l)} aria-label={`Löschen: ${l.title}`}><Trash2 className="size-4" /></Button>}
             </div>
           </li>
         ))}
@@ -87,12 +87,12 @@ export default function AdminItemsPage() {
       <AlertDialog open={!!deleting} onOpenChange={(o) => !o && setDeleting(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>حذف «{deleting?.title}»؟</AlertDialogTitle>
-            <AlertDialogDescription>از سایت حذف می‌شود. اگر فقط موقتاً نمی‌خواهید دیده شود، وضعیتش را «پنهان» کنید.</AlertDialogDescription>
+            <AlertDialogTitle>„{deleting?.title}“ löschen?</AlertDialogTitle>
+            <AlertDialogDescription>wird von der Website gelöscht. Wenn er nur vorübergehend nicht sichtbar sein soll, setzen Sie den Status auf „Versteckt“.</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>انصراف</AlertDialogCancel>
-            <AlertDialogAction onClick={() => void remove()} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">حذف</AlertDialogAction>
+            <AlertDialogCancel>Abbrechen</AlertDialogCancel>
+            <AlertDialogAction onClick={() => void remove()} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Löschen</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

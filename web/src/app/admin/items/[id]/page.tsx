@@ -4,7 +4,7 @@ import Link from "next/link";
 import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { ArrowRight, Loader2, Save } from "lucide-react";
+import { ArrowLeft, Loader2, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -25,8 +25,8 @@ type Form = {
 };
 const empty: Form = { title: "", category: "", summary: "", description: "", priceType: "Fixed", price: "", original: "", unit: "", badge: "", images: [], attributes: {}, status: "Published", isFeatured: false, sortOrder: "0", version: null };
 const digits = (s: string) => s.replace(/[۰-۹]/g, (d) => String("۰۱۲۳۴۵۶۷۸۹".indexOf(d))).replace(/[^\d]/g, "");
-const rial = (t: string) => (digits(t) ? Number(digits(t)) * 10 : null);
-const tomanStr = (r: number | null) => (r ? String(r / 10) : "");
+const rial = (t: string) => (digits(t) ? Number(digits(t)) * 100 : null);
+const tomanStr = (r: number | null) => (r ? String(r / 100) : "");
 
 const fromListing = (l: Listing): Form => ({
   title: l.title, category: l.category ?? "", summary: l.summary ?? "", description: l.description ?? "", priceType: l.priceType,
@@ -68,7 +68,7 @@ export default function ItemEditPage({ params }: { params: Promise<{ id: string 
     try {
       if (isNew) await apiSend("/api/v1/admin/listings", "POST", body);
       else await apiSend(`/api/v1/admin/listings/${id}`, "PUT", body);
-      toast.success(isNew ? `${L.itemSingular} اضافه شد.` : "ذخیره شد.");
+      toast.success(isNew ? `${L.itemSingular} Hinzugefügt.` : "Gespeichert.");
       await reloadSite();
       router.push("/admin/items");
     } catch (e) {
@@ -81,19 +81,19 @@ export default function ItemEditPage({ params }: { params: Promise<{ id: string 
   const selectCls = "h-11";
   return (
     <form className="mx-auto max-w-4xl" onSubmit={(e) => { e.preventDefault(); void submit(); }}>
-      <Button asChild variant="ghost" className="mb-3"><Link href="/admin/items"><ArrowRight className="size-4" />{L.itemPlural}</Link></Button>
-      <AdminHeader title={isNew ? `${L.itemSingular} جدید` : `ویرایش ${L.itemSingular}`} />
-      {!canEdit && <p className="mb-5 rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground">فقط مدیر می‌تواند موارد موجود را ویرایش کند.</p>}
+      <Button asChild variant="ghost" className="mb-3"><Link href="/admin/items"><ArrowLeft className="size-4" />{L.itemPlural}</Link></Button>
+      <AdminHeader title={isNew ? `Neu: ${L.itemSingular}` : `Bearbeiten: ${L.itemSingular}`} />
+      {!canEdit && <p className="mb-5 rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground">Nur der Admin kann bestehende Einträge bearbeiten.</p>}
       <fieldset disabled={!canEdit} className="grid gap-6">
         <div className="grid gap-5 rounded-2xl border border-border bg-card p-5 sm:grid-cols-2 sm:p-6">
-          <TextField className="sm:col-span-2" label="عنوان" required value={form.title} onChange={(v) => set("title", v)} max={150} />
+          <TextField className="sm:col-span-2" label="Titel" required value={form.title} onChange={(v) => set("title", v)} max={150} />
           <div className="grid gap-2">
             <Label>{L.categoryLabel}</Label>
             {site.content.categories.length > 0 ? (
               <Select value={form.category || "__none"} onValueChange={(v) => set("category", v === "__none" ? "" : v)}>
                 <SelectTrigger className={selectCls} aria-label={L.categoryLabel}><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="__none">بدون دسته</SelectItem>
+                  <SelectItem value="__none">Ohne Kategorie</SelectItem>
                   {site.content.categories.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
                 </SelectContent>
               </Select>
@@ -101,14 +101,14 @@ export default function ItemEditPage({ params }: { params: Promise<{ id: string 
               <Input value={form.category} onChange={(e) => set("category", e.target.value)} className={selectCls} maxLength={60} aria-label={L.categoryLabel} />
             )}
           </div>
-          <TextField label="برچسب روی عکس (اختیاری)" value={form.badge} onChange={(v) => set("badge", v)} max={30} placeholder="ویژه / تخفیف / جدید" />
-          <TextField className="sm:col-span-2" label="توضیح کوتاه" value={form.summary} onChange={(v) => set("summary", v)} max={200} hint="زیر عنوان روی کارت دیده می‌شود." />
-          <AreaField className="sm:col-span-2" label="توضیحات کامل" value={form.description} onChange={(v) => set("description", v)} max={5000} rows={6} />
+          <TextField label="Etikett auf dem Bild (optional)" value={form.badge} onChange={(v) => set("badge", v)} max={30} placeholder="Highlight / Rabatt / Neu" />
+          <TextField className="sm:col-span-2" label="Kurzbeschreibung" value={form.summary} onChange={(v) => set("summary", v)} max={200} hint="Erscheint unter dem Titel auf der Karte." />
+          <AreaField className="sm:col-span-2" label="Ausführliche Beschreibung" value={form.description} onChange={(v) => set("description", v)} max={5000} rows={6} />
         </div>
 
         {site.content.fields.length > 0 && (
           <div className="grid gap-5 rounded-2xl border border-border bg-card p-5 sm:grid-cols-2 sm:p-6">
-            <p className="font-bold sm:col-span-2">مشخصات</p>
+            <p className="font-bold sm:col-span-2">Eigenschaften</p>
             {site.content.fields.map((f) =>
               f.type === "select" ? (
                 <div key={f.key} className="grid gap-2">
@@ -126,24 +126,24 @@ export default function ItemEditPage({ params }: { params: Promise<{ id: string 
                   dir={f.type === "number" ? "ltr" : undefined} max={200} />
               ),
             )}
-            <p className="text-xs text-muted-foreground sm:col-span-2">فیلدها را از «تنظیمات سایت ← آیتم‌ها و فیلدها» عوض کنید.</p>
+            <p className="text-xs text-muted-foreground sm:col-span-2">Die Felder ändern Sie unter „Website-Einstellungen → Einträge und Felder“.</p>
           </div>
         )}
 
         <div className="grid gap-5 rounded-2xl border border-border bg-card p-5 sm:grid-cols-2 sm:p-6">
-          <p className="font-bold sm:col-span-2">قیمت</p>
+          <p className="font-bold sm:col-span-2">Preis</p>
           <div className="grid gap-2">
-            <Label>نوع قیمت</Label>
+            <Label>Preisart</Label>
             <Select value={form.priceType} onValueChange={(v) => set("priceType", v as PriceType)}>
-              <SelectTrigger className={selectCls} aria-label="نوع قیمت"><SelectValue /></SelectTrigger>
+              <SelectTrigger className={selectCls} aria-label="Preisart"><SelectValue /></SelectTrigger>
               <SelectContent>{(Object.keys(priceTypeLabels) as PriceType[]).map((p) => <SelectItem key={p} value={p}>{priceTypeLabels[p]}</SelectItem>)}</SelectContent>
             </Select>
           </div>
           {form.priceType !== "OnCall" && (
             <>
-              <TextField label="قیمت (تومان)" dir="ltr" required value={form.price} onChange={(v) => set("price", v)} hint={rial(form.price) ? `= ${toman(rial(form.price))}` : undefined} />
-              <TextField label="قیمت قبل از تخفیف (اختیاری)" dir="ltr" value={form.original} onChange={(v) => set("original", v)} hint="خط‌خورده نمایش داده می‌شود." />
-              <TextField label="واحد (اختیاری)" value={form.unit} onChange={(v) => set("unit", v)} max={40} placeholder="هر نفر / هر عدد" />
+              <TextField label="Preis (€)" dir="ltr" required value={form.price} onChange={(v) => set("price", v)} hint={rial(form.price) ? `= ${toman(rial(form.price))}` : undefined} />
+              <TextField label="Preis vor Rabatt (optional)" dir="ltr" value={form.original} onChange={(v) => set("original", v)} hint="Wird durchgestrichen angezeigt." />
+              <TextField label="Einheit (optional)" value={form.unit} onChange={(v) => set("unit", v)} max={40} placeholder="pro Person / pro Stück" />
             </>
           )}
         </div>
@@ -152,21 +152,21 @@ export default function ItemEditPage({ params }: { params: Promise<{ id: string 
 
         <div className="grid gap-4 rounded-2xl border border-border bg-card p-5 sm:grid-cols-2 sm:p-6">
           <div className="grid gap-2">
-            <Label>وضعیت</Label>
+            <Label>Status</Label>
             <Select value={form.status} onValueChange={(v) => set("status", v as ListingStatus)}>
-              <SelectTrigger className={selectCls} aria-label="وضعیت"><SelectValue /></SelectTrigger>
+              <SelectTrigger className={selectCls} aria-label="Status"><SelectValue /></SelectTrigger>
               <SelectContent>{(Object.keys(listingStatusLabels) as ListingStatus[]).map((s) => <SelectItem key={s} value={s}>{s === "SoldOut" ? L.soldOutLabel : listingStatusLabels[s]}</SelectItem>)}</SelectContent>
             </Select>
           </div>
-          <TextField label="ترتیب نمایش" dir="ltr" value={form.sortOrder} onChange={(v) => set("sortOrder", v)} hint="عدد کمتر = جلوتر" />
-          <div className="sm:col-span-2"><SwitchRow label="ویژه" hint="در صفحه‌ی اول نمایش داده می‌شود." checked={form.isFeatured} onChange={(v) => set("isFeatured", v)} /></div>
+          <TextField label="Reihenfolge" dir="ltr" value={form.sortOrder} onChange={(v) => set("sortOrder", v)} hint="kleinere Zahl = weiter vorne" />
+          <div className="sm:col-span-2"><SwitchRow label="Highlight" hint="Wird auf der Startseite angezeigt." checked={form.isFeatured} onChange={(v) => set("isFeatured", v)} /></div>
         </div>
       </fieldset>
       {error && <p role="alert" className="mt-4 text-sm text-destructive">{error}</p>}
       {canEdit && (
         <div className="sticky bottom-20 z-30 mt-6 flex justify-end gap-3 rounded-2xl border border-border bg-background/90 p-3 backdrop-blur">
-          <Button type="button" variant="ghost" onClick={() => router.push("/admin/items")}>انصراف</Button>
-          <Button type="submit" disabled={busy || !form.title.trim()}>{busy ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}ذخیره</Button>
+          <Button type="button" variant="ghost" onClick={() => router.push("/admin/items")}>Abbrechen</Button>
+          <Button type="submit" disabled={busy || !form.title.trim()}>{busy ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}Speichern</Button>
         </div>
       )}
     </form>

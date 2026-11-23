@@ -81,16 +81,16 @@ export default function Slider06({
   return (
     <div dir="ltr" className="w-full max-w-sm mx-auto space-y-5">
       {/* Header — label + price + clear all in one row */}
-      <div dir="rtl" className="flex items-start justify-between gap-4">
+      <div className="flex items-start justify-between gap-4">
         <div>
-          <p dir="rtl" className="text-sm font-medium text-muted-foreground mb-1">
+          <p className="text-sm font-medium text-muted-foreground mb-1">
             {label}
           </p>
           {/* NumberFlow only animates Latin digits, so Persian digits are rendered as plain text */}
-          <div dir="rtl" className="flex flex-wrap items-baseline gap-x-1.5 gap-y-1">
-            <span className="text-lg font-bold tabular-nums text-foreground">{low.toLocaleString("fa-IR")}</span>
-            <span className="text-muted-foreground">تا</span>
-            <span className="text-lg font-bold tabular-nums text-foreground">{high.toLocaleString("fa-IR")}</span>
+          <div className="flex flex-wrap items-baseline gap-x-1.5 gap-y-1">
+            <span className="text-lg font-bold tabular-nums text-foreground">{low.toLocaleString("de-DE")}</span>
+            <span className="text-muted-foreground">bis</span>
+            <span className="text-lg font-bold tabular-nums text-foreground">{high.toLocaleString("de-DE")}</span>
             <small className="text-sm text-muted-foreground">{unit}</small>
           </div>
         </div>
@@ -136,7 +136,7 @@ export default function Slider06({
         {/* Labels */}
         <div className="flex justify-between text-xs font-medium text-muted-foreground/70 select-none">
           {LABELS.map((val) => (
-            <span key={val}>{val.toLocaleString("fa-IR")}</span>
+            <span key={val}>{val.toLocaleString("de-DE")}</span>
           ))}
         </div>
       </div>

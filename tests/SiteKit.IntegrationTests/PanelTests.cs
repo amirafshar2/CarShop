@@ -16,7 +16,7 @@ public sealed class PanelTests(ApiFactory factory) : IClassFixture<ApiFactory>
         var client = factory.CreateClient();
         (await client.PostAsJsonAsync("/api/v1/auth/otp", new { phone })).EnsureSuccessStatusCode();
         var code = factory.Sms.LastCode[phone];
-        var verify = await client.PostAsJsonAsync("/api/v1/auth/verify", new { phone, code, fullName = "تست" });
+        var verify = await client.PostAsJsonAsync("/api/v1/auth/verify", new { phone, code, fullName = "Test" });
         verify.EnsureSuccessStatusCode();
         var body = await verify.Content.ReadFromJsonAsync<JsonElement>(Json);
         client.DefaultRequestHeaders.Authorization = new("Bearer", body.GetProperty("accessToken").GetString());
@@ -26,8 +26,8 @@ public sealed class PanelTests(ApiFactory factory) : IClassFixture<ApiFactory>
     private static object Service(string title, string priceType = "Fixed", long? price = 50_000_000, long? original = null,
         bool active = true, Guid? version = null) => new
     {
-        title, category = "دیتیلینگ", description = "توضیح", features = new[] { "ویژگی ۱", "ویژگی ۲" },
-        priceType, priceRial = price, originalPriceRial = original, unit = "هر مورد", badge = (string?)null,
+        title, category = "Fahrzeugaufbereitung", description = "Beschreibung", features = new[] { "Merkmal 1", "Merkmal 2" },
+        priceType, priceRial = price, originalPriceRial = original, unit = "pro Stück", badge = (string?)null,
         imageUrl = (string?)null, sortOrder = 9, isActive = active, isFeatured = false, version
     };
 
@@ -57,7 +57,7 @@ public sealed class PanelTests(ApiFactory factory) : IClassFixture<ApiFactory>
     [Fact]
     public async Task Open_demo_signs_in_as_staff_without_key()
     {
-        using var demo = factory.WithWebHostBuilder(b => b.UseSetting("Demo:OpenAccess", "true").UseSetting("Seed:StaffPhones:0", "09120000002"));
+        using var demo = factory.WithWebHostBuilder(b => b.UseSetting("Demo:OpenAccess", "true").UseSetting("Seed:StaffPhones:0", "015120000002"));
         var client = demo.CreateClient();
         var info = await client.GetFromJsonAsync<JsonElement>("/api/v1/auth/demo", Json);
         Assert.True(info.GetProperty("enabled").GetBoolean());
@@ -69,7 +69,7 @@ public sealed class PanelTests(ApiFactory factory) : IClassFixture<ApiFactory>
     [Fact]
     public async Task Otp_code_is_never_returned_outside_development()
     {
-        var res = await factory.CreateClient().PostAsJsonAsync("/api/v1/auth/otp", new { phone = "09170000086" });
+        var res = await factory.CreateClient().PostAsJsonAsync("/api/v1/auth/otp", new { phone = "015170000086" });
         var body = await res.Content.ReadFromJsonAsync<JsonElement>(Json);
         Assert.True(!body.TryGetProperty("devCode", out var c) || c.ValueKind == JsonValueKind.Null);
     }
@@ -85,10 +85,10 @@ public sealed class PanelTests(ApiFactory factory) : IClassFixture<ApiFactory>
     [Fact]
     public async Task Admin_creates_updates_hides_and_deletes_a_service_and_public_list_follows()
     {
-        var admin = await LoginAsync("09120000001");
+        var admin = await LoginAsync("015120000001");
         var anon = factory.CreateClient();
 
-        var created = await admin.PostAsJsonAsync("/api/v1/admin/services", Service("خدمت تست CRUD"));
+        var created = await admin.PostAsJsonAsync("/api/v1/admin/services", Service("Testleistung CRUD"));
         Assert.Equal(HttpStatusCode.Created, created.StatusCode);
         var id = (await created.Content.ReadFromJsonAsync<JsonElement>(Json)).GetProperty("id").GetGuid();
         Assert.Contains((await anon.GetFromJsonAsync<JsonElement>("/api/v1/services", Json)).EnumerateArray(),
@@ -96,14 +96,14 @@ public sealed class PanelTests(ApiFactory factory) : IClassFixture<ApiFactory>
 
         var all = await admin.GetFromJsonAsync<JsonElement>("/api/v1/admin/services", Json);
         var version = all.EnumerateArray().First(s => s.GetProperty("id").GetGuid() == id).GetProperty("version").GetGuid();
-        var updated = await admin.PutAsJsonAsync($"/api/v1/admin/services/{id}", Service("خدمت تست CRUD", price: 70_000_000, original: 90_000_000, version: version));
+        var updated = await admin.PutAsJsonAsync($"/api/v1/admin/services/{id}", Service("Testleistung CRUD", price: 70_000_000, original: 90_000_000, version: version));
         Assert.Equal(HttpStatusCode.NoContent, updated.StatusCode);
-        var stale = await admin.PutAsJsonAsync($"/api/v1/admin/services/{id}", Service("خدمت تست CRUD", version: version));
+        var stale = await admin.PutAsJsonAsync($"/api/v1/admin/services/{id}", Service("Testleistung CRUD", version: version));
         Assert.Equal(HttpStatusCode.Conflict, stale.StatusCode);
         Assert.Contains((await anon.GetFromJsonAsync<JsonElement>("/api/v1/services", Json)).EnumerateArray(),
             s => s.GetProperty("id").GetGuid() == id && s.GetProperty("priceRial").GetInt64() == 70_000_000);
 
-        var hidden = await admin.PutAsJsonAsync($"/api/v1/admin/services/{id}", Service("خدمت تست CRUD", active: false));
+        var hidden = await admin.PutAsJsonAsync($"/api/v1/admin/services/{id}", Service("Testleistung CRUD", active: false));
         Assert.Equal(HttpStatusCode.NoContent, hidden.StatusCode);
         Assert.DoesNotContain((await anon.GetFromJsonAsync<JsonElement>("/api/v1/services", Json)).EnumerateArray(),
             s => s.GetProperty("id").GetGuid() == id);
@@ -116,10 +116,10 @@ public sealed class PanelTests(ApiFactory factory) : IClassFixture<ApiFactory>
     [Fact]
     public async Task Invalid_service_price_is_rejected()
     {
-        var admin = await LoginAsync("09120000001");
-        var noPrice = await admin.PostAsJsonAsync("/api/v1/admin/services", Service("بی‌قیمت", price: null));
-        var badOriginal = await admin.PostAsJsonAsync("/api/v1/admin/services", Service("تخفیف غلط", price: 50, original: 40));
-        var onCall = await admin.PostAsJsonAsync("/api/v1/admin/services", Service("تماس", priceType: "OnCall", price: null));
+        var admin = await LoginAsync("015120000001");
+        var noPrice = await admin.PostAsJsonAsync("/api/v1/admin/services", Service("Ohne Preis", price: null));
+        var badOriginal = await admin.PostAsJsonAsync("/api/v1/admin/services", Service("Falscher Rabatt", price: 50, original: 40));
+        var onCall = await admin.PostAsJsonAsync("/api/v1/admin/services", Service("Kontakt", priceType: "OnCall", price: null));
         Assert.Equal(HttpStatusCode.UnprocessableEntity, noPrice.StatusCode);
         Assert.Equal(HttpStatusCode.UnprocessableEntity, badOriginal.StatusCode);
         Assert.Equal(HttpStatusCode.Created, onCall.StatusCode);
@@ -128,16 +128,16 @@ public sealed class PanelTests(ApiFactory factory) : IClassFixture<ApiFactory>
     [Fact]
     public async Task Customer_and_staff_cannot_change_prices_or_users()
     {
-        var customer = await LoginAsync("09170000081");
+        var customer = await LoginAsync("015170000081");
         Assert.Equal(HttpStatusCode.Forbidden, (await customer.PostAsJsonAsync("/api/v1/admin/services", Service("x"))).StatusCode);
         Assert.Equal(HttpStatusCode.Forbidden, (await customer.GetAsync("/api/v1/admin/stats")).StatusCode);
         Assert.Equal(HttpStatusCode.Unauthorized, (await factory.CreateClient().GetAsync("/api/v1/me")).StatusCode);
 
         // Admin promotes a phone to staff → staff sees the dashboard but still cannot edit prices or users.
-        var admin = await LoginAsync("09120000001");
-        var created = await admin.PostAsJsonAsync("/api/v1/admin/users", new { phone = "09170000082", fullName = "کارشناس", role = "Staff" });
+        var admin = await LoginAsync("015120000001");
+        var created = await admin.PostAsJsonAsync("/api/v1/admin/users", new { phone = "015170000082", fullName = "Fachkraft", role = "Staff" });
         Assert.Equal(HttpStatusCode.Created, created.StatusCode);
-        var staff = await LoginAsync("09170000082");
+        var staff = await LoginAsync("015170000082");
         Assert.Equal(HttpStatusCode.OK, (await staff.GetAsync("/api/v1/admin/stats")).StatusCode);
         Assert.Equal(HttpStatusCode.Forbidden, (await staff.PostAsJsonAsync("/api/v1/admin/services", Service("x"))).StatusCode);
         Assert.Equal(HttpStatusCode.Forbidden, (await staff.GetAsync("/api/v1/admin/users")).StatusCode);
@@ -146,7 +146,7 @@ public sealed class PanelTests(ApiFactory factory) : IClassFixture<ApiFactory>
     [Fact]
     public async Task Admin_cannot_remove_own_admin_role()
     {
-        var admin = await LoginAsync("09120000001");
+        var admin = await LoginAsync("015120000001");
         var me = await admin.GetFromJsonAsync<JsonElement>("/api/v1/me", Json);
         var res = await admin.PutAsJsonAsync($"/api/v1/admin/users/{me.GetProperty("id").GetGuid()}/role", new { role = "Customer" });
         Assert.Equal(HttpStatusCode.Conflict, res.StatusCode);
@@ -156,14 +156,14 @@ public sealed class PanelTests(ApiFactory factory) : IClassFixture<ApiFactory>
     public async Task Customer_sees_own_leads_and_can_update_profile()
     {
         var anon = factory.CreateClient();
-        await anon.PostAsJsonAsync("/api/v1/leads", new { name = "رضا", phone = "09170000085", type = "ServiceRequest", message = "سرامیک" });
-        var customer = await LoginAsync("09170000085");
+        await anon.PostAsJsonAsync("/api/v1/leads", new { name = "Reza", phone = "015170000085", type = "ServiceRequest", message = "Keramik" });
+        var customer = await LoginAsync("015170000085");
 
         var leads = await customer.GetFromJsonAsync<JsonElement>("/api/v1/me/leads", Json);
         Assert.Single(leads.EnumerateArray());
 
-        var updated = await customer.PutAsJsonAsync("/api/v1/me", new { fullName = "رضا رضایی" });
-        Assert.Equal("رضا رضایی", (await updated.Content.ReadFromJsonAsync<JsonElement>(Json)).GetProperty("fullName").GetString());
+        var updated = await customer.PutAsJsonAsync("/api/v1/me", new { fullName = "Reza Rezaei" });
+        Assert.Equal("Reza Rezaei", (await updated.Content.ReadFromJsonAsync<JsonElement>(Json)).GetProperty("fullName").GetString());
     }
 
 }
