@@ -107,7 +107,7 @@ function BentoGrid({ items = itemsSample }: BentoGridProps) {
                                     "transition-colors duration-300 group-hover:bg-black/10 dark:group-hover:bg-white/20"
                                 )}
                             >
-                                {item.status || "Active"}
+                                {item.status || "Aktiv"}
                             </span>
                         </div>
 
@@ -135,7 +135,7 @@ function BentoGrid({ items = itemsSample }: BentoGridProps) {
                                 ))}
                             </div>
                             <span className="text-xs text-gray-500 dark:text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity">
-                                {item.cta || "Explore →"}
+                                {item.cta || "Mehr →"}
                             </span>
                         </div>
                     </div>

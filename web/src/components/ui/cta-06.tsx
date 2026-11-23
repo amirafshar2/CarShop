@@ -15,11 +15,11 @@ type CTAProps = {
 };
 
 const CTA = ({
-  title = "Experience the difference",
-  description = "Join thousands of developers using our premium component library to ship beautiful UIs in minutes, not hours.",
-  primaryText = "Get Started",
+  title = "Überzeugen Sie sich selbst",
+  description = "Melden Sie sich bei uns – wir beraten Sie gern.",
+  primaryText = "Jetzt starten",
   primaryHref = "#",
-  secondaryText = "View Components",
+  secondaryText = "Mehr erfahren",
   secondaryHref = "#",
 }: CTAProps) => {
   const { resolvedTheme } = useTheme();

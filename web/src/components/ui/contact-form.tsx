@@ -41,12 +41,12 @@ type ContactFormStatus = "idle" | "pending" | "success" | "error";
 
 const defaultLabels: ContactFormLabels = {
   name: "Name",
-  email: "Email",
-  message: "Message",
-  submit: "Send message",
-  pending: "Sending…",
-  success: "Thanks for your message. We'll get back to you soon.",
-  error: "Something went wrong. Please try again.",
+  email: "E-Mail",
+  message: "Nachricht",
+  submit: "Nachricht senden",
+  pending: "Wird gesendet…",
+  success: "Danke für Ihre Nachricht. Wir melden uns bald.",
+  error: "Etwas ist schiefgelaufen. Bitte erneut versuchen.",
 };
 
 const defaultDetails = (
@@ -62,7 +62,7 @@ const defaultDetails = (
     </li>
     <li className="flex items-center gap-3">
       <ClockIcon aria-hidden="true" className="size-4 shrink-0" />
-      <span>We reply within one business day</span>
+      <span>Antwort innerhalb eines Werktags</span>
     </li>
   </ul>
 );
@@ -120,9 +120,9 @@ interface ContactFormProps extends Omit<
  * />
  */
 function ContactForm({
-  eyebrow = "Contact",
-  title = "Get in touch",
-  description = "Questions about plans, features or anything else? Send us a message and the team will reply.",
+  eyebrow = "Kontakt",
+  title = "Schreiben Sie uns",
+  description = "Fragen? Schicken Sie uns eine Nachricht, wir antworten gern.",
   details = defaultDetails,
   labels: labelsProp,
   placeholders,
