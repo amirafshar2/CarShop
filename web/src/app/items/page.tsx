@@ -43,7 +43,7 @@ export default async function ItemsPage({ searchParams }: { searchParams: Promis
     <div className="mx-auto max-w-7xl px-4 pb-24 pt-32 md:pt-36">
       <header className="mb-8">
         <h1 className="text-3xl font-black md:text-5xl">{c.labels.itemsPageTitle}</h1>
-        {data && <p className="mt-2 text-muted-foreground">{`${fa(data.totalCount)} ${c.labels.itemSingular}`}</p>}
+        {data && <p className="mt-2 text-muted-foreground">{`${fa(data.totalCount)} ${data.totalCount === 1 ? c.labels.itemSingular : c.labels.itemPlural}`}</p>}
       </header>
 
       {c.categories.length > 0 && (

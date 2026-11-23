@@ -68,7 +68,7 @@ export default function ItemEditPage({ params }: { params: Promise<{ id: string 
     try {
       if (isNew) await apiSend("/api/v1/admin/listings", "POST", body);
       else await apiSend(`/api/v1/admin/listings/${id}`, "PUT", body);
-      toast.success(isNew ? `${L.itemSingular} Hinzugefügt.` : "Gespeichert.");
+      toast.success(isNew ? `${L.itemSingular} hinzugefügt.` : "Gespeichert.");
       await reloadSite();
       router.push("/admin/items");
     } catch (e) {

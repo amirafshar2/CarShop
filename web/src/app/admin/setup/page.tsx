@@ -82,7 +82,7 @@ function Wizard() {
       images: quick.image ? [quick.image] : [], attributes: {}, status: "Published", isFeatured: true, sortOrder: 0,
     });
     await step("items");
-    toast.success(`${L.itemSingular} Hinzugefügt.`);
+    toast.success(`${L.itemSingular} hinzugefügt.`);
     setQuick({ title: "", price: "", priceType: "Fixed", category: "", image: null, summary: "" });
   });
 
@@ -181,7 +181,7 @@ function Wizard() {
           {current.key === "items" && (
             <div className="grid gap-5">
               {site.progress.listings > 0 && (
-                <p className="rounded-xl bg-emerald-500/10 p-3 text-sm text-emerald-700 dark:text-emerald-300">{`${fa(site.progress.listings)} ${L.itemSingular} angelegt. `}<Link href="/admin/items" className="font-semibold underline">Alle verwalten</Link></p>
+                <p className="rounded-xl bg-emerald-500/10 p-3 text-sm text-emerald-700 dark:text-emerald-300">{`${fa(site.progress.listings)} ${site.progress.listings === 1 ? L.itemSingular : L.itemPlural} angelegt. `}<Link href="/admin/items" className="font-semibold underline">Alle verwalten</Link></p>
               )}
               <div className="grid gap-4 sm:grid-cols-2">
                 <TextField className="sm:col-span-2" label={`Titel: ${L.itemSingular}`} required value={quick.title} onChange={(v) => setQuick({ ...quick, title: v })} max={150} />
