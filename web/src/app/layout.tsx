@@ -5,6 +5,7 @@ import FooterWithSuite from "@/components/ui/footer-with-suite";
 import { Toaster } from "@/components/ui/sonner";
 import HideOnAdmin from "@/components/app/hide-on-admin";
 import SiteGate from "@/components/site/site-gate";
+import DemoLegalNote from "@/components/site/demo-legal-note";
 import { getSite, themeVars } from "@/lib/site";
 import { mediaUrl } from "@/lib/api";
 import "./globals.css";
@@ -66,6 +67,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
                 email={c.contact.address ?? c.contact.email ?? ""}
                 copyright={c.footer.copyright ?? `© ${year} ${c.brand.name}`}
               />
+              <DemoLegalNote />
             </HideOnAdmin>
           </SiteGate>
           <Toaster position="top-center" richColors />

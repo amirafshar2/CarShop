@@ -94,6 +94,8 @@ interface ContactFormProps extends Omit<
   onSubmit?: (values: ContactFormValues) => void | Promise<void>;
   /** Props for the `<form>`, such as `action` and `method` for a native submit. */
   formProps?: ComponentProps<"form">;
+  /** When set, shown in the card instead of the form (e.g. a public demo that collects no personal data). */
+  replaceForm?: ReactNode;
 }
 
 /**
@@ -130,6 +132,7 @@ function ContactForm({
   formFooter,
   onSubmit,
   formProps,
+  replaceForm,
   className,
   ...props
 }: ContactFormProps) {
@@ -209,6 +212,7 @@ function ContactForm({
         </div>
         <Card data-slot="contact-form-card" className="min-w-0 rounded-3xl border-border/70 bg-card/80 shadow-[0_24px_60px_-20px_rgba(0,0,0,0.7)] backdrop-blur">
           <CardContent className="p-6 sm:p-8">
+            {replaceForm ? replaceForm : <>
             {formHeader}
             <form
               data-slot="contact-form-form"
@@ -285,6 +289,7 @@ function ContactForm({
                 {formFooter}
               </div>
             </form>
+            </>}
           </CardContent>
         </Card>
       </div>

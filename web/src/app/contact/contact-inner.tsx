@@ -5,11 +5,15 @@ import { useSearchParams } from "next/navigation";
 import { Clock, Mail, MapPin, Phone, ShieldCheck } from "lucide-react";
 import { FaInstagram, FaTelegram, FaWhatsapp } from "react-icons/fa6";
 import ContactForm from "@/components/ui/contact-form";
-import { createLead, type LeadType } from "@/lib/api";
+import { useEffect, useState } from "react";
+import { createLead, getDemoInfo, type LeadType } from "@/lib/api";
 import { instagramLink, telegramLink, whatsappLink, type SiteContent } from "@/lib/site";
 
 export default function ContactInner({ site: c }: { site: SiteContent }) {
   const params = useSearchParams();
+  // Public demo: the request form is switched off so no personal data is collected.
+  const [demo, setDemo] = useState(false);
+  useEffect(() => { void getDemoInfo().then((d) => setDemo(d.enabled && !d.requiresKey)); }, []);
   const itemId = params.get("item") ?? undefined;
   const itemTitle = params.get("title")?.slice(0, 150) ?? undefined;
   const service = params.get("service")?.slice(0, 120) ?? undefined;
@@ -74,6 +78,21 @@ export default function ContactInner({ site: c }: { site: SiteContent }) {
           )}
         </div>
       }
+      replaceForm={demo ? (
+        <div data-testid="demo-form-off">
+          <p className="flex items-center gap-2 text-xl font-bold"><ShieldCheck className="size-5 text-primary" aria-hidden />Demo-Projekt</p>
+          <p className="mt-3 leading-7 text-muted-foreground">
+            Das Anfrageformular ist in der Demo abgeschaltet – es werden keine persönlichen Daten erhoben. Anfragen im Panel sehen Sie über den Demo-Login (Rollen-Buttons).
+          </p>
+          <p className="mt-4 text-sm">
+            <Link href="/login" className="font-semibold text-primary hover:underline">Zum Demo-Login</Link>
+            {" · "}
+            <a href="https://amirrezaafshar.de/impressum" target="_blank" rel="noopener noreferrer" className="font-semibold text-primary hover:underline">Impressum</a>
+            {" · "}
+            <a href="https://amirrezaafshar.de/datenschutz" target="_blank" rel="noopener noreferrer" className="font-semibold text-primary hover:underline">Datenschutz</a>
+          </p>
+        </div>
+      ) : undefined}
       formHeader={
         <div className="mb-6 border-b border-border pb-5">
           <p className="text-xl font-bold">Anfrageformular</p>
