@@ -20,24 +20,21 @@ function destination(roles: string[], next: string | null) {
 }
 
 /** "Demo-Login": one click into the admin or staff panel for presentations. */
-function DemoAccess({ onDone }: { onDone: (roles: string[]) => void }) {
-  const [info, setInfo] = useState<{ enabled: boolean; requiresKey: boolean } | null>(null);
-  const [key, setKey] = useState("");
-  const [busy, setBusy] = useState<"Admin" | "Staff" | null>(null);
-  const [error, setError] = useState<string>();
+type DemoInfo = { enabled: boolean; requiresKey: boolean };
 
-  useEffect(() => {
-    void getDemoInfo().then(setInfo);
-  }, []);
+function DemoAccess({ info, onDone }: { info: DemoInfo | null; onDone: (roles: string[]) => void }) {
+  const [key, setKey] = useState("");
+  const [busy, setBusy] = useState<"Admin" | "Staff" | "Customer" | null>(null);
+  const [error, setError] = useState<string>();
 
   if (!info?.enabled) return null;
 
-  const go = async (role: "Admin" | "Staff") => {
+  const go = async (role: "Admin" | "Staff" | "Customer") => {
     setBusy(role);
     setError(undefined);
     try {
       const r = await demoLogin(role, key || undefined);
-      toast.success(role === "Admin" ? "Willkommen im Admin-Panel" : "Willkommen im Mitarbeiter-Panel");
+      toast.success(role === "Admin" ? "Willkommen im Admin-Panel" : role === "Staff" ? "Willkommen im Mitarbeiter-Panel" : "Willkommen im Kundenbereich");
       onDone(r.user.roles);
     } catch (e) {
       setError((e as Error).message);
@@ -49,6 +46,7 @@ function DemoAccess({ onDone }: { onDone: (roles: string[]) => void }) {
   const roles = [
     { role: "Admin" as const, icon: ShieldCheck, title: "Admin", desc: "Alle Bereiche: Fahrzeuge, Leistungen, Anfragen und Benutzer", variant: "default" as const },
     { role: "Staff" as const, icon: Briefcase, title: "Mitarbeiter", desc: "Fahrzeuge verwalten und Anfragen bearbeiten", variant: "outline" as const },
+    { role: "Customer" as const, icon: UserRound, title: "Kunde", desc: "Kundenbereich mit eigenen Anfragen", variant: "outline" as const },
   ];
   const locked = !!busy || (info.requiresKey && !key);
 
@@ -57,13 +55,13 @@ function DemoAccess({ onDone }: { onDone: (roles: string[]) => void }) {
       <div>
         <p id="demo-title" className="font-bold text-foreground">Schnell-Login für die Demo, mit einem Klick</p>
         <p className="mt-1 text-xs text-muted-foreground sm:text-sm">
-          {info.requiresKey ? "Demo-Passwort eingeben und Rolle wählen. Keine SMS nötig." : "Rolle wählen. Keine SMS und kein Code nötig."}
+          {info.requiresKey ? "Demo-Passwort eingeben und Rolle wählen. Keine SMS nötig." : "Rolle wählen – es werden keine persönlichen Daten abgefragt."}
         </p>
       </div>
       {info.requiresKey && (
         <Input type="password" autoComplete="off" placeholder="Demo-Passwort" aria-label="Demo-Passwort" value={key} onChange={(e) => setKey(e.target.value)} />
       )}
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
         {roles.map(({ role, icon: Icon, title, desc, variant }) => (
           <Button
             key={role}
@@ -82,12 +80,6 @@ function DemoAccess({ onDone }: { onDone: (roles: string[]) => void }) {
         ))}
       </div>
       {error && <p role="alert" className="text-destructive">{error}</p>}
-      <p className="flex items-start gap-1.5 text-xs leading-relaxed text-muted-foreground">
-        <UserRound className="mt-0.5 size-3.5 shrink-0" aria-hidden />
-        <span>
-          Kundenbereich: Geben Sie eine beliebige Handynummer ein – der Bestätigungscode wird hier auf der Seite angezeigt.
-        </span>
-      </p>
     </section>
   );
 }
@@ -105,7 +97,11 @@ function LoginForm() {
   const [cooldown, setCooldown] = useState(0);
   const [devCode, setDevCode] = useState<string | null>(null);
   const [fresh, setFresh] = useState(false);
+  const [demo, setDemo] = useState<DemoInfo | null | undefined>(undefined);
   useEffect(() => { void getSetupStatus().then((s) => setFresh(!!s && !s.hasAdmin)); }, []);
+  useEffect(() => { void getDemoInfo().then((d) => setDemo(d ?? null)).catch(() => setDemo(null)); }, []);
+  // Public demo: no personal data is ever asked for – only the one-click role buttons are shown.
+  const demoOnly = !!demo?.enabled && !demo.requiresKey && !fresh;
 
   // Already signed in (refresh cookie) → straight to the right panel.
   useEffect(() => {
@@ -151,8 +147,8 @@ function LoginForm() {
   return (
     <Card className="w-full max-w-md">
       <CardHeader>
-        <CardTitle className="text-2xl">Anmelden / Registrieren</CardTitle>
-        <CardDescription>Mit Handynummer, ohne Passwort.</CardDescription>
+        <CardTitle className="text-2xl">{demoOnly ? "Anmelden" : "Anmelden / Registrieren"}</CardTitle>
+        <CardDescription>{demoOnly ? "Demo-Version: Rolle wählen und sofort loslegen." : "Mit Handynummer, ohne Passwort."}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-5">
         {fresh && (
@@ -161,9 +157,11 @@ function LoginForm() {
             <span className="mt-1 block text-muted-foreground">Hier klicken, um die Website einzurichten und ein Admin-Konto anzulegen →</span>
           </Link>
         )}
-        {step === "phone" ? (
+        {demo === undefined ? null : demoOnly ? (
+          <DemoAccess info={demo} onDone={(roles) => router.push(destination(roles, nextParam))} />
+        ) : step === "phone" ? (
           <>
-          <DemoAccess onDone={(roles) => router.push(destination(roles, nextParam))} />
+          <DemoAccess info={demo} onDone={(roles) => router.push(destination(roles, nextParam))} />
           <div className="flex items-center gap-3 text-xs text-muted-foreground" aria-hidden>
             <span className="h-px flex-1 bg-border" />oder mit Handynummer<span className="h-px flex-1 bg-border" />
           </div>

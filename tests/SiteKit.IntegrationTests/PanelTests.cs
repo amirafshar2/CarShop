@@ -41,7 +41,7 @@ public sealed class PanelTests(ApiFactory factory) : IClassFixture<ApiFactory>
     }
 
     [Fact]
-    public async Task Demo_login_with_access_key_signs_in_as_admin_and_rejects_wrong_key()
+    public async Task Demo_login_with_access_key_signs_in_as_admin_or_demo_customer_and_rejects_wrong_key()
     {
         using var demo = factory.WithWebHostBuilder(b => b.UseSetting("Demo:AccessKey", "showroom-2026"));
         var client = demo.CreateClient();
@@ -51,7 +51,9 @@ public sealed class PanelTests(ApiFactory factory) : IClassFixture<ApiFactory>
         var body = await ok.Content.ReadFromJsonAsync<JsonElement>(Json);
         Assert.Contains(body.GetProperty("user").GetProperty("roles").EnumerateArray(), r => r.GetString() == "Admin");
         var customer = await client.PostAsJsonAsync("/api/v1/auth/demo-login", new { role = "Customer", key = "showroom-2026" });
-        Assert.NotEqual(HttpStatusCode.OK, customer.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, customer.StatusCode);
+        var cbody = await customer.Content.ReadFromJsonAsync<JsonElement>(Json);
+        Assert.Contains(cbody.GetProperty("user").GetProperty("roles").EnumerateArray(), r => r.GetString() == "Customer");
     }
 
     [Fact]

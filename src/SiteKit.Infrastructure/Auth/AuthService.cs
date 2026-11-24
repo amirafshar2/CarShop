@@ -182,8 +182,22 @@ public sealed class AuthService(
 
     public async Task<Result<AuthTokens>> DemoSignInAsync(string role, CancellationToken ct)
     {
-        if (role is not (Roles.Admin or Roles.Staff))
+        if (role is not (Roles.Admin or Roles.Staff or Roles.Customer))
             return Error.Validation("demo.role", "Ungültige Rolle.");
+        if (role == Roles.Customer)
+        {
+            // Demo customer: a fixed fictitious account, so visitors never have to enter their own data.
+            const string demoPhone = "015199999999";
+            var customer = await users.Users.FirstOrDefaultAsync(u => u.PhoneNumber == demoPhone, ct);
+            if (customer is null)
+            {
+                customer = new ApplicationUser { UserName = demoPhone, PhoneNumber = demoPhone, PhoneNumberConfirmed = true, FullName = "Demo-Kunde", CreatedAt = clock.GetUtcNow() };
+                if ((await users.CreateAsync(customer)).Succeeded) await users.AddToRoleAsync(customer, Roles.Customer);
+                else customer = await users.Users.FirstOrDefaultAsync(u => u.PhoneNumber == demoPhone, ct);
+                if (customer is null) return Error.NotFound("demo.no_user", "Demo-Konto nicht gefunden.");
+            }
+            return await IssueTokensAsync(customer, familyId: Guid.NewGuid(), ct);
+        }
         var user = (await users.GetUsersInRoleAsync(role)).OrderBy(u => u.CreatedAt).FirstOrDefault();
         if (user is null) return Error.NotFound("demo.no_user", "Demo-Konto nicht gefunden.");
         return await IssueTokensAsync(user, familyId: Guid.NewGuid(), ct);

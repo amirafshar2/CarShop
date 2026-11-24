@@ -192,7 +192,7 @@ export async function getDemoInfo(): Promise<{ enabled: boolean; requiresKey: bo
   }
 }
 
-export async function demoLogin(role: "Admin" | "Staff", key?: string) {
+export async function demoLogin(role: "Admin" | "Staff" | "Customer", key?: string) {
   const res = await call(`/api/v1/auth/demo-login`, {
     method: "POST",
     headers: { "content-type": "application/json" },
