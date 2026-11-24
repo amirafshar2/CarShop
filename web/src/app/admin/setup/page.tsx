@@ -154,7 +154,7 @@ function Wizard() {
 
         <div className="mt-8">
           {current.key === "type" && (
-            <div className="grid gap-5">
+            <div className="grid grid-cols-1 gap-5">
               <div className="grid gap-3 sm:grid-cols-2" role="radiogroup" aria-label="Unternehmensart">
                 {site.presets.map((p) => (
                   <button key={p.key} type="button" role="radio" aria-checked={preset === p.key} onClick={() => setPreset(p.key)}
@@ -172,20 +172,20 @@ function Wizard() {
           {current.key === "look" && <LookSection c={draft} set={set} />}
           {current.key === "contact" && <ContactSection c={draft} set={set} />}
           {current.key === "home" && (
-            <div className="grid gap-6">
+            <div className="grid grid-cols-1 gap-6">
               <HeroSection c={draft} set={set} />
               <AreaField label="Ein Absatz „Über uns“ (optional)" value={draft.home.aboutText} onChange={(v) => set("home.aboutText", v)} max={3000} rows={4} />
               <p className="text-sm text-muted-foreground">Weitere Bereiche der Startseite (Vorteile, Fragen, Kennzahlen) stellen Sie später unter „Website-Einstellungen → Startseite“ ein.</p>
             </div>
           )}
           {current.key === "items" && (
-            <div className="grid gap-5">
+            <div className="grid grid-cols-1 gap-5">
               {site.progress.listings > 0 && (
                 <p className="rounded-xl bg-emerald-500/10 p-3 text-sm text-emerald-700 dark:text-emerald-300">{`${fa(site.progress.listings)} ${site.progress.listings === 1 ? L.itemSingular : L.itemPlural} angelegt. `}<Link href="/admin/items" className="font-semibold underline">Alle verwalten</Link></p>
               )}
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <TextField className="sm:col-span-2" label={`Titel: ${L.itemSingular}`} required value={quick.title} onChange={(v) => setQuick({ ...quick, title: v })} max={150} />
-                <div className="grid gap-2">
+                <div className="grid grid-cols-1 gap-2">
                   <span className="text-sm font-medium">Preis</span>
                   <div className="flex gap-2">
                     <Select value={quick.priceType} onValueChange={(v) => setQuick({ ...quick, priceType: v })}>
@@ -194,10 +194,10 @@ function Wizard() {
                     </Select>
                     <input dir="ltr" inputMode="numeric" value={quick.price} onChange={(e) => setQuick({ ...quick, price: e.target.value })} placeholder="€" aria-label="Preis in Euro" className="h-11 min-w-0 flex-1 rounded-md border border-input bg-transparent px-3" />
                   </div>
-                  <p className="text-xs text-muted-foreground">{digits(quick.price) ? `= ${toman(Number(digits(quick.price)) * 10)}` : "leer lassen = „Auf Anfrage“"}</p>
+                  <p className="text-xs text-muted-foreground">{digits(quick.price) ? `= ${toman(Number(digits(quick.price)) * 100)}` : "leer lassen = „Auf Anfrage“"}</p>
                 </div>
                 {draft.categories.length > 0 && (
-                  <div className="grid gap-2">
+                  <div className="grid grid-cols-1 gap-2">
                     <span className="text-sm font-medium">{L.categoryLabel}</span>
                     <Select value={quick.category} onValueChange={(v) => setQuick({ ...quick, category: v })}>
                       <SelectTrigger className="h-11" aria-label={L.categoryLabel}><SelectValue placeholder="Auswählen" /></SelectTrigger>
@@ -212,7 +212,7 @@ function Wizard() {
             </div>
           )}
           {current.key === "services" && (
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               {site.progress.services > 0 && <p className="rounded-xl bg-emerald-500/10 p-3 text-sm text-emerald-700 sm:col-span-2 dark:text-emerald-300">{`${fa(site.progress.services)} Leistung angelegt. `}<Link href="/admin/services" className="font-semibold underline">Leistungen verwalten</Link></p>}
               <TextField label="Titel der Leistung" value={svc.title} onChange={(v) => setSvc({ ...svc, title: v })} max={120} />
               <TextField label="Preis (€)" dir="ltr" value={svc.price} onChange={(v) => setSvc({ ...svc, price: v })} hint="leer = „Auf Anfrage“" />
@@ -221,8 +221,8 @@ function Wizard() {
             </div>
           )}
           {current.key === "publish" && (
-            <div className="grid gap-4">
-              <ul className="grid gap-2">
+            <div className="grid grid-cols-1 gap-4">
+              <ul className="grid grid-cols-1 gap-2">
                 {steps.filter((s) => s.key !== "publish").map((s) => (
                   <li key={s.key} className="flex items-center gap-2 text-sm">
                     {s.done(site) ? <CheckCircle2 className="size-4 text-emerald-500" aria-hidden /> : <span className="size-4 rounded-full border border-border" aria-hidden />}

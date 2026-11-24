@@ -88,7 +88,7 @@ export default async function ItemsPage({ searchParams }: { searchParams: Promis
       {!data && <p className="text-center text-muted-foreground">Keine Verbindung zum Server.</p>}
       {data && data.items.length === 0 && (
         <div className="rounded-[var(--radius)] border border-dashed border-border p-12 text-center text-muted-foreground">
-          {base ? <>Nichts gefunden. <Link href="/items" className="text-primary underline">Filter zurücksetzen</Link></> : `Noch kein(e) ${c.labels.itemSingular} vorhanden.`}
+          {base ? <>Nichts gefunden. <Link href="/items" className="text-primary underline">Filter zurücksetzen</Link></> : `Noch keine ${c.labels.itemPlural} vorhanden.`}
         </div>
       )}
       {data && data.items.length > 0 && (

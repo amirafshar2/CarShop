@@ -14,7 +14,7 @@ export function setupSteps(s: AdminSite | null): StepInfo[] {
     { key: "look", title: "Farbe und Aussehen", why: "Die Hauptfarbe sitzt auf Buttons und Links; stimmen Sie sie mit Ihrem Logo ab.", done: () => has("look") },
     { key: "contact", title: "Kontaktwege", why: "Kunden sollen mit einem Klick anrufen oder schreiben können.", done: (x) => x.progress.hasContact },
     { key: "home", title: "Startseite", why: "Das Erste, was Besucher sehen: eine klare Überschrift und ein gutes Bild.", done: (x) => x.progress.hasHero && has("home") },
-    { key: "items", title: `Erste(r/s) ${L?.itemSingular ?? "Eintrag"}`, why: `Mindestens ein(e) ${L?.itemSingular ?? "Eintrag"} hinzufügen, damit die Seite ${L?.itemPlural ?? "Einträge"} nicht leer ist.`, done: (x) => x.progress.listings > 0 },
+    { key: "items", title: `${L?.itemPlural ?? "Einträge"} anlegen`, why: `Legen Sie mindestens einen Eintrag an, damit die Seite „${L?.itemPlural ?? "Einträge"}“ nicht leer ist.`, done: (x) => x.progress.listings > 0 },
     { key: "services", title: "Leistungen und Preise", why: "Optional: eine Liste der Leistungen mit Preisen, für Kunden, die nach Preisen suchen.", done: (x) => x.progress.services > 0 || has("services"), optional: true },
     { key: "publish", title: "Website veröffentlichen", why: "Solange Sie nicht veröffentlichen, sehen Besucher die Seite „Bald für Sie da“.", done: (x) => x.isPublished },
   ];

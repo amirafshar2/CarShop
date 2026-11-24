@@ -55,8 +55,8 @@ export default function AdminItemsPage() {
       <LoadState loading={loading && !data} error={error} onRetry={reload} />
       {data && rows.length === 0 && (
         <div className="rounded-2xl border border-dashed border-border p-12 text-center">
-          <p className="text-muted-foreground">{q ? "Nichts gefunden." : `Noch kein(e) ${L?.itemSingular ?? "Eintrag"} angelegt.`}</p>
-          {!q && <Button asChild className="mt-4"><Link href="/admin/items/new"><Plus className="size-4" />{`Erste(r/s) ${L?.itemSingular ?? "Eintrag"}`}</Link></Button>}
+          <p className="text-muted-foreground">{q ? "Nichts gefunden." : `Noch keine ${L?.itemPlural ?? "Einträge"} angelegt.`}</p>
+          {!q && <Button asChild className="mt-4"><Link href="/admin/items/new"><Plus className="size-4" />{`${L?.itemSingular ?? "Eintrag"} anlegen`}</Link></Button>}
         </div>
       )}
       <ul className="grid gap-3">

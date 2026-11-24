@@ -16,7 +16,7 @@ export function TextField({ label, value, onChange, hint, placeholder, max, dir,
 }) {
   const id = useId();
   return (
-    <div className={`grid gap-2 ${className ?? ""}`}>
+    <div className={`grid grid-cols-1 gap-2 ${className ?? ""}`}>
       <Label htmlFor={id}>{label}{required && <span className="text-destructive"> *</span>}</Label>
       <Input id={id} type={type} dir={dir} value={value ?? ""} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} maxLength={max} required={required} className="h-11" />
       {hint && <p className="text-xs leading-5 text-muted-foreground">{hint}</p>}
@@ -29,7 +29,7 @@ export function AreaField({ label, value, onChange, hint, placeholder, max, rows
 }) {
   const id = useId();
   return (
-    <div className={`grid gap-2 ${className ?? ""}`}>
+    <div className={`grid grid-cols-1 gap-2 ${className ?? ""}`}>
       <Label htmlFor={id}>{label}</Label>
       <Textarea id={id} rows={rows} value={value ?? ""} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} maxLength={max} />
       {hint && <p className="text-xs leading-5 text-muted-foreground">{hint}</p>}
@@ -71,7 +71,7 @@ export function ImageField({ label, value, onChange, hint, accept = "image", cla
     }
   };
   return (
-    <div className={`grid gap-2 ${className ?? ""}`}>
+    <div className={`grid grid-cols-1 gap-2 ${className ?? ""}`}>
       <span className="text-sm font-medium">{label}</span>
       <div className="flex flex-wrap items-center gap-3">
         <div className="grid size-24 shrink-0 place-items-center overflow-hidden rounded-xl border border-dashed border-border bg-muted">

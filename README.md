@@ -44,8 +44,8 @@ Ich habe Ideen, Anforderungen und Entscheidungen vorgegeben und alles getestet; 
 | ![Assistent](docs/screenshots/wizard.jpg) | ![Aussehen](docs/screenshots/look.jpg) |
 | **Eigene Felder & Kategorien** | **Veröffentlichen, Export/Import, Neustart** |
 | ![Felder](docs/screenshots/catalog.jpg) | ![Veröffentlichen](docs/screenshots/publish.jpg) |
-| **Beispiel: Vorlage „Autohaus“ mit Beispielinhalt** | **Ergebnis des Assistenten: „Reisebüro“** |
-| ![Autohaus](docs/screenshots/home.jpg) | ![Reisebüro](docs/screenshots/result-travel.jpg) |
+| **Beispiel: Vorlage „Autohaus“ mit Beispielinhalt** | **Leistungen mit Preisliste** |
+| ![Autohaus](docs/screenshots/home.jpg) | ![Leistungen](docs/screenshots/services.jpg) |
 | **Liste mit Filtern aus eigenen Feldern** | **Admin-Dashboard mit Fortschritt** |
 | ![Liste](docs/screenshots/items.jpg) | ![Dashboard](docs/screenshots/dashboard.jpg) |
 
